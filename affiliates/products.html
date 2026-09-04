@@ -71,10 +71,15 @@
     if (cached) render(cached);
   } catch (e) {}
 
-  fetch('/api/partner?action=products&partner_id=' + partner.id).then(function (r) { return r.json(); }).then(function (d) {
+  var token = (function () { try { return localStorage.getItem('partners_token'); } catch (e) { return ''; } })();
+  fetch('/api/partner?action=products', { headers: { 'Authorization': 'Bearer ' + token } }).then(function (r) { return r.json(); }).then(function (d) {
     if (d.ok && d.products) {
       render(d.products);
       try { localStorage.setItem(cacheKey, JSON.stringify(d.products)); } catch (e) {}
+    } else if (d.error === 'Unauthorized. Please log in.') {
+      localStorage.removeItem('partners_partner');
+      localStorage.removeItem('partners_token');
+      window.location.href = '/affiliates/login';
     }
   }).catch(function () {
     if (!grid.children.length || grid.querySelector('.skeleton')) {

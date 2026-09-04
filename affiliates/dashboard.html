@@ -147,12 +147,17 @@
   } catch (e) {}
 
   // 2. Fresh background fetch using consolidated single-call dashboard endpoint
-  fetch('/api/partner?action=dashboard&partner_id=' + partner.id)
+  var token = (function () { try { return localStorage.getItem('partners_token'); } catch (e) { return ''; } })();
+  fetch('/api/partner?action=dashboard', { headers: { 'Authorization': 'Bearer ' + token } })
     .then(function (r) { return r.json(); })
     .then(function (d) {
       if (d.ok) {
         render(d);
         try { localStorage.setItem(cacheKey, JSON.stringify(d)); } catch (e) {}
+      } else if (d.error === 'Unauthorized. Please log in.') {
+        localStorage.removeItem('partners_partner');
+        localStorage.removeItem('partners_token');
+        window.location.href = '/affiliates/login';
       }
     })
     .catch(function () {});

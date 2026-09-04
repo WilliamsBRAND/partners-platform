@@ -1,7 +1,38 @@
+import crypto from 'crypto';
 import { getDb, json } from './_db.js';
 
 function slugify(t) {
   return t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+}
+
+function signToken(payload) {
+  const secret = process.env.ADMIN_TOKEN_SECRET || process.env.ADMIN_PASSWORD || '';
+  const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const sig = crypto.createHmac('sha256', secret).update(body).digest('base64url');
+  return body + '.' + sig;
+}
+
+function verifyToken(token) {
+  try {
+    const secret = process.env.ADMIN_TOKEN_SECRET || process.env.ADMIN_PASSWORD || '';
+    if (!secret) return null;
+    const [body, sig] = String(token || '').split('.');
+    if (!body || !sig) return null;
+    const expected = crypto.createHmac('sha256', secret).update(body).digest('base64url');
+    if (expected !== sig) return null;
+    const payload = JSON.parse(Buffer.from(body, 'base64url').toString());
+    if (!payload || payload.sub !== 'admin' || !payload.exp || Date.now() > payload.exp) return null;
+    return payload;
+  } catch (e) {
+    return null;
+  }
+}
+
+function getToken(req) {
+  const h = req.headers.authorization || '';
+  if (h.startsWith('Bearer ')) return h.slice(7);
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  return url.searchParams.get('token') || '';
 }
 
 export default async function handler(req, res) {
@@ -16,10 +47,13 @@ export default async function handler(req, res) {
       case 'auth':
         return await auth(req, res);
       case 'all':
-        return await all(req, res, db);
       case 'update':
-        return await update(req, res, db);
       case 'offer':
+        if (!verifyToken(getToken(req))) {
+          return json(res, 401, { error: 'Unauthorized.' });
+        }
+        if (action === 'all') return await all(req, res, db);
+        if (action === 'update') return await update(req, res, db);
         return await offer(req, res, db);
       default:
         return json(res, 400, { error: 'Unknown action. Valid: auth, all, update, offer.' });
@@ -29,13 +63,18 @@ export default async function handler(req, res) {
   }
 }
 
+function authIssuedAt() {
+  return Date.now();
+}
+
 async function auth(req, res) {
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
   const { password } = req.body || {};
   const adminPass = process.env.ADMIN_PASSWORD || '';
   if (!adminPass) return json(res, 500, { error: 'Admin password not configured.' });
   if (password !== adminPass) return json(res, 401, { error: 'Wrong password.' });
-  return json(res, 200, { ok: true });
+  const token = signToken({ sub: 'admin', iat: authIssuedAt(), exp: Date.now() + 12 * 60 * 60 * 1000 });
+  return json(res, 200, { ok: true, token });
 }
 
 async function all(req, res, db) {

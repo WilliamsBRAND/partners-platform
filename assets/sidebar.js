@@ -17,6 +17,9 @@
     try { return JSON.parse(localStorage.getItem('partners_partner')); }
     catch (e) { return null; }
   }
+  function getToken() {
+    return localStorage.getItem('partners_token') || '';
+  }
 
   function snack(msg) {
     var el = document.getElementById('snackbar');
@@ -52,6 +55,7 @@
 
   function logout() {
     localStorage.removeItem('partners_partner');
+    localStorage.removeItem('partners_token');
     window.location.href = '/affiliates/login';
   }
 
@@ -70,10 +74,11 @@
 
   function submitWithdrawal() {
     var p = getPartner();
+    var token = getToken();
     var amtEl = document.getElementById('withdrawAmount');
     var errEl = document.getElementById('withdrawErr');
     var btnEl = document.getElementById('wfConfirm');
-    if (!p || !p.id) { window.location.href = '/affiliates/login'; return; }
+    if (!p || !p.id || !token) { window.location.href = '/affiliates/login'; return; }
     var amt = parseFloat(amtEl.value);
     if (!amt || amt <= 0) { errEl.textContent = 'Please enter a valid amount.'; return; }
     var kobo = Math.round(amt * 100);
@@ -82,8 +87,8 @@
     btnEl.textContent = 'Submitting...';
     fetch('/api/partner?action=withdraw', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ partner_id: p.id, amount_kobo: kobo })
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ amount_kobo: kobo })
     }).then(function (r) { return r.json(); }).then(function (d) {
       btnEl.disabled = false;
       btnEl.textContent = 'Confirm';
@@ -92,6 +97,10 @@
         snack('Withdrawal requested. We\'ll pay you shortly.');
         setTimeout(function () { window.location.reload(); }, 900);
       } else {
+        if (d.error === 'Unauthorized. Please log in.') {
+          logout();
+          return;
+        }
         errEl.textContent = d.error || 'Something went wrong.';
       }
     }).catch(function () {
@@ -102,7 +111,8 @@
   }
 
   var partner = getPartner();
-  if (!partner || !partner.id) { window.location.href = '/affiliates/login'; return; }
+  var token = getToken();
+  if (!partner || !partner.id || !token) { window.location.href = '/affiliates/login'; return; }
 
   // ---- inject sidebar ----
   var nav = [
@@ -146,5 +156,5 @@
   shell.appendChild(sidebar);
   shell.appendChild(main);
 
-  window.App = { esc, fmt, fmtDate, snack, copyLink, logout, getPartner, toggleWithdraw, submitWithdrawal };
+  window.App = { esc, fmt, fmtDate, snack, copyLink, logout, getPartner, getToken, toggleWithdraw, submitWithdrawal };
 })();

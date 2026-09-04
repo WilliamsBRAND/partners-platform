@@ -136,6 +136,7 @@ input::placeholder{color:#555;}
     .then(function(r){ return r.json(); })
     .then(function(d){
       if(d.ok){
+        localStorage.setItem('partners_token', d.token || '');
         localStorage.setItem('partners_partner', JSON.stringify(d));
         formCard.style.display = 'none';
         successCard.style.display = 'block';

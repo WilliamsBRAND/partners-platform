@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { getDb, json } from './_db.js';
 
 function generateCode(name) {
@@ -8,6 +9,35 @@ function generateCode(name) {
 
 function koboToNaira(kobo) {
   return (kobo / 100).toFixed(2);
+}
+
+function signToken(partnerId) {
+  const secret = process.env.PARTNER_TOKEN_SECRET || process.env.SUPABASE_SERVICE_KEY || '';
+  const body = Buffer.from(JSON.stringify({ sub: partnerId, exp: Date.now() + 30 * 24 * 60 * 60 * 1000 })).toString('base64url');
+  const sig = crypto.createHmac('sha256', secret).update(body).digest('base64url');
+  return body + '.' + sig;
+}
+
+function verifyToken(token) {
+  try {
+    const secret = process.env.PARTNER_TOKEN_SECRET || process.env.SUPABASE_SERVICE_KEY || '';
+    if (!secret) return null;
+    const [body, sig] = String(token || '').split('.');
+    if (!body || !sig) return null;
+    const expected = crypto.createHmac('sha256', secret).update(body).digest('base64url');
+    if (expected !== sig) return null;
+    const payload = JSON.parse(Buffer.from(body, 'base64url').toString());
+    if (!payload || !payload.sub || !payload.exp || Date.now() > payload.exp) return null;
+    return payload.sub;
+  } catch (e) {
+    return null;
+  }
+}
+
+function getPartnerId(req, url) {
+  const h = req.headers.authorization || '';
+  if (h.startsWith('Bearer ')) return verifyToken(h.slice(7));
+  return null;
 }
 
 async function notifyWithdrawal(db, partner, payoutRow) {
@@ -50,17 +80,22 @@ export default async function handler(req, res) {
       case 'login':
         return await login(req, res, db, url);
       case 'dashboard':
-        return await dashboard(req, res, db, url);
       case 'stats':
-        return await stats(req, res, db, url);
       case 'commissions':
-        return await commissions(req, res, db, url);
       case 'withdraw':
-        return await withdraw(req, res, db, url);
       case 'payouts':
-        return await payouts(req, res, db, url);
-      case 'products':
-        return await products(req, res, db, url);
+      case 'products': {
+        const partnerId = getPartnerId(req, url);
+        if (!partnerId) {
+          return json(res, 401, { error: 'Unauthorized. Please log in.' });
+        }
+        if (action === 'dashboard') return await dashboard(req, res, db, partnerId);
+        if (action === 'stats') return await stats(req, res, db, partnerId);
+        if (action === 'commissions') return await commissions(req, res, db, partnerId);
+        if (action === 'withdraw') return await withdraw(req, res, db, partnerId);
+        if (action === 'payouts') return await payouts(req, res, db, partnerId);
+        return await products(req, res, db, partnerId);
+      }
       default:
         return json(res, 400, { error: 'Unknown action. Valid: register, login, dashboard, stats, commissions, withdraw, payouts, products.' });
     }
@@ -99,8 +134,9 @@ async function register(req, res, db, url) {
   }).select('id, code, name, email, bank_name, account_number, account_name').single();
 
   if (error) return json(res, 500, { error: 'Failed to create account.' });
-  const siteUrl = process.env.SITE_URL || 'https://nexora.tomidewilliams.com';
-  return json(res, 200, { ok: true, ...data, siteUrl });
+  const siteUrl = process.env.SITE_URL || 'https://partners.tomidewilliams.com';
+  const token = signToken(data.id);
+  return json(res, 200, { ok: true, ...data, siteUrl, token });
 }
 
 async function login(req, res, db, url) {
@@ -113,12 +149,12 @@ async function login(req, res, db, url) {
     .eq('email', email.toLowerCase().trim()).eq('status', 'active').maybeSingle();
 
   if (!data) return json(res, 404, { error: 'No active partner account found with that email.' });
-  const siteUrl = process.env.SITE_URL || 'https://nexora.tomidewilliams.com';
-  return json(res, 200, { ok: true, ...data, siteUrl });
+  const siteUrl = process.env.SITE_URL || 'https://partners.tomidewilliams.com';
+  const token = signToken(data.id);
+  return json(res, 200, { ok: true, ...data, siteUrl, token });
 }
 
-async function dashboard(req, res, db, url) {
-  const partnerId = url.searchParams.get('partner_id');
+async function dashboard(req, res, db, partnerId) {
   if (!partnerId) return json(res, 400, { error: 'partner_id required.' });
 
   const [clicksRes, convRes, payoutsRes, partnerRes, offersRes] = await Promise.all([
@@ -156,7 +192,7 @@ async function dashboard(req, res, db, url) {
     offer_name: offerMap[c.offer_id] || '-'
   }));
 
-  const siteUrl = process.env.SITE_URL || 'https://nexora.tomidewilliams.com';
+  const siteUrl = process.env.SITE_URL || 'https://partners.tomidewilliams.com';
 
   return json(res, 200, {
     ok: true,
@@ -175,8 +211,7 @@ async function dashboard(req, res, db, url) {
   }, { 'Cache-Control': 'no-store' });
 }
 
-async function stats(req, res, db, url) {
-  const partnerId = url.searchParams.get('partner_id');
+async function stats(req, res, db, partnerId) {
   if (!partnerId) return json(res, 400, { error: 'partner_id required.' });
 
   const [clicksRes, convRes, payoutsRes, partnerRes] = await Promise.all([
@@ -211,8 +246,7 @@ async function stats(req, res, db, url) {
   }, { 'Cache-Control': 'no-store' });
 }
 
-async function commissions(req, res, db, url) {
-  const partnerId = url.searchParams.get('partner_id');
+async function commissions(req, res, db, partnerId) {
   if (!partnerId) return json(res, 400, { error: 'partner_id required.' });
 
   const { data } = await db.from('conversions')
@@ -229,18 +263,18 @@ async function commissions(req, res, db, url) {
   return json(res, 200, { ok: true, commissions: commissionsList }, { 'Cache-Control': 'no-store' });
 }
 
-async function withdraw(req, res, db, url) {
+async function withdraw(req, res, db, partnerId) {
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
-  const { partner_id, amount_kobo } = req.body || {};
-  if (!partner_id || !amount_kobo) return json(res, 400, { error: 'partner_id and amount_kobo required.' });
+  const { amount_kobo } = req.body || {};
+  if (!partnerId || !amount_kobo) return json(res, 400, { error: 'partner_id and amount_kobo required.' });
   const amt = parseInt(amount_kobo, 10);
   if (!amt || amt <= 0) return json(res, 400, { error: 'Invalid amount.' });
 
   const [convRes, payoutsRes, partnerRes] = await Promise.all([
-    db.from('conversions').select('commission_kobo, status').eq('partner_id', partner_id),
-    db.from('payouts').select('amount_kobo, status').eq('partner_id', partner_id),
+    db.from('conversions').select('commission_kobo, status').eq('partner_id', partnerId),
+    db.from('payouts').select('amount_kobo, status').eq('partner_id', partnerId),
     db.from('partners').select('id, code, name, email, bank_name, account_number, account_name')
-      .eq('id', partner_id).eq('status', 'active').maybeSingle(),
+      .eq('id', partnerId).eq('status', 'active').maybeSingle(),
   ]);
 
   if (!partnerRes.data) return json(res, 404, { error: 'Partner not found.' });
@@ -256,7 +290,7 @@ async function withdraw(req, res, db, url) {
   if (amt > available) return json(res, 400, { error: 'Amount exceeds your available balance.' });
 
   const { data: payoutRow, error } = await db.from('payouts').insert({
-    partner_id,
+    partner_id: partnerId,
     amount_kobo: amt,
     status: 'pending',
   }).select('id, amount_kobo, status, created_at').single();
@@ -268,8 +302,7 @@ async function withdraw(req, res, db, url) {
   return json(res, 200, { ok: true, payout: payoutRow });
 }
 
-async function payouts(req, res, db, url) {
-  const partnerId = url.searchParams.get('partner_id');
+async function payouts(req, res, db, partnerId) {
   if (!partnerId) return json(res, 400, { error: 'partner_id required.' });
 
   const { data } = await db.from('payouts')
@@ -278,8 +311,7 @@ async function payouts(req, res, db, url) {
   return json(res, 200, { ok: true, payouts: data || [] }, { 'Cache-Control': 'no-store' });
 }
 
-async function products(req, res, db, url) {
-  const partnerId = url.searchParams.get('partner_id');
+async function products(req, res, db, partnerId) {
   if (!partnerId) return json(res, 400, { error: 'partner_id required.' });
 
   const [partnerRes, offersRes, referralsRes, convsRes] = await Promise.all([
@@ -312,7 +344,7 @@ async function products(req, res, db, url) {
     }
   });
 
-  const siteUrl = process.env.SITE_URL || 'https://nexora.tomidewilliams.com';
+  const siteUrl = process.env.SITE_URL || 'https://partners.tomidewilliams.com';
 
   const productList = offers.map(o => {
     const checkout = o.checkout_url || (siteUrl + '/checkout');

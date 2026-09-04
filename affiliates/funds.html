@@ -121,7 +121,9 @@
     if (cp) renderPayouts(cp);
   } catch (e) {}
 
-  fetch('/api/partner?action=stats&partner_id=' + partner.id)
+  var token = (function () { try { return localStorage.getItem('partners_token'); } catch (e) { return ''; } })();
+
+  fetch('/api/partner?action=stats', { headers: { 'Authorization': 'Bearer ' + token } })
     .then(function (r) { return r.json(); })
     .then(function (d) {
       if (d.ok) {
@@ -130,7 +132,7 @@
       }
     }).catch(function () {});
 
-  fetch('/api/partner?action=payouts&partner_id=' + partner.id)
+  fetch('/api/partner?action=payouts', { headers: { 'Authorization': 'Bearer ' + token } })
     .then(function (r) { return r.json(); })
     .then(function (d) {
       if (d.ok) {

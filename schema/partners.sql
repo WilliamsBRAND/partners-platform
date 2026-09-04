@@ -7,7 +7,7 @@ create table if not exists offers (
   slug text unique not null,
   name text not null,
   description text,
-  price_kobo integer not null default 666700,
+  price_kobo integer not null default 749000,
   commission_rate numeric(3,2) not null default 0.30,
   checkout_url text,
   status text default 'active' check (status in ('active', 'inactive')),
@@ -91,5 +91,11 @@ create policy "Service role full access payouts" on payouts for all using (true)
 
 -- Seed the first offer
 insert into offers (slug, name, description, price_kobo, commission_rate, checkout_url, status)
-values ('nexora', 'NEXORA', 'Birthday pre-order — practical lessons on money, career, AI, and personal growth.', 666700, 0.30, '/checkout', 'active')
+values ('nexora', 'NEXORA', 'Birthday pre-order — practical lessons on money, career, AI, and personal growth.', 749000, 0.30, '/checkout', 'active')
 on conflict (slug) do nothing;
+
+-- Reconcile existing NEXORA offer to the actual checkout price (₦7,490)
+-- The partner platform previously showed ₦6,667 (666700) while the real Paystack
+-- checkout price is ₦7,490 (749000, see nexora verify-payment expectedAmount).
+-- Run once against the live DB to fix the displayed price and commission base.
+update offers set price_kobo = 749000 where slug = 'nexora' and price_kobo <> 749000;

@@ -106,7 +106,7 @@ td:first-child{color:#fff;}
   <div class="topbar">
     <div class="logo">Partners Admin</div>
     <div class="right">
-      <a class="logout" onclick="sessionStorage.removeItem('partners_admin');document.getElementById('dashWrap').style.display='none';document.getElementById('loginWrap').style.display='';">Logout</a>
+      <a class="logout" onclick="sessionStorage.removeItem('partners_admin_token');document.getElementById('dashWrap').style.display='none';document.getElementById('loginWrap').style.display='';">Logout</a>
     </div>
   </div>
 
@@ -196,8 +196,15 @@ td:first-child{color:#fff;}
 
 <script>
 (function(){
-  if(sessionStorage.getItem('partners_admin')) showDash();
+  if(sessionStorage.getItem('partners_admin_token')) showDash();
 })();
+
+function api(url, method, body){
+  var opts = {method:method||'GET'};
+  opts.headers = {'Authorization':'Bearer '+sessionStorage.getItem('partners_admin_token')};
+  if(body){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(body);}
+  return fetch(url,opts).then(function(r){return r.json();});
+}
 
 function doLogin(){
   var pass = document.getElementById('adminPass').value;
@@ -206,9 +213,19 @@ function doLogin(){
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({password:pass})
   }).then(function(r){return r.json();}).then(function(d){
-    if(d.ok){sessionStorage.setItem('partners_admin','1');showDash();}
+    if(d.ok){
+      sessionStorage.setItem('partners_admin_token',d.token);
+      showDash();
+    }
     else{document.getElementById('loginErr').textContent=d.error||'Wrong password.';}
   }).catch(function(){document.getElementById('loginErr').textContent='Network error.';});
+}
+
+function onUnauthorized(d){
+  sessionStorage.removeItem('partners_admin_token');
+  document.getElementById('dashWrap').style.display='none';
+  document.getElementById('loginWrap').style.display='';
+  document.getElementById('loginErr').textContent=(d&&d.error)||'Session expired. Please log in again.';
 }
 
 function showDash(){
@@ -218,8 +235,8 @@ function showDash(){
 }
 
 function loadAll(){
-  fetch('/api/admin?action=all').then(function(r){return r.json();}).then(function(d){
-    if(!d.ok) return;
+  api('/api/admin?action=all').then(function(d){
+    if(!d.ok){ if(d.error==='Unauthorized.'){onUnauthorized(d);} return; }
     document.getElementById('aPartners').textContent=d.partners?d.partners.length:0;
     document.getElementById('aClicks').textContent=d.totalClicks||0;
     document.getElementById('aConversions').textContent=d.totalConversions||0;
@@ -280,8 +297,8 @@ function renderOffers(offers){
 }
 
 function editOffer(id){
-  fetch('/api/admin?action=offer').then(function(r){return r.json();}).then(function(d){
-    if(!d.ok) return;
+  api('/api/admin?action=offer').then(function(d){
+    if(!d.ok){ if(d.error==='Unauthorized.'){onUnauthorized(d);} return; }
     var o = (d.offers||[]).find(function(x){return x.id===id;});
     if(!o) return;
     document.getElementById('oName').value = o.name||'';
@@ -316,29 +333,23 @@ function saveOffer(){
   };
   var url = '/api/admin?action=offer';
   var method = id?'PATCH':'POST';
-  fetch(url,{method:method,headers:{'Content-Type':'application/json'},body:JSON.stringify(id?{id:id,...body}:body)})
-  .then(function(r){return r.json();}).then(function(d){
-    if(d.ok){showSnack('Saved.');resetOfferForm();loadAll();}
-    else{showSnack(d.error||'Failed.');}
+  api(url,method,id?{id:id,...body}:body).then(function(d){
+    if(!d.ok){ if(d.error==='Unauthorized.'){onUnauthorized(d);return;} showSnack(d.error||'Failed.'); }
+    else{showSnack('Saved.');resetOfferForm();loadAll();}
   }).catch(function(){showSnack('Network error.');});
 }
 
 function toggleOffer(id,status){
-  fetch('/api/admin?action=offer',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id,status:status})})
-  .then(function(r){return r.json();}).then(function(d){
-    if(d.ok){showSnack('Updated.');loadAll();}
-    else{showSnack(d.error||'Failed.');}
+  api('/api/admin?action=offer','PATCH',{id:id,status:status}).then(function(d){
+    if(!d.ok){ if(d.error==='Unauthorized.'){onUnauthorized(d);return;} showSnack(d.error||'Failed.'); }
+    else{showSnack('Updated.');loadAll();}
   }).catch(function(){showSnack('Network error.');});
 }
 
 function updateStatus(type,id,status){
-  fetch('/api/admin?action=update',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({type:type,id:id,status:status})
-  }).then(function(r){return r.json();}).then(function(d){
-    if(d.ok){showSnack('Updated.');loadAll();}
-    else{showSnack(d.error||'Failed.');}
+  api('/api/admin?action=update','POST',{type:type,id:id,status:status}).then(function(d){
+    if(!d.ok){ if(d.error==='Unauthorized.'){onUnauthorized(d);return;} showSnack(d.error||'Failed.'); }
+    else{showSnack('Updated.');loadAll();}
   }).catch(function(){showSnack('Network error.');});
 }
 
