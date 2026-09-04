@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partners &middot; Tomide Williams</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --crimson:#7A0A15;
+  --crimson-dark:#9B0D1A;
+  --crimson-bright:#e88a93;
+  --white:#ffffff;
+  --offwhite:#f5f2ef;
+  --black:#050505;
+  --bg:#0a0a0a;
+  --panel:#111111;
+  --ink:#ffffff;
+  --gray:#999999;
+  --line:rgba(255,255,255,.08);
+  --line-strong:rgba(255,255,255,.14);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Archivo',sans-serif;
+  color:var(--ink);
+  background:var(--bg);
+  line-height:1.6;
+  font-size:16px;
+  -webkit-font-smoothing:antialiased;
+}
+a{text-decoration:none;color:inherit;}
+.wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
+
+/* ===== TOP BAR ===== */
+.nav{
+  position:sticky;top:0;z-index:1200;
+  background:var(--black);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px;}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:19px;color:#fff;letter-spacing:-.01em;}
+.brand .logo-ico{width:30px;height:30px;}
+.brand .bb{display:flex;flex-direction:column;line-height:1.05;}
+.brand .bb .b1{font-weight:800;font-size:19px;color:#fff;}
+.brand .bb .b2{font-size:10px;font-weight:700;letter-spacing:.22em;color:var(--gray);margin-top:3px;}
+.nav-links{display:flex;gap:26px;align-items:center;}
+.nav-links a{font-weight:600;font-size:14px;color:#c9c9c9;}
+.nav-links a:hover{color:var(--crimson-bright);}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:'Archivo',sans-serif;font-weight:700;font-size:14px;border-radius:8px;padding:10px 18px;cursor:pointer;border:1px solid transparent;transition:.15s;}
+.btn-primary{background:var(--crimson);color:#fff;}
+.btn-primary:hover{background:var(--crimson-dark);}
+.btn-outline{background:transparent;color:var(--dark,crimson);border-color:var(--crimson);color:var(--crimson);}
+.btn-outline:hover{background:var(--crimson);color:#fff;}
+.btn-lg{padding:14px 26px;font-size:16px;border-radius:10px;}
+.nav-cta{padding:9px 18px;font-size:13px;border-radius:8px;}
+
+/* ===== HERO ===== */
+.hero{background:var(--black);color:#fff;}
+.hero .inner{max-width:1000px;margin:0 auto;padding:88px 24px 72px;text-align:center;}
+.hero .tag{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--crimson-bright);border:1px solid rgba(122,10,21,.4);padding:6px 14px;border-radius:100px;margin-bottom:26px;}
+.hero h1{font-size:52px;line-height:1.08;font-weight:800;letter-spacing:-.02em;margin-bottom:20px;}
+.hero h1 em{font-style:normal;color:var(--crimson-bright);}
+.hero p.lead{font-size:19px;color:#cfcbc8;max-width:640px;margin:0 auto 34px;font-weight:400;}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.hero .btn-primary{background:var(--crimson);border-color:var(--crimson);}
+.hero .btn-primary:hover{background:var(--crimson-dark);}
+.hero .btn-outline{border-color:rgba(255,255,255,.35);color:#fff;}
+.hero .btn-outline:hover{border-color:var(--crimson);background:var(--crimson);}
+
+/* ===== SECTIONS ===== */
+section{padding:72px 0;}
+.section-head{text-align:center;max-width:660px;margin:0 auto 48px;}
+.section-head .eyebrow{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--crimson-bright);margin-bottom:14px;}
+.section-head h2{font-size:34px;font-weight:800;letter-spacing:-.01em;color:#fff;line-height:1.15;margin-bottom:14px;}
+.section-head p{color:var(--gray);font-size:16px;}
+
+/* how it works */
+.how{background:var(--black);}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:34px 28px;}
+.step .n{font-size:13px;font-weight:800;letter-spacing:.18em;color:var(--crimson-bright);margin-bottom:14px;}
+.step h3{font-size:19px;font-weight:700;color:#fff;margin-bottom:8px;}
+.step p{color:var(--gray);font-size:15px;}
+
+/* earn / offers */
+.offers{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;}
+.offer{background:var(--panel);border:1px solid var(--line-strong);border-radius:14px;padding:30px 28px;display:flex;flex-direction:column;}
+.offer .ot{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:8px;}
+.offer h3{font-size:24px;font-weight:800;color:#fff;margin-bottom:8px;}
+.offer p{color:var(--gray);font-size:15px;margin-bottom:22px;flex:1;}
+.offer .rate{font-size:15px;color:#cfcbc8;font-weight:600;margin-bottom:20px;}
+.offer .rate b{font-size:20px;color:var(--crimson-bright);}
+.offer .btn{width:100%;}
+
+/* faq */
+.faq{max-width:720px;margin:0 auto;}
+.faq details{border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin-bottom:12px;background:var(--panel);}
+.faq summary{font-weight:700;font-size:16px;color:#fff;cursor:pointer;}
+.faq details p{color:var(--gray);font-size:15px;margin-top:10px;}
+
+/* cta + footer */
+.cta{background:var(--black);color:#fff;text-align:center;}
+.cta .inner{max-width:660px;margin:0 auto;padding:76px 24px;}
+.cta h2{font-size:34px;font-weight:800;margin-bottom:16px;}
+.cta p{color:#cfcbc8;margin-bottom:30px;}
+.cta .btn-primary{background:var(--crimson);border-color:var(--crimson);}
+.cta .btn-primary:hover{background:var(--crimson-dark);}
+footer{border-top:1px solid var(--line);padding:30px 0;}
+.footer-inner{display:flex;align-items:center;justify-content:space-between;gap:14px;color:var(--gray);font-size:13px;flex-wrap:wrap;}
+.footer-inner .fb{display:flex;gap:20px;}
+.footer-inner a:hover{color:var(--crimson);}
+
+@media(max-width:720px){
+  .hero h1{font-size:36px;}
+  .steps,.offers{grid-template-columns:1fr;}
+  .nav-inner{flex-wrap:wrap;height:auto;padding:12px 0;}
+  .nav-links{display:none;}
+}
+</style>
+</head>
+<body>
+
+<nav class="top nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="/">
+      <svg class="logo-ico" viewBox="0 0 100 100" fill="none" aria-label="Tomide Williams">
+        <circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,0.15)" stroke-width="3"/>
+        <path d="M 25 35 L 75 35" stroke="#7A0A15" stroke-width="7"/>
+        <path d="M 50 35 L 50 75" stroke="#7A0A15" stroke-width="7"/>
+        <path d="M 20 25 L 35 80 L 50 55 L 65 80 L 80 25" stroke="#050505" stroke-width="12" stroke-linejoin="bevel"/>
+        <path d="M 20 25 L 35 80 L 50 55 L 65 80 L 80 25" stroke="#ffffff" stroke-width="4" stroke-linejoin="bevel"/>
+      </svg>
+      <span class="bb"><span class="b1">Tomide Williams</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#earn">Earn</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="btn btn-primary nav-cta" href="/affiliates/login">Sign in</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="inner">
+    <span class="tag">Partner Program</span>
+    <h1>Make Up to <em>&#8358;200K</em> From Products You Didn&rsquo;t Create</h1>
+    <p class="lead">Join the partner program and earn for every sale you drive. Share your link, track your earnings, and get paid on time.</p>
+    <div class="hero-btns">
+      <a class="btn btn-primary btn-lg" href="/affiliates/register">Become a partner</a>
+      <a class="btn btn-outline btn-lg" href="#how">How it works</a>
+    </div>
+  </div>
+</header>
+
+<section class="how" id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">How it works</div>
+      <h2>Three steps to earning</h2>
+      <p>Simple, transparent, and built for your audience.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="n">01</div>
+        <h3>Sign up</h3>
+        <p>Create your partner account in under a minute. No fees, no paperwork.</p>
+      </div>
+      <div class="step">
+        <div class="n">02</div>
+        <h3>Share your link</h3>
+        <p>Get a unique tracking link for every product and share it anywhere.</p>
+      </div>
+      <div class="step">
+        <div class="n">03</div>
+        <h3>Get paid</h3>
+        <p>Earn a commission on every approved sale. Track everything in your dashboard.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="earn">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Earn</div>
+      <h2>Products you can promote</h2>
+      <p>Pick a product, grab your link, and start earning.</p>
+    </div>
+    <div class="offers" id="offers">
+      <div class="offer">
+        <div class="ot">Loading&hellip;</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="faq">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">FAQ</div>
+      <h2>Common questions</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>How much can I earn?</summary>
+        <p>Every product has its own commission rate, shown on your dashboard. Rates are set per offer and clearly displayed.</p>
+      </details>
+      <details>
+        <summary>When do I get paid?</summary>
+        <p>Commissions become available after a sale is approved. You can request a withdrawal from your funds page once you have an available balance.</p>
+      </details>
+      <details>
+        <summary>How are sales tracked?</summary>
+        <p>Every partner gets unique tracking links. When someone buys after clicking your link, the sale is automatically attributed to you.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="inner">
+    <h2>Ready to start earning?</h2>
+    <p>Join thousands of partners promoting products they love.</p>
+    <a class="btn btn-primary btn-lg" href="/affiliates/register">Get started</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div>Partners &middot; Tomide Williams</div>
+    <div class="fb"><a href="#how">How it works</a><a href="#earn">Earn</a><a href="#faq">FAQ</a><a href="/affiliates/login">Sign in</a></div>
+  </div>
+</footer>
+
+<script>
+fetch('/api/offers')
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var list=(d.ok&&d.offers)?d.offers:[];
+    var box=document.getElementById('offers');
+    if(!list.length){box.innerHTML='<div class="offer"><div class="ot">No products available yet</div><p>Check back soon.</p></div>';return;}
+    var html='';
+    list.forEach(function(o){
+      var price=o.price_kobo?'NGN '+Math.round(o.price_kobo/100).toLocaleString():'';
+      var rate=o.commission_rate!=null?Math.round(o.commission_rate*100)+'%':'30%';
+      html+='<div class="offer"><div class="ot">'+o.slug+'</div><h3>'+o.name+'</h3><p>'+o.description+'</p><div class="rate">Earn <b>'+rate+'</b>'+(price?' &middot; '+price:'')+'</div><a class="btn btn-primary" href="/affiliates/login">Promote this</a></div>';
+    });
+    box.innerHTML=html;
+  })
+  .catch(function(){box.innerHTML='<div class="offer"><div class="ot">Could not load offers</div><p>Please refresh.</p></div>';});
+</script>
+</body>
+</html>

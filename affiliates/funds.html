@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Funds &middot; Partners</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body data-page="funds">
+
+<div class="main" id="main">
+  <div class="page-head">
+    <div class="page-eyebrow">Funds</div>
+    <h1 class="page-title">Your Earnings</h1>
+    <div class="page-sub">Track what you've earned, what's pending, and request a withdrawal.</div>
+  </div>
+
+  <div class="balance-card">
+    <div class="bl">
+      <div class="bl-lbl">Available to withdraw</div>
+      <div class="bl-num" id="sAvailable">&#8358;0</div>
+      <div class="bl-note">Approved commissions only. Your request is emailed to us and paid by manual bank transfer.</div>
+    </div>
+    <button class="btn" id="withdrawBtn" onclick="App.toggleWithdraw()">Request Withdrawal</button>
+  </div>
+
+  <div class="withdraw-form" id="withdrawForm">
+    <div class="wf-title">Request a withdrawal</div>
+    <div class="wf-hint">Enter the amount (in Naira) you'd like to withdraw from your available balance.</div>
+    <div class="wf-row">
+      <input type="number" id="withdrawAmount" class="wf-input" placeholder="Amount in Naira" min="0">
+      <button class="btn" id="wfConfirm" onclick="App.submitWithdrawal()">Confirm</button>
+      <button class="btn dark" onclick="App.toggleWithdraw()">Cancel</button>
+    </div>
+    <div class="err" id="withdrawErr"></div>
+  </div>
+
+  <div class="grid cols-3">
+    <div class="card stat-card">
+      <div class="lbl">Total Earned</div>
+      <div class="num" id="sEarned">-</div>
+      <div class="foot">Approved + paid commissions</div>
+    </div>
+    <div class="card stat-card">
+      <div class="lbl">Pending</div>
+      <div class="num" id="sPending">-</div>
+      <div class="foot">Awaiting admin approval</div>
+    </div>
+    <div class="card stat-card">
+      <div class="lbl">Requested Withdrawals</div>
+      <div class="num" id="sRequested">-</div>
+      <div class="foot">Pending payout requests</div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <h2>Payout History</h2>
+    <span class="count" id="payoutCount">0 payouts</span>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Date</th><th class="num">Amount</th><th>Reference</th><th>Status</th></tr></thead>
+      <tbody id="payoutBody"></tbody>
+    </table>
+    <div class="empty" id="emptyPayout" style="display:none;">No payouts yet.</div>
+  </div>
+</div>
+
+<script src="/assets/sidebar.js"></script>
+<script>
+(function () {
+  var partner = (function () { try { return JSON.parse(localStorage.getItem('partners_partner')); } catch (e) { return null; } })();
+  if (!partner || !partner.id) return;
+
+  var availableKobo = 0;
+
+  function refreshBtn() {
+    document.getElementById('withdrawBtn').disabled = !(availableKobo > 0);
+  }
+
+  function loadStats() {
+    fetch('/api/partner?action=stats&partner_id=' + partner.id).then(function (r) { return r.json(); }).then(function (d) {
+      if (d.ok) {
+        availableKobo = d.available_kobo || 0;
+        document.getElementById('sAvailable').textContent = '&#8358;' + App.fmt(availableKobo);
+        document.getElementById('sEarned').textContent = '&#8358;' + App.fmt(d.earned_kobo || 0);
+        document.getElementById('sPending').textContent = '&#8358;' + App.fmt(d.pending_kobo || 0);
+        document.getElementById('sRequested').textContent = '&#8358;' + App.fmt(d.requested_withdrawals_kobo || 0);
+        refreshBtn();
+      }
+    }).catch(function () {});
+  }
+
+  function loadPayouts() {
+    fetch('/api/partner?action=payouts&partner_id=' + partner.id).then(function (r) { return r.json(); }).then(function (d) {
+      if (d.ok && d.payouts && d.payouts.length) {
+        document.getElementById('payoutCount').textContent = d.payouts.length + ' payout' + (d.payouts.length !== 1 ? 's' : '');
+        var html = '';
+        d.payouts.forEach(function (p) {
+          html += '<tr><td>' + App.fmtDate(p.created_at) + '</td><td class="num">&#8358;' + App.fmt(p.amount_kobo) + '</td><td>' + App.esc(p.paystack_transfer_ref || '-') + '</td><td><span class="status ' + App.esc(p.status) + '">' + App.esc(p.status) + '</span></td></tr>';
+        });
+        document.getElementById('payoutBody').innerHTML = html;
+        document.querySelector('.tbl-wrap table').style.display = '';
+      } else {
+        document.getElementById('payoutBody').innerHTML = '';
+        document.querySelector('.tbl-wrap table').style.display = 'none';
+        document.getElementById('emptyPayout').style.display = '';
+      }
+    }).catch(function () {});
+  }
+
+  loadStats();
+  loadPayouts();
+})();
+</script>
+</body>
+</html>

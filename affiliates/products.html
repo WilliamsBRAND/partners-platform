@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Products &middot; Partners</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+.product-hero{margin-bottom:22px;}
+.p-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+</style>
+</head>
+<body data-page="products">
+
+<div class="main" id="main">
+  <div class="page-head">
+    <div class="page-eyebrow">Products</div>
+    <h1 class="page-title">Promote Your Products</h1>
+    <div class="page-sub">Every product gets its own tracked link. Push as many as you like â€” each sale is attributed to the product's link you shared.</div>
+  </div>
+
+  <div class="grid" id="productsGrid" style="grid-template-columns:1fr;">
+    <div class="empty">Loading products...</div>
+  </div>
+</div>
+
+<script src="/assets/sidebar.js"></script>
+<script>
+(function () {
+  var partner = (function () { try { return JSON.parse(localStorage.getItem('partners_partner')); } catch (e) { return null; } })();
+  if (!partner || !partner.id) return;
+
+  var grid = document.getElementById('productsGrid');
+
+  fetch('/api/partner?action=products&partner_id=' + partner.id).then(function (r) { return r.json(); }).then(function (d) {
+    if (!d.ok || !d.products || !d.products.length) {
+      grid.innerHTML = '<div class="empty">No active products to promote right now. Check back soon.</div>';
+      return;
+    }
+    var html = '';
+    d.products.forEach(function (o) {
+      var price = o.price_kobo ? '&#8358;' + Math.round(o.price_kobo / 100).toLocaleString() : '';
+      var rate = o.commission_rate != null ? Math.round(o.commission_rate * 100) + '%' : '30%';
+      var desc = o.description || '';
+      html += '<div class="card offer-card">' +
+        '<div class="oh">' +
+          '<div><h3>' + App.esc(o.name) + '</h3>' +
+            '<div class="od">' + App.esc(desc) + '</div></div>' +
+          '<span class="earn">Earn ' + rate + '</span>' +
+        '</div>' +
+        (price ? '<div class="mini-stat">Price: <b>' + price + '</b></div>' : '') +
+        '<div class="p-stats">' +
+          '<div class="card stat-card" style="padding:14px;"><div class="lbl">Clicks</div><div class="num" style="font-size:22px;">' + (o.clicks || 0) + '</div></div>' +
+          '<div class="card stat-card" style="padding:14px;"><div class="lbl">Sales</div><div class="num" style="font-size:22px;">' + (o.conversions || 0) + '</div></div>' +
+          '<div class="card stat-card" style="padding:14px;"><div class="lbl">Earned</div><div class="num" style="font-size:22px;color:#22c55e;">&#8358;' + App.fmt(o.earned_kobo || 0) + '</div></div>' +
+        '</div>' +
+        '<div class="link-row"><div class="link-val">' + App.esc(o.link) + '</div>' +
+        '<button class="copy-btn" onclick="App.copyLink(this,\'' + App.esc(o.link).replace(/'/g, '&#39;') + '\')">Copy</button></div>' +
+      '</div>';
+    });
+    grid.innerHTML = html;
+  }).catch(function () {
+    grid.innerHTML = '<div class="empty">Could not load products. Please refresh.</div>';
+  });
+})();
+</script>
+</body>
+</html>

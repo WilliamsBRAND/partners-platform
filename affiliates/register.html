@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register &middot; Partners</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Archivo',sans-serif;background:#050505;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:30px;}
+.brand .bb{display:flex;flex-direction:column;line-height:1.05;}
+.brand .b1{font-weight:800;font-size:22px;color:#fff;letter-spacing:-.01em;}
+.brand .b2{font-size:10px;font-weight:700;letter-spacing:.22em;color:#999;margin-top:4px;}
+.card{width:100%;max-width:440px;background:#111;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:36px 34px;}
+h1{font-size:24px;font-weight:800;letter-spacing:-.01em;color:#fff;margin-bottom:6px;text-align:center;}
+.sub{font-size:14px;color:#999;margin-bottom:26px;text-align:center;}
+.field{margin-bottom:16px;}
+label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#999;margin-bottom:6px;}
+input{width:100%;padding:12px 14px;font-size:15px;font-family:'Archivo',sans-serif;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;outline:none;transition:border-color .15s;}
+input:focus{border-color:#7A0A15;}
+input::placeholder{color:#555;}
+.btn{width:100%;padding:14px;border:none;border-radius:8px;background:#7A0A15;color:#fff;font-weight:700;font-size:15px;font-family:'Archivo',sans-serif;cursor:pointer;transition:background .15s;margin-top:8px;}
+.btn:hover{background:#9B0D1A;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.err{color:#ef4444;font-size:13px;min-height:18px;margin-top:-8px;margin-bottom:8px;}
+.success{display:none;text-align:center;padding:12px 0;}
+.success .icon{width:60px;height:60px;border-radius:50%;background:rgba(122,10,21,.18);border:1.5px solid rgba(122,10,21,.4);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;color:#d5aab0;}
+.success h2{font-size:22px;font-weight:800;color:#fff;margin-bottom:8px;}
+.success p{font-size:14px;color:#999;margin-bottom:20px;}
+.success .code-box{background:rgba(122,10,21,.12);border:1.5px solid rgba(122,10,21,.3);border-radius:8px;padding:14px;text-align:center;margin-bottom:20px;}
+.success .code-box .label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#999;margin-bottom:4px;font-weight:700;}
+.success .code-box .code{font-size:28px;font-weight:800;color:#fff;letter-spacing:2px;}
+.link{display:block;text-align:center;margin-top:16px;font-size:13px;color:#666;text-decoration:none;font-weight:600;}
+.link:hover{color:#9B0D1A;}
+.spinner{display:inline-block;width:17px;height:17px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:8px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div class="brand">
+  <svg width="34" height="34" viewBox="0 0 100 100" fill="none" aria-label="Tomide Williams">
+    <circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+    <path d="M 25 35 L 75 35" stroke="#7A0A15" stroke-width="7" stroke-linecap="square"/>
+    <path d="M 50 35 L 50 75" stroke="#7A0A15" stroke-width="7" stroke-linecap="square"/>
+    <path d="M 20 25 L 35 80 L 50 55 L 65 80 L 80 25" stroke="#050505" stroke-width="12" stroke-linejoin="bevel"/>
+    <path d="M 20 25 L 35 80 L 50 55 L 65 80 L 80 25" stroke="#ffffff" stroke-width="4" stroke-linejoin="bevel"/>
+  </svg>
+  <span class="bb"><span class="b1">Partners</span><span class="b2">Tomide Williams</span></span>
+</div>
+
+<div class="card" id="formCard">
+  <h1>Create your account</h1>
+  <p class="sub">Get your unique referral link and start earning. You'll need your bank details for payouts.</p>
+
+  <form id="regForm">
+    <div class="field">
+      <label>Full Name</label>
+      <input type="text" id="name" placeholder="Your full name" required />
+    </div>
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" id="email" placeholder="you@example.com" required />
+    </div>
+    <div class="field">
+      <label>Phone Number</label>
+      <input type="tel" id="phone" placeholder="0801 234 5678" />
+    </div>
+    <div class="field">
+      <label>Bank Name</label>
+      <input type="text" id="bank_name" placeholder="e.g. GTBank, Access, Kuda" required />
+    </div>
+    <div class="field">
+      <label>Account Number</label>
+      <input type="text" id="account_number" placeholder="e.g. 0123456789" inputmode="numeric" required />
+    </div>
+    <div class="field">
+      <label>Account Name</label>
+      <input type="text" id="account_name" placeholder="Name on account" required />
+    </div>
+    <div class="err" id="err"></div>
+    <button class="btn" type="submit" id="submitBtn">Create Account</button>
+  </form>
+
+  <a href="/affiliates/login" class="link">Already a partner? Log in</a>
+</div>
+
+<div class="card success" id="successCard">
+  <div class="icon">&#10003;</div>
+  <h2>You're in!</h2>
+  <p>Here's your referral code. Share your link and start earning.</p>
+  <div class="code-box">
+    <div class="label">Your referral code</div>
+    <div class="code" id="partnerCode"></div>
+  </div>
+  <p style="font-size:13px;color:#666;margin-bottom:12px;">Your referral link:</p>
+  <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:12px 16px;word-break:break-all;font-size:13px;color:#9B0D1A;font-weight:600;margin-bottom:20px;" id="refLink"></div>
+  <a href="/affiliates/dashboard" class="btn" style="text-decoration:none;text-align:center;display:block;">Go to Dashboard</a>
+  <a href="/" class="link">Back to site</a>
+</div>
+
+<script>
+(function(){
+  var form = document.getElementById('regForm');
+  var errEl = document.getElementById('err');
+  var btn = document.getElementById('submitBtn');
+  var formCard = document.getElementById('formCard');
+  var successCard = document.getElementById('successCard');
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var name = document.getElementById('name').value.trim();
+    var email = document.getElementById('email').value.trim();
+    var phone = document.getElementById('phone').value.trim();
+    var bank_name = document.getElementById('bank_name').value.trim();
+    var account_number = document.getElementById('account_number').value.trim();
+    var account_name = document.getElementById('account_name').value.trim();
+
+    if(!name){ errEl.textContent = 'Please enter your name.'; return; }
+    if(!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ errEl.textContent = 'Please enter a valid email.'; return; }
+    if(!bank_name || !account_number || !account_name){ errEl.textContent = 'Please provide your bank details for payouts.'; return; }
+
+    errEl.textContent = '';
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Creating account...';
+
+    fetch('/api/partner?action=register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name, email: email, phone: phone, bank_name: bank_name, account_number: account_number, account_name: account_name })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.ok){
+        localStorage.setItem('partners_partner', JSON.stringify(d));
+        formCard.style.display = 'none';
+        successCard.style.display = 'block';
+        document.getElementById('partnerCode').textContent = d.code;
+        document.getElementById('refLink').textContent = d.siteUrl + '?pp=' + d.code;
+      } else {
+        errEl.textContent = d.error || 'Something went wrong.';
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+      }
+    })
+    .catch(function(){
+      errEl.textContent = 'Network error. Please try again.';
+      btn.disabled = false;
+      btn.textContent = 'Create Account';
+    });
+  });
+})();
+</script>
+</body>
+</html>

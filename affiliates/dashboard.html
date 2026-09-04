@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home &middot; Partners</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body data-page="home">
+
+<div class="main" id="main">
+  <div class="page-head">
+    <div class="page-eyebrow">Overview</div>
+    <h1 class="page-title" id="greet">Dashboard</h1>
+    <div class="page-sub">Track your referrals, commissions, and earnings at a glance.</div>
+  </div>
+
+  <div class="balance-card">
+    <div class="bl">
+      <div class="bl-lbl">Available to withdraw</div>
+      <div class="bl-num" id="sAvailable">&#8358;0</div>
+      <div class="bl-note">Approved commissions only. You'll be paid by manual bank transfer.</div>
+    </div>
+    <a class="btn" href="/affiliates/funds">Request Withdrawal</a>
+  </div>
+
+  <div class="grid cols-4">
+    <div class="card stat-card">
+      <div class="top"><div class="lbl">Total Clicks</div><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-7"/></svg></div></div>
+      <div class="num" id="sClicks">-</div>
+    </div>
+    <div class="card stat-card">
+      <div class="top"><div class="lbl">Conversions</div><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3 3.5-4.5 6.5-4.5s5.7 1.5 6.5 4.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18.5 15.6c1.2.6 2.2 1.6 2.9 2.9"/></svg></div></div>
+      <div class="num" id="sConversions">-</div>
+    </div>
+    <div class="card stat-card accent">
+      <div class="top"><div class="lbl">Total Earned</div><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6.5c-1-1-2.5-1.5-5-1.5-3 0-5 1.2-5 3.5 0 4.5 10 2.2 10 6.5 0 2.3-2 3.5-5 3.5-2.5 0-4-.5-5-1.5"/></svg></div></div>
+      <div class="num" id="sEarnings">-</div>
+    </div>
+    <div class="card stat-card">
+      <div class="top"><div class="lbl">Pending</div><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div></div>
+      <div class="num" id="sPending">-</div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <h2>Your Referral Links</h2>
+    <span class="count" id="offerCount">0 offers</span>
+  </div>
+  <div class="grid" id="offersGrid" style="grid-template-columns:1fr;"></div>
+
+  <div class="section-head">
+    <h2>Recent Commissions</h2>
+    <span class="count" id="commCount">0 sales</span>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Date</th><th>Offer</th><th>Customer</th><th class="num">Commission</th><th>Status</th></tr></thead>
+      <tbody id="commBody"></tbody>
+    </table>
+    <div class="empty" id="emptyComm" style="display:none;">No commissions yet. Share your link to start earning.</div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var partner = null;
+  try { partner = JSON.parse(localStorage.getItem('partners_partner')); } catch (e) {}
+  if (!partner || !partner.id) return;
+
+  var hour = new Date().getHours();
+  var g = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('greet').textContent = g + ', ' + (partner.name || 'partner') + '.';
+})();
+</script>
+<script src="/assets/sidebar.js"></script>
+<script>
+(function () {
+  var partner = (function () { try { return JSON.parse(localStorage.getItem('partners_partner')); } catch (e) { return null; } })();
+  if (!partner || !partner.id) return;
+  var siteUrl = partner.siteUrl || window.location.origin;
+
+  var grid = document.getElementById('offersGrid');
+  fetch('/api/offers').then(function (r) { return r.json(); }).then(function (d) {
+    var list = (d.ok && d.offers) ? d.offers : [];
+    document.getElementById('offerCount').textContent = list.length + ' offer' + (list.length !== 1 ? 's' : '');
+    if (!list.length) {
+      grid.innerHTML = '<div class="empty">No offers available right now. Check back soon.</div>';
+      return;
+    }
+    var html = '';
+    list.forEach(function (o) {
+      var checkout = o.checkout_url || (siteUrl + '/checkout');
+      var link = checkout + '?pp=' + partner.code;
+      var price = o.price_kobo ? '&#8358;' + Math.round(o.price_kobo / 100).toLocaleString() : '';
+      var rate = o.commission_rate != null ? Math.round(o.commission_rate * 100) + '%' : '30%';
+      html += '<div class="offer-card">' +
+        '<div class="oh"><div><h3>' + App.esc(o.name) + '</h3>' +
+        (price ? '<div class="mini-stat">' + price + ' &middot; <span style="color:#888;">' + App.esc(o.description || '') + '</span></div>' : '<div class="od">' + App.esc(o.description || '') + '</div>') +
+        '</div><span class="earn">Earn ' + rate + '</span></div>' +
+        '<div class="link-row"><div class="link-val">' + App.esc(link) + '</div>' +
+        '<button class="copy-btn" onclick="App.copyLink(this,\'' + App.esc(link).replace(/'/g, '&#39;') + '\')">Copy</button></div>' +
+        '</div>';
+    });
+    grid.innerHTML = html;
+  }).catch(function () { grid.innerHTML = '<div class="empty">Could not load offers. Please refresh.</div>'; });
+
+  function loadStats() {
+    fetch('/api/partner?action=stats&partner_id=' + partner.id).then(function (r) { return r.json(); }).then(function (d) {
+      if (d.ok) {
+        document.getElementById('sClicks').textContent = d.clicks || 0;
+        document.getElementById('sConversions').textContent = d.conversions || 0;
+        document.getElementById('sEarnings').textContent = '&#8358;' + App.fmt(d.earned_kobo || 0);
+        document.getElementById('sPending').textContent = '&#8358;' + App.fmt(d.pending_kobo || 0);
+        document.getElementById('sAvailable').textContent = '&#8358;' + App.fmt(d.available_kobo || 0);
+      }
+    }).catch(function () {});
+  }
+
+  function loadCommissions() {
+    fetch('/api/partner?action=commissions&partner_id=' + partner.id).then(function (r) { return r.json(); }).then(function (d) {
+      if (d.ok && d.commissions && d.commissions.length) {
+        document.getElementById('commCount').textContent = d.commissions.length + ' sale' + (d.commissions.length !== 1 ? 's' : '');
+        var html = '';
+        d.commissions.forEach(function (c) {
+          html += '<tr><td>' + App.fmtDate(c.created_at) + '</td><td>' + App.esc(c.offer_name || '-') + '</td><td>' + App.esc(c.customer_email) + '</td><td class="num">&#8358;' + App.fmt(c.commission_kobo) + '</td><td><span class="status ' + App.esc(c.status) + '">' + App.esc(c.status) + '</span></td></tr>';
+        });
+        document.getElementById('commBody').innerHTML = html;
+        document.querySelector('.tbl-wrap table').style.display = '';
+      } else {
+        document.getElementById('commBody').innerHTML = '';
+        document.querySelector('.tbl-wrap table').style.display = 'none';
+        document.getElementById('emptyComm').style.display = '';
+      }
+    }).catch(function () {});
+  }
+
+  loadStats();
+  loadCommissions();
+})();
+</script>
+</body>
+</html>

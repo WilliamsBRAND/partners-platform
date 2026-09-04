@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaderboard &middot; Partners</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+</head>
+<body data-page="leaderboard">
+
+<div class="main" id="main">
+  <div class="page-head">
+    <div class="page-eyebrow">Leaderboard</div>
+    <h1 class="page-title">Top Partners</h1>
+    <div class="page-sub">Ranked by approved commissions. Switch between products to see who's leading each one.</div>
+  </div>
+
+  <div class="lb-tabs" id="lbTabs">
+    <button class="lb-tab active" data-id="">All Products</button>
+  </div>
+
+  <div class="lb-rows" id="lbRows">
+    <div class="empty">Loading leaderboard...</div>
+  </div>
+</div>
+
+<script src="/assets/sidebar.js"></script>
+<script>
+(function () {
+  var partner = (function () { try { return JSON.parse(localStorage.getItem('partners_partner')); } catch (e) { return null; } })();
+  if (!partner || !partner.id) return;
+  var currentOffer = '';
+
+  function load(offerId) {
+    var url = '/api/leaderboard' + (offerId ? '?offer_id=' + encodeURIComponent(offerId) : '');
+    var rows = document.getElementById('lbRows');
+    rows.innerHTML = '<div class="empty">Loading leaderboard...</div>';
+
+    fetch(url).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d.ok) { rows.innerHTML = '<div class="empty">Could not load leaderboard.</div>'; return; }
+
+      // Render tabs (once, with the current one marked)
+      renderTabs(d.offers || [], offerId);
+
+      var list = d.top || [];
+      if (!list.length) { rows.innerHTML = '<div class="empty">No approved earnings to rank yet. Get selling!</div>'; return; }
+
+      var myId = partner.id;
+      var html = list.map(function (r, i) {
+        var isMe = r.partner_id === myId;
+        var me = isMe ? '<span class="me-badge">You</span>' : '';
+        var whoExtra = r.partner_id === myId ? ' style="background:rgba(122,10,21,.10);"' : '';
+        return '<div class="lb-row' + (isMe ? ' me' : '') + '">' +
+          '<div class="lb-rank">' + (i + 1) + '</div>' +
+          '<div class="lb-who"><div class="n">' + App.esc(r.name) + me + '</div><div class="c">CODE: ' + App.esc(r.code) + '</div></div>' +
+          '<div class="lb-val"><div class="earned">&#8358;' + App.fmt(r.earned_kobo) + '</div><div class="sales">' + r.sales + ' sale' + (r.sales !== 1 ? 's' : '') + '</div></div>' +
+        '</div>';
+      }).join('');
+      rows.innerHTML = html;
+    }).catch(function () { rows.innerHTML = '<div class="empty">Could not load leaderboard.</div>'; });
+  }
+
+  function renderTabs(offers, activeId) {
+    var tabs = document.getElementById('lbTabs');
+    tabs.innerHTML = '<button class="lb-tab' + (activeId === '' ? ' active' : '') + '" data-id="" onclick="App.lbPick(\'\')">All Products</button>';
+    (offers || []).forEach(function (o) {
+      tabs.innerHTML += '<button class="lb-tab' + (activeId === o.id ? ' active' : '') + '" data-id="' + o.id + '" onclick="App.lbPick(\'' + o.id + '\')">' + App.esc(o.name) + '</button>';
+    });
+  }
+
+  App.lbPick = function (id) { currentOffer = id; load(id); };
+
+  load('');
+})();
+</script>
+</body>
+</html>
