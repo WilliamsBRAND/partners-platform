@@ -97,7 +97,16 @@ export default async function handler(req, res) {
     return json(res, 200, { ok: true, ignored: 'not_success_confirmed' });
   }
 
-  if (!vAmount || vAmount !== product.price_kobo) {
+  if (!vAmount || vAmount <= 0) {
+    return json(res, 200, { ok: true, ignored: 'invalid_amount' });
+  }
+  // Relaxed price policy: NEXORA (and future products) may sell at a range of
+  // prices — e.g. pre-orders, promos and different tiers are all below the
+  // stored base price. So we accept any paid amount that does NOT exceed the
+  // product's stored price_kobo. Overpaying relative to the stored price is
+  // treated as a mismatch (likely a different product or tampered charge).
+  // Commission is always computed from the amount actually paid (vAmount).
+  if (product.price_kobo && vAmount > product.price_kobo) {
     return json(res, 200, { ok: true, ignored: 'amount_mismatch' });
   }
 
