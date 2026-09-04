@@ -163,6 +163,15 @@ footer{border-top:1px solid var(--line);padding:40px 0 30px;}
 .footer-col a:hover{color:var(--crimson-bright);}
 .footer-bottom{border-top:1px solid var(--line);padding-top:20px;display:flex;justify-content:space-between;gap:14px;color:var(--gray);font-size:12px;flex-wrap:wrap;}
 
+/* ===== SCROLL ANIMATIONS ===== */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.in-view{opacity:1;transform:translateY(0);}
+.reveal-delay-1{transition-delay:.1s;}
+.reveal-delay-2{transition-delay:.2s;}
+.reveal-delay-3{transition-delay:.3s;}
+.reveal-delay-4{transition-delay:.35s;}
+.reveal-delay-5{transition-delay:.4s;}
+
 @media(max-width:720px){
   .hero h1{font-size:32px;}
   .steps,.offers-grid,.benefits,.dash-grid,.promote-cols{grid-template-columns:1fr;}
@@ -248,9 +257,26 @@ footer{border-top:1px solid var(--line);padding:40px 0 30px;}
       <h2>Choose What You Want to Promote</h2>
       <p>See what each offer is about, who it is for and how much you can earn from every sale.</p>
     </div>
-    <div class="offers-grid" id="offers">
+    <div class="offers-grid">
       <div class="offer">
-        <div class="ot">Loading&hellip;</div>
+        <div class="ot">Course</div>
+        <h3>NEXORA</h3>
+        <p>Practical lessons to help people make money, grow their careers, build businesses, use AI and improve their lives.</p>
+        <div class="commission-row">
+          <span class="comm-tag">Earn &#8358;7,490 per sale</span>
+          <span class="comm-tag">30% commission</span>
+        </div>
+        <a class="btn btn-primary" href="/affiliates/register">Promote NEXORA</a>
+      </div>
+      <div class="offer">
+        <div class="ot">Programme</div>
+        <h3>AAIM</h3>
+        <p>A hands-on programme teaching young professionals how to use AI to accelerate their careers, build side income and stand out in any industry.</p>
+        <div class="commission-row">
+          <span class="comm-tag">Earn &#8358;5,997 per sale</span>
+          <span class="comm-tag">30% commission</span>
+        </div>
+        <a class="btn btn-primary" href="/affiliates/register">Promote AAIM</a>
       </div>
     </div>
     <p class="offers-note">More offers will be added regularly.</p>
@@ -267,22 +293,30 @@ footer{border-top:1px solid var(--line);padding:40px 0 30px;}
     </div>
     <div class="dash-grid">
       <div class="dash-card">
-        <div class="icon">&#128279;</div>
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        </div>
         <h3>Your Links</h3>
         <p>Get a different tracking link for every offer you promote.</p>
       </div>
       <div class="dash-card">
-        <div class="icon">&#128200;</div>
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
         <h3>Clicks and Sales</h3>
         <p>See how many people clicked your links and how many completed their payments.</p>
       </div>
       <div class="dash-card">
-        <div class="icon">&#128176;</div>
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/><path d="M6 12h.01M18 12h.01"/></svg>
+        </div>
         <h3>Your Earnings</h3>
         <p>See your pending commission, available balance and total earnings.</p>
       </div>
       <div class="dash-card">
-        <div class="icon">&#128179;</div>
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
+        </div>
         <h3>Withdrawals</h3>
         <p>Request a withdrawal and follow its status from your dashboard.</p>
       </div>
@@ -308,7 +342,9 @@ footer{border-top:1px solid var(--line);padding:40px 0 30px;}
         <p>If you promote several offers, you will see the performance of each one separately.</p>
       </div>
       <div style="background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:32px 28px;text-align:center;">
-        <div style="font-size:48px;margin-bottom:12px;">&#128202;</div>
+        <div style="margin-bottom:16px;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+        </div>
         <div style="font-size:13px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--crimson-bright);margin-bottom:8px;">Dashboard Preview</div>
         <p style="color:var(--gray);font-size:14px;">Total clicks, successful sales, pending commission and available balance &mdash; all in one view.</p>
       </div>
@@ -520,36 +556,22 @@ footer{border-top:1px solid var(--line);padding:40px 0 30px;}
 </footer>
 
 <script>
-fetch('/api/offers')
-  .then(function(r){return r.json();})
-  .then(function(d){
-    var list=(d.ok&&d.offers)?d.offers:[];
-    var box=document.getElementById('offers');
-    if(!list.length){box.innerHTML='<div class="offer"><div class="ot">No products available yet</div><p>Check back soon.</p></div>';return;}
-    var html='';
-    list.forEach(function(o){
-      var price=o.price_kobo?'NGN '+Math.round(o.price_kobo/100).toLocaleString():'';
-      var rate=o.commission_label||(o.commission_rate!=null&&o.commission_rate>0?Math.round(o.commission_rate*100)+'%':'30%');
-      var earned=o.price_kobo&&o.commission_rate?Math.round(o.price_kobo*o.commission_rate/100).toLocaleString():'';
-      var cta;
-      try {
-        cta = (JSON.parse(localStorage.getItem('partners_partner')) && JSON.parse(localStorage.getItem('partners_partner')).id)
-          ? '/affiliates/marketplace' : '/affiliates/register';
-      } catch (e) { cta = '/affiliates/register'; }
-      html+='<div class="offer">'+
-        '<div class="ot">'+o.slug+'</div>'+
-        '<h3>'+o.name+'</h3>'+
-        '<p>'+o.description+'</p>'+
-        '<div class="commission-row">'+
-        (earned?'<span class="comm-tag">Earn \u20a6'+earned+' per sale</span>':'')+
-        '<span class="comm-tag">'+rate+' commission</span>'+
-        '</div>'+
-        '<a class="btn btn-primary" href="'+cta+'">'+((cta==='/affiliates/marketplace')?'Get my link':'Promote '+o.name.split(' ')[0])+'</a>'+
-        '</div>';
+(function(){
+  var targets=document.querySelectorAll('.section-head,.step,.offer,.dash-card,.benefit,.plat-tag,.payout-step,.faq details');
+  targets.forEach(function(el){el.classList.add('reveal');});
+  var delays={step:1,offer:1,dash_card:1,benefit:1,plat_tag:1,payout_step:1};
+  document.querySelectorAll('.step').forEach(function(el,i){el.classList.add('reveal-delay-'+(i+1));});
+  document.querySelectorAll('.offer').forEach(function(el,i){el.classList.add('reveal-delay-'+(i+1));});
+  document.querySelectorAll('.dash-card').forEach(function(el,i){el.classList.add('reveal-delay-'+(i+1));});
+  document.querySelectorAll('.benefit').forEach(function(el,i){el.classList.add('reveal-delay-'+(i%2===0?1:2));});
+
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){e.target.classList.add('in-view');obs.unobserve(e.target);}
     });
-    box.innerHTML=html;
-  })
-  .catch(function(){document.getElementById('offers').innerHTML='<div class="offer"><div class="ot">Could not load offers</div><p>Please refresh.</p></div>';});
+  },{threshold:0.15,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
+})();
 </script>
 </body>
 </html>
