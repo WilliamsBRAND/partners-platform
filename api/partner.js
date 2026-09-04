@@ -49,6 +49,8 @@ export default async function handler(req, res) {
         return await register(req, res, db, url);
       case 'login':
         return await login(req, res, db, url);
+      case 'dashboard':
+        return await dashboard(req, res, db, url);
       case 'stats':
         return await stats(req, res, db, url);
       case 'commissions':
@@ -60,7 +62,7 @@ export default async function handler(req, res) {
       case 'products':
         return await products(req, res, db, url);
       default:
-        return json(res, 400, { error: 'Unknown action. Valid: register, login, stats, commissions, withdraw, payouts, products.' });
+        return json(res, 400, { error: 'Unknown action. Valid: register, login, dashboard, stats, commissions, withdraw, payouts, products.' });
     }
   } catch (e) {
     return json(res, 500, { error: 'Server error: ' + (e.message || '') });
@@ -115,6 +117,64 @@ async function login(req, res, db, url) {
   return json(res, 200, { ok: true, ...data, siteUrl });
 }
 
+async function dashboard(req, res, db, url) {
+  const partnerId = url.searchParams.get('partner_id');
+  if (!partnerId) return json(res, 400, { error: 'partner_id required.' });
+
+  const [clicksRes, convRes, payoutsRes, partnerRes, offersRes] = await Promise.all([
+    db.from('referrals').select('id', { count: 'exact', head: true }).eq('partner_id', partnerId),
+    db.from('conversions').select('id, offer_id, customer_email, amount_kobo, commission_kobo, status, created_at')
+      .eq('partner_id', partnerId).order('created_at', { ascending: false }).limit(20),
+    db.from('payouts').select('amount_kobo, status').eq('partner_id', partnerId),
+    db.from('partners').select('id, code, name, email').eq('id', partnerId).maybeSingle(),
+    db.from('offers').select('*').eq('status', 'active').order('created_at', { ascending: true })
+  ]);
+
+  const clicks = clicksRes.count || 0;
+  const recentConversions = convRes.data || [];
+
+  const { data: allConvs } = await db.from('conversions').select('commission_kobo, status').eq('partner_id', partnerId);
+  const convList = allConvs || recentConversions;
+
+  const earned = convList.filter(c => c.status === 'approved' || c.status === 'paid').reduce((s, c) => s + c.commission_kobo, 0);
+  const pending = convList.filter(c => c.status === 'pending').reduce((s, c) => s + c.commission_kobo, 0);
+
+  const payoutRows = payoutsRes.data || [];
+  const paidPayouts = payoutRows.filter(p => p.status === 'processing' || p.status === 'completed')
+    .reduce((s, p) => s + p.amount_kobo, 0);
+  const requestedWithdrawals = payoutRows.filter(p => p.status === 'pending')
+    .reduce((s, p) => s + p.amount_kobo, 0);
+
+  const available = Math.max(0, earned - paidPayouts - requestedWithdrawals);
+
+  const offers = offersRes.data || [];
+  const offerMap = {};
+  offers.forEach(o => { offerMap[o.id] = o.name; });
+
+  const commissionsList = recentConversions.map(c => ({
+    ...c,
+    offer_name: offerMap[c.offer_id] || '-'
+  }));
+
+  const siteUrl = process.env.SITE_URL || 'https://nexora.tomidewilliams.com';
+
+  return json(res, 200, {
+    ok: true,
+    stats: {
+      clicks,
+      conversions: convList.length,
+      earned_kobo: earned,
+      pending_kobo: pending,
+      available_kobo: available,
+      requested_withdrawals_kobo: requestedWithdrawals,
+    },
+    partner: partnerRes.data || null,
+    offers,
+    commissions: commissionsList,
+    siteUrl
+  }, { 'Cache-Control': 'no-store' });
+}
+
 async function stats(req, res, db, url) {
   const partnerId = url.searchParams.get('partner_id');
   if (!partnerId) return json(res, 400, { error: 'partner_id required.' });
@@ -148,7 +208,7 @@ async function stats(req, res, db, url) {
     available_kobo: available,
     requested_withdrawals_kobo: requestedWithdrawals,
     code: partnerRes.data ? partnerRes.data.code : null,
-  });
+  }, { 'Cache-Control': 'no-store' });
 }
 
 async function commissions(req, res, db, url) {
@@ -166,7 +226,7 @@ async function commissions(req, res, db, url) {
     (offers || []).forEach(o => { offerMap[o.id] = o.name; });
   }
   const commissionsList = (data || []).map(c => ({ ...c, offer_name: offerMap[c.offer_id] || '-' }));
-  return json(res, 200, { ok: true, commissions: commissionsList });
+  return json(res, 200, { ok: true, commissions: commissionsList }, { 'Cache-Control': 'no-store' });
 }
 
 async function withdraw(req, res, db, url) {
@@ -215,41 +275,61 @@ async function payouts(req, res, db, url) {
   const { data } = await db.from('payouts')
     .select('id, amount_kobo, status, created_at')
     .eq('partner_id', partnerId).order('created_at', { ascending: false }).limit(50);
-  return json(res, 200, { ok: true, payouts: data || [] });
+  return json(res, 200, { ok: true, payouts: data || [] }, { 'Cache-Control': 'no-store' });
 }
 
 async function products(req, res, db, url) {
   const partnerId = url.searchParams.get('partner_id');
   if (!partnerId) return json(res, 400, { error: 'partner_id required.' });
 
-  const [offersRes, convRes, refRes] = await Promise.all([
-    db.from('offers').select('id, slug, name, description, price_kobo, commission_rate, checkout_url').eq('status', 'active').order('created_at', { ascending: true }),
+  const [partnerRes, offersRes, referralsRes, convsRes] = await Promise.all([
+    db.from('partners').select('id, code').eq('id', partnerId).eq('status', 'active').maybeSingle(),
+    db.from('offers').select('*').eq('status', 'active').order('created_at', { ascending: true }),
+    db.from('referrals').select('offer_id').eq('partner_id', partnerId),
     db.from('conversions').select('offer_id, commission_kobo, status').eq('partner_id', partnerId),
-    db.from('referrals').select('offer_id', { count: 'exact', head: true }).eq('partner_id', partnerId),
   ]);
 
+  const partner = partnerRes.data;
+  if (!partner) return json(res, 404, { error: 'Partner not found.' });
+
   const offers = offersRes.data || [];
-  const convs = convRes.data || [];
+  const referrals = referralsRes.data || [];
+  const conversions = convsRes.data || [];
+
   const clicksByOffer = {};
-  (refRes.data || []).forEach(r => { clicksByOffer[r.offer_id] = (clicksByOffer[r.offer_id] || 0) + 1; });
+  referrals.forEach(r => {
+    if (r.offer_id) clicksByOffer[r.offer_id] = (clicksByOffer[r.offer_id] || 0) + 1;
+  });
+
+  const convsByOffer = {};
+  const earnedByOffer = {};
+  conversions.forEach(c => {
+    if (c.offer_id) {
+      convsByOffer[c.offer_id] = (convsByOffer[c.offer_id] || 0) + 1;
+      if (c.status === 'approved' || c.status === 'paid') {
+        earnedByOffer[c.offer_id] = (earnedByOffer[c.offer_id] || 0) + c.commission_kobo;
+      }
+    }
+  });
 
   const siteUrl = process.env.SITE_URL || 'https://nexora.tomidewilliams.com';
-  const partnerRes = await db.from('partners').select('code').eq('id', partnerId).maybeSingle();
-  const code = partnerRes.data ? partnerRes.data.code : null;
 
-  const list = offers.map(o => {
-    const oConvs = convs.filter(c => c.offer_id === o.id);
-    const earned = oConvs.filter(c => c.status === 'approved' || c.status === 'paid').reduce((s, c) => s + c.commission_kobo, 0);
-    const pending = oConvs.filter(c => c.status === 'pending').reduce((s, c) => s + c.commission_kobo, 0);
+  const productList = offers.map(o => {
+    const checkout = o.checkout_url || (siteUrl + '/checkout');
+    const link = checkout + '?pp=' + partner.code;
     return {
-      ...o,
+      id: o.id,
+      slug: o.slug,
+      name: o.name,
+      description: o.description,
+      price_kobo: o.price_kobo,
+      commission_rate: o.commission_rate,
+      link,
       clicks: clicksByOffer[o.id] || 0,
-      conversions: oConvs.length,
-      earned_kobo: earned,
-      pending_kobo: pending,
-      link: (o.checkout_url || siteUrl) + (code ? '?pp=' + code : ''),
+      conversions: convsByOffer[o.id] || 0,
+      earned_kobo: earnedByOffer[o.id] || 0,
     };
   });
 
-  return json(res, 200, { ok: true, products: list });
+  return json(res, 200, { ok: true, products: productList }, { 'Cache-Control': 'no-store' });
 }

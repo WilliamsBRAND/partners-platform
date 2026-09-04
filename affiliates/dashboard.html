@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -22,7 +22,7 @@
   <div class="balance-card">
     <div class="bl">
       <div class="bl-lbl">Available to withdraw</div>
-      <div class="bl-num" id="sAvailable">₦0</div>
+      <div class="bl-num" id="sAvailable"><span class="skeleton" style="width:120px;height:40px;"></span></div>
       <div class="bl-note">Approved commissions only. You'll be paid by manual bank transfer.</div>
     </div>
     <a class="btn" href="/affiliates/funds">Request Withdrawal</a>
@@ -31,27 +31,29 @@
   <div class="grid cols-4">
     <div class="card stat-card">
       <div class="top"><div class="lbl">Total Clicks</div><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-7"/></svg></div></div>
-      <div class="num" id="sClicks">-</div>
+      <div class="num" id="sClicks"><span class="skeleton" style="width:50px;height:28px;"></span></div>
     </div>
     <div class="card stat-card">
       <div class="top"><div class="lbl">Conversions</div><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3 3.5-4.5 6.5-4.5s5.7 1.5 6.5 4.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18.5 15.6c1.2.6 2.2 1.6 2.9 2.9"/></svg></div></div>
-      <div class="num" id="sConversions">-</div>
+      <div class="num" id="sConversions"><span class="skeleton" style="width:50px;height:28px;"></span></div>
     </div>
     <div class="card stat-card accent">
       <div class="top"><div class="lbl">Total Earned</div><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6.5c-1-1-2.5-1.5-5-1.5-3 0-5 1.2-5 3.5 0 4.5 10 2.2 10 6.5 0 2.3-2 3.5-5 3.5-2.5 0-4-.5-5-1.5"/></svg></div></div>
-      <div class="num" id="sEarnings">-</div>
+      <div class="num" id="sEarnings"><span class="skeleton" style="width:90px;height:28px;"></span></div>
     </div>
     <div class="card stat-card">
       <div class="top"><div class="lbl">Pending</div><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div></div>
-      <div class="num" id="sPending">-</div>
+      <div class="num" id="sPending"><span class="skeleton" style="width:90px;height:28px;"></span></div>
     </div>
   </div>
 
   <div class="section-head">
     <h2>Your Referral Links</h2>
-    <span class="count" id="offerCount">0 offers</span>
+    <span class="count" id="offerCount">Offers</span>
   </div>
-  <div class="grid" id="offersGrid" style="grid-template-columns:1fr;"></div>
+  <div class="grid" id="offersGrid" style="grid-template-columns:1fr;">
+    <div class="card offer-card"><span class="skeleton" style="width:100%;height:80px;"></span></div>
+  </div>
 
   <div class="section-head">
     <h2>Recent Commissions</h2>
@@ -82,65 +84,78 @@
 (function () {
   var partner = (function () { try { return JSON.parse(localStorage.getItem('partners_partner')); } catch (e) { return null; } })();
   if (!partner || !partner.id) return;
-  var siteUrl = partner.siteUrl || window.location.origin;
+  var cacheKey = 'partners_dash_cache_' + partner.id;
 
-  var grid = document.getElementById('offersGrid');
-  fetch('/api/offers').then(function (r) { return r.json(); }).then(function (d) {
-    var list = (d.ok && d.offers) ? d.offers : [];
-    document.getElementById('offerCount').textContent = list.length + ' offer' + (list.length !== 1 ? 's' : '');
-    if (!list.length) {
+  function render(data) {
+    if (!data) return;
+    var stats = data.stats || {};
+    var offers = data.offers || [];
+    var comms = data.commissions || [];
+    var siteUrl = data.siteUrl || partner.siteUrl || window.location.origin;
+
+    // Render stats
+    document.getElementById('sAvailable').textContent = '₦' + App.fmt(stats.available_kobo || 0);
+    document.getElementById('sClicks').textContent = stats.clicks || 0;
+    document.getElementById('sConversions').textContent = stats.conversions || 0;
+    document.getElementById('sEarnings').textContent = '₦' + App.fmt(stats.earned_kobo || 0);
+    document.getElementById('sPending').textContent = '₦' + App.fmt(stats.pending_kobo || 0);
+
+    // Render offers
+    var grid = document.getElementById('offersGrid');
+    document.getElementById('offerCount').textContent = offers.length + ' offer' + (offers.length !== 1 ? 's' : '');
+    if (!offers.length) {
       grid.innerHTML = '<div class="empty">No offers available right now. Check back soon.</div>';
-      return;
+    } else {
+      var html = '';
+      offers.forEach(function (o) {
+        var checkout = o.checkout_url || (siteUrl + '/checkout');
+        var link = checkout + '?pp=' + partner.code;
+        var price = o.price_kobo ? '₦' + Math.round(o.price_kobo / 100).toLocaleString() : '';
+        var rate = o.commission_rate != null ? Math.round(o.commission_rate * 100) + '%' : '30%';
+        html += '<div class="offer-card">' +
+          '<div class="oh"><div><h3>' + App.esc(o.name) + '</h3>' +
+          (price ? '<div class="mini-stat">' + price + ' &middot; <span style="color:#aaa;">' + App.esc(o.description || '') + '</span></div>' : '<div class="od">' + App.esc(o.description || '') + '</div>') +
+          '</div><span class="earn">Earn ' + rate + '</span></div>' +
+          '<div class="link-row"><div class="link-val">' + App.esc(link) + '</div>' +
+          '<button class="copy-btn" data-copy="' + App.esc(link) + '" onclick="App.copyLink(this, this.getAttribute(\'data-copy\'))">Copy</button></div>' +
+          '</div>';
+      });
+      grid.innerHTML = html;
     }
-    var html = '';
-    list.forEach(function (o) {
-      var checkout = o.checkout_url || (siteUrl + '/checkout');
-      var link = checkout + '?pp=' + partner.code;
-      var price = o.price_kobo ? '₦' + Math.round(o.price_kobo / 100).toLocaleString() : '';
-      var rate = o.commission_rate != null ? Math.round(o.commission_rate * 100) + '%' : '30%';
-      html += '<div class="offer-card">' +
-        '<div class="oh"><div><h3>' + App.esc(o.name) + '</h3>' +
-        (price ? '<div class="mini-stat">' + price + ' &middot; <span style="color:#888;">' + App.esc(o.description || '') + '</span></div>' : '<div class="od">' + App.esc(o.description || '') + '</div>') +
-        '</div><span class="earn">Earn ' + rate + '</span></div>' +
-        '<div class="link-row"><div class="link-val">' + App.esc(link) + '</div>' +
-        '<button class="copy-btn" data-copy="' + App.esc(link) + '" onclick="App.copyLink(this, this.getAttribute(\'data-copy\'))">Copy</button></div>' +
-        '</div>';
-    });
-    grid.innerHTML = html;
-  }).catch(function () { grid.innerHTML = '<div class="empty">Could not load offers. Please refresh.</div>'; });
 
-  function loadStats() {
-    fetch('/api/partner?action=stats&partner_id=' + partner.id).then(function (r) { return r.json(); }).then(function (d) {
+    // Render commissions
+    document.getElementById('commCount').textContent = comms.length + ' sale' + (comms.length !== 1 ? 's' : '');
+    if (comms.length) {
+      var commHtml = '';
+      comms.forEach(function (c) {
+        commHtml += '<tr><td>' + App.fmtDate(c.created_at) + '</td><td>' + App.esc(c.offer_name || '-') + '</td><td>' + App.esc(c.customer_email) + '</td><td class="num">₦' + App.fmt(c.commission_kobo) + '</td><td><span class="status ' + App.esc(c.status) + '">' + App.esc(c.status) + '</span></td></tr>';
+      });
+      document.getElementById('commBody').innerHTML = commHtml;
+      document.querySelector('.tbl-wrap table').style.display = '';
+      document.getElementById('emptyComm').style.display = 'none';
+    } else {
+      document.getElementById('commBody').innerHTML = '';
+      document.querySelector('.tbl-wrap table').style.display = 'none';
+      document.getElementById('emptyComm').style.display = '';
+    }
+  }
+
+  // 1. Instant render from local cache (0ms instant UI)
+  try {
+    var cached = JSON.parse(localStorage.getItem(cacheKey));
+    if (cached) render(cached);
+  } catch (e) {}
+
+  // 2. Fresh background fetch using consolidated single-call dashboard endpoint
+  fetch('/api/partner?action=dashboard&partner_id=' + partner.id)
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
       if (d.ok) {
-        document.getElementById('sClicks').textContent = d.clicks || 0;
-        document.getElementById('sConversions').textContent = d.conversions || 0;
-        document.getElementById('sEarnings').textContent = '₦' + App.fmt(d.earned_kobo || 0);
-        document.getElementById('sPending').textContent = '₦' + App.fmt(d.pending_kobo || 0);
-        document.getElementById('sAvailable').textContent = '₦' + App.fmt(d.available_kobo || 0);
+        render(d);
+        try { localStorage.setItem(cacheKey, JSON.stringify(d)); } catch (e) {}
       }
-    }).catch(function () {});
-  }
-
-  function loadCommissions() {
-    fetch('/api/partner?action=commissions&partner_id=' + partner.id).then(function (r) { return r.json(); }).then(function (d) {
-      if (d.ok && d.commissions && d.commissions.length) {
-        document.getElementById('commCount').textContent = d.commissions.length + ' sale' + (d.commissions.length !== 1 ? 's' : '');
-        var html = '';
-        d.commissions.forEach(function (c) {
-          html += '<tr><td>' + App.fmtDate(c.created_at) + '</td><td>' + App.esc(c.offer_name || '-') + '</td><td>' + App.esc(c.customer_email) + '</td><td class="num">₦' + App.fmt(c.commission_kobo) + '</td><td><span class="status ' + App.esc(c.status) + '">' + App.esc(c.status) + '</span></td></tr>';
-        });
-        document.getElementById('commBody').innerHTML = html;
-        document.querySelector('.tbl-wrap table').style.display = '';
-      } else {
-        document.getElementById('commBody').innerHTML = '';
-        document.querySelector('.tbl-wrap table').style.display = 'none';
-        document.getElementById('emptyComm').style.display = '';
-      }
-    }).catch(function () {});
-  }
-
-  loadStats();
-  loadCommissions();
+    })
+    .catch(function () {});
 })();
 </script>
 </body>

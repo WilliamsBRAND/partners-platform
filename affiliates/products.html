@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -20,11 +20,11 @@
   <div class="page-head">
     <div class="page-eyebrow">Products</div>
     <h1 class="page-title">Promote Your Products</h1>
-    <div class="page-sub">Every product gets its own tracked link. Push as many as you like â€” each sale is attributed to the product's link you shared.</div>
+    <div class="page-sub">Every product gets its own tracked link. Push as many as you like — each sale is attributed to the product's link you shared.</div>
   </div>
 
   <div class="grid" id="productsGrid" style="grid-template-columns:1fr;">
-    <div class="empty">Loading products...</div>
+    <div class="card offer-card"><span class="skeleton" style="width:100%;height:100px;"></span></div>
   </div>
 </div>
 
@@ -33,16 +33,17 @@
 (function () {
   var partner = (function () { try { return JSON.parse(localStorage.getItem('partners_partner')); } catch (e) { return null; } })();
   if (!partner || !partner.id) return;
+  var cacheKey = 'partners_products_cache_' + partner.id;
 
   var grid = document.getElementById('productsGrid');
 
-  fetch('/api/partner?action=products&partner_id=' + partner.id).then(function (r) { return r.json(); }).then(function (d) {
-    if (!d.ok || !d.products || !d.products.length) {
+  function render(products) {
+    if (!products || !products.length) {
       grid.innerHTML = '<div class="empty">No active products to promote right now. Check back soon.</div>';
       return;
     }
     var html = '';
-    d.products.forEach(function (o) {
+    products.forEach(function (o) {
       var price = o.price_kobo ? '₦' + Math.round(o.price_kobo / 100).toLocaleString() : '';
       var rate = o.commission_rate != null ? Math.round(o.commission_rate * 100) + '%' : '30%';
       var desc = o.description || '';
@@ -63,8 +64,22 @@
       '</div>';
     });
     grid.innerHTML = html;
+  }
+
+  try {
+    var cached = JSON.parse(localStorage.getItem(cacheKey));
+    if (cached) render(cached);
+  } catch (e) {}
+
+  fetch('/api/partner?action=products&partner_id=' + partner.id).then(function (r) { return r.json(); }).then(function (d) {
+    if (d.ok && d.products) {
+      render(d.products);
+      try { localStorage.setItem(cacheKey, JSON.stringify(d.products)); } catch (e) {}
+    }
   }).catch(function () {
-    grid.innerHTML = '<div class="empty">Could not load products. Please refresh.</div>';
+    if (!grid.children.length || grid.querySelector('.skeleton')) {
+      grid.innerHTML = '<div class="empty">Could not load products. Please refresh.</div>';
+    }
   });
 })();
 </script>

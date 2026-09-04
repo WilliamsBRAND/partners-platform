@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -22,7 +22,7 @@
   <div class="balance-card">
     <div class="bl">
       <div class="bl-lbl">Available to withdraw</div>
-      <div class="bl-num" id="sAvailable">₦0</div>
+      <div class="bl-num" id="sAvailable"><span class="skeleton" style="width:120px;height:40px;"></span></div>
       <div class="bl-note">Approved commissions only. Your request is emailed to us and paid by manual bank transfer.</div>
     </div>
     <button class="btn" id="withdrawBtn" onclick="App.toggleWithdraw()">Request Withdrawal</button>
@@ -42,17 +42,17 @@
   <div class="grid cols-3">
     <div class="card stat-card">
       <div class="lbl">Total Earned</div>
-      <div class="num" id="sEarned">-</div>
+      <div class="num" id="sEarned"><span class="skeleton" style="width:90px;height:28px;"></span></div>
       <div class="foot">Approved + paid commissions</div>
     </div>
     <div class="card stat-card">
       <div class="lbl">Pending</div>
-      <div class="num" id="sPending">-</div>
+      <div class="num" id="sPending"><span class="skeleton" style="width:90px;height:28px;"></span></div>
       <div class="foot">Awaiting admin approval</div>
     </div>
     <div class="card stat-card">
       <div class="lbl">Requested Withdrawals</div>
-      <div class="num" id="sRequested">-</div>
+      <div class="num" id="sRequested"><span class="skeleton" style="width:90px;height:28px;"></span></div>
       <div class="foot">Pending payout requests</div>
     </div>
   </div>
@@ -76,45 +76,68 @@
   var partner = (function () { try { return JSON.parse(localStorage.getItem('partners_partner')); } catch (e) { return null; } })();
   if (!partner || !partner.id) return;
 
+  var statsCacheKey = 'partners_funds_stats_' + partner.id;
+  var payoutsCacheKey = 'partners_funds_payouts_' + partner.id;
   var availableKobo = 0;
 
   function refreshBtn() {
-    document.getElementById('withdrawBtn').disabled = !(availableKobo > 0);
+    var btn = document.getElementById('withdrawBtn');
+    if (btn) btn.disabled = !(availableKobo > 0);
   }
 
-  function loadStats() {
-    fetch('/api/partner?action=stats&partner_id=' + partner.id).then(function (r) { return r.json(); }).then(function (d) {
+  function renderStats(d) {
+    if (!d) return;
+    availableKobo = d.available_kobo || 0;
+    document.getElementById('sAvailable').textContent = '₦' + App.fmt(availableKobo);
+    document.getElementById('sEarned').textContent = '₦' + App.fmt(d.earned_kobo || 0);
+    document.getElementById('sPending').textContent = '₦' + App.fmt(d.pending_kobo || 0);
+    document.getElementById('sRequested').textContent = '₦' + App.fmt(d.requested_withdrawals_kobo || 0);
+    refreshBtn();
+  }
+
+  function renderPayouts(payouts) {
+    if (!payouts) return;
+    document.getElementById('payoutCount').textContent = payouts.length + ' payout' + (payouts.length !== 1 ? 's' : '');
+    if (payouts.length) {
+      var html = '';
+      payouts.forEach(function (p) {
+        html += '<tr><td>' + App.fmtDate(p.created_at) + '</td><td class="num">₦' + App.fmt(p.amount_kobo) + '</td><td>' + App.esc(p.paystack_transfer_ref || '-') + '</td><td><span class="status ' + App.esc(p.status) + '">' + App.esc(p.status) + '</span></td></tr>';
+      });
+      document.getElementById('payoutBody').innerHTML = html;
+      document.querySelector('.tbl-wrap table').style.display = '';
+      document.getElementById('emptyPayout').style.display = 'none';
+    } else {
+      document.getElementById('payoutBody').innerHTML = '';
+      document.querySelector('.tbl-wrap table').style.display = 'none';
+      document.getElementById('emptyPayout').style.display = '';
+    }
+  }
+
+  // Instant render cached
+  try {
+    var cs = JSON.parse(localStorage.getItem(statsCacheKey));
+    if (cs) renderStats(cs);
+    var cp = JSON.parse(localStorage.getItem(payoutsCacheKey));
+    if (cp) renderPayouts(cp);
+  } catch (e) {}
+
+  fetch('/api/partner?action=stats&partner_id=' + partner.id)
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
       if (d.ok) {
-        availableKobo = d.available_kobo || 0;
-        document.getElementById('sAvailable').textContent = '₦' + App.fmt(availableKobo);
-        document.getElementById('sEarned').textContent = '₦' + App.fmt(d.earned_kobo || 0);
-        document.getElementById('sPending').textContent = '₦' + App.fmt(d.pending_kobo || 0);
-        document.getElementById('sRequested').textContent = '₦' + App.fmt(d.requested_withdrawals_kobo || 0);
-        refreshBtn();
+        renderStats(d);
+        try { localStorage.setItem(statsCacheKey, JSON.stringify(d)); } catch (e) {}
       }
     }).catch(function () {});
-  }
 
-  function loadPayouts() {
-    fetch('/api/partner?action=payouts&partner_id=' + partner.id).then(function (r) { return r.json(); }).then(function (d) {
-      if (d.ok && d.payouts && d.payouts.length) {
-        document.getElementById('payoutCount').textContent = d.payouts.length + ' payout' + (d.payouts.length !== 1 ? 's' : '');
-        var html = '';
-        d.payouts.forEach(function (p) {
-          html += '<tr><td>' + App.fmtDate(p.created_at) + '</td><td class="num">₦' + App.fmt(p.amount_kobo) + '</td><td>' + App.esc(p.paystack_transfer_ref || '-') + '</td><td><span class="status ' + App.esc(p.status) + '">' + App.esc(p.status) + '</span></td></tr>';
-        });
-        document.getElementById('payoutBody').innerHTML = html;
-        document.querySelector('.tbl-wrap table').style.display = '';
-      } else {
-        document.getElementById('payoutBody').innerHTML = '';
-        document.querySelector('.tbl-wrap table').style.display = 'none';
-        document.getElementById('emptyPayout').style.display = '';
+  fetch('/api/partner?action=payouts&partner_id=' + partner.id)
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (d.ok) {
+        renderPayouts(d.payouts || []);
+        try { localStorage.setItem(payoutsCacheKey, JSON.stringify(d.payouts || [])); } catch (e) {}
       }
     }).catch(function () {});
-  }
-
-  loadStats();
-  loadPayouts();
 })();
 </script>
 </body>

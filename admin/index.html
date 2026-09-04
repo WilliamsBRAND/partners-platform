@@ -13,20 +13,20 @@ body{font-family:'Montserrat',sans-serif;background:#0a0a0a;color:#fff;min-heigh
 
 .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
 .login-card{width:100%;max-width:360px;background:#111;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:36px 28px;}
-.login-card .logo{font-family:'Archivo',sans-serif;font-weight:900;font-size:22px;color:#7A0A15;margin-bottom:20px;}
+.login-card .logo{font-family:'Archivo',sans-serif;font-weight:900;font-size:22px;color:#E50914;margin-bottom:20px;}
 .login-card h2{font-family:'Archivo',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;}
 .login-card p{font-size:13px;color:#666;margin-bottom:20px;}
 .login-card input{width:100%;padding:13px 15px;font-size:15px;font-family:'Montserrat',sans-serif;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;outline:none;margin-bottom:14px;}
-.login-card input:focus{border-color:#7A0A15;}
-.login-card .btn{width:100%;padding:13px;border:none;border-radius:10px;background:#7A0A15;color:#fff;font-weight:700;font-size:15px;cursor:pointer;font-family:'Montserrat',sans-serif;}
-.login-card .btn:hover{background:#9B0D1A;}
+.login-card input:focus{border-color:#E50914;}
+.login-card .btn{width:100%;padding:13px;border:none;border-radius:10px;background:#E50914;color:#fff;font-weight:700;font-size:15px;cursor:pointer;font-family:'Montserrat',sans-serif;}
+.login-card .btn:hover{background:#FF1E1E;}
 .err{color:#c0392b;font-size:12px;margin-bottom:10px;}
 
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid rgba(255,255,255,.06);}
-.topbar .logo{font-family:'Archivo',sans-serif;font-weight:900;font-size:18px;color:#7A0A15;}
+.topbar .logo{font-family:'Archivo',sans-serif;font-weight:900;font-size:18px;color:#E50914;}
 .topbar .right{display:flex;align-items:center;gap:16px;}
 .topbar .logout{font-size:13px;color:#666;text-decoration:none;cursor:pointer;}
-.topbar .logout:hover{color:#7A0A15;}
+.topbar .logout:hover{color:#E50914;}
 
 .wrap{max-width:960px;margin:0 auto;padding:28px 24px 60px;}
 .page-title{font-family:'Archivo',sans-serif;font-size:22px;font-weight:800;margin-bottom:24px;}
@@ -34,7 +34,7 @@ body{font-family:'Montserrat',sans-serif;background:#0a0a0a;color:#fff;min-heigh
 .tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,.06);}
 .tab{padding:12px 20px;font-size:14px;font-weight:600;color:#666;cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
 .tab:hover{color:#aaa;}
-.tab.active{color:#7A0A15;border-bottom-color:#7A0A15;}
+.tab.active{color:#E50914;border-bottom-color:#E50914;}
 
 .panel{display:none;}
 .panel.active{display:block;}
@@ -43,7 +43,7 @@ body{font-family:'Montserrat',sans-serif;background:#0a0a0a;color:#fff;min-heigh
 .stat{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:20px 16px;}
 .stat .num{font-family:'Archivo',sans-serif;font-size:26px;font-weight:900;color:#fff;}
 .stat .lbl{font-size:11px;color:#666;margin-top:2px;}
-.stat.accent .num{color:#7A0A15;}
+.stat.accent .num{color:#E50914;}
 
 table{width:100%;border-collapse:collapse;}
 th{text-align:left;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06);}
@@ -73,11 +73,11 @@ td:first-child{color:#fff;}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .fld{display:block;font-size:11px;color:#666;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
 .offer-form input,.offer-form textarea{width:100%;padding:12px 14px;font-size:14px;font-family:'Montserrat',sans-serif;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;outline:none;}
-.offer-form input:focus,.offer-form textarea:focus{border-color:#7A0A15;}
+.offer-form input:focus,.offer-form textarea:focus{border-color:#E50914;}
 .offer-form textarea{resize:vertical;}
 .form-actions{display:flex;gap:10px;margin-top:16px;}
-.btn.primary{padding:12px 22px;border:none;border-radius:10px;background:#7A0A15;color:#fff;font-weight:700;font-size:14px;cursor:pointer;font-family:'Montserrat',sans-serif;}
-.btn.primary:hover{background:#9B0D1A;}
+.btn.primary{padding:12px 22px;border:none;border-radius:10px;background:#E50914;color:#fff;font-weight:700;font-size:14px;cursor:pointer;font-family:'Montserrat',sans-serif;}
+.btn.primary:hover{background:#FF1E1E;}
 .btn.ghost{padding:12px 18px;border:1px solid rgba(255,255,255,.15);border-radius:10px;background:transparent;color:#888;font-weight:600;font-size:13px;cursor:pointer;font-family:'Montserrat',sans-serif;}
 .btn.ghost:hover{color:#fff;}
 .link-out{font-size:12px;color:#4ade80;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;}
@@ -231,7 +231,7 @@ function loadAll(){
       var h='';
       d.partners.forEach(function(p){
         var bank = (p.bank_name||p.account_number||p.account_name) ? esc(p.bank_name||'-') + ' &middot; ' + esc(p.account_number||'-') + ' &middot; ' + esc(p.account_name||'-') : '-';
-        h+='<tr><td><code style="color:#7A0A15;">'+esc(p.code)+'</code></td><td>'+esc(p.name)+'</td><td>'+esc(p.email)+'</td><td style="font-size:11px;color:#4ade80;">'+bank+'</td><td>'+(p.sale_count||0)+'</td><td>\u20A6'+Math.round((p.total_earned||0)/100).toLocaleString()+'</td><td><span class="status '+p.status+'">'+p.status+'</span></td></tr>';
+        h+='<tr><td><code style="color:#E50914;">'+esc(p.code)+'</code></td><td>'+esc(p.name)+'</td><td>'+esc(p.email)+'</td><td style="font-size:11px;color:#4ade80;">'+bank+'</td><td>'+(p.sale_count||0)+'</td><td>\u20A6'+Math.round((p.total_earned||0)/100).toLocaleString()+'</td><td><span class="status '+p.status+'">'+p.status+'</span></td></tr>';
       });
       document.getElementById('pBody').innerHTML=h;
       document.getElementById('emptyP').style.display='none';
