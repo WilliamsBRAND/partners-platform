@@ -1,43 +1,412 @@
-import crypto from 'crypto';
+// Partners — Affiliate API (multi-product marketplace)
+// Endpoints: register, login, marketplace, select, dashboard, product, stats,
+//            commissions, payouts, withdraw, profile, materials
 import { getDb, json } from './_db.js';
+import {
+  buildReferralLink,
+  commissionFor,
+  generateCode,
+  signToken,
+  verifyToken,
+  koboToNaira,
+} from './_helpers.js';
 
-function generateCode(name) {
-  const base = name.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8);
-  const rand = Math.random().toString(36).slice(2, 6);
-  return (base + rand).slice(0, 12);
+function partnerSecret() {
+  return process.env.PARTNER_TOKEN_SECRET || process.env.SUPABASE_SERVICE_KEY || '';
 }
 
-function koboToNaira(kobo) {
-  return (kobo / 100).toFixed(2);
+function getPartnerId(req) {
+  const h = req.headers.authorization || '';
+  if (h.startsWith('Bearer ')) {
+    const payload = verifyToken(h.slice(7), partnerSecret());
+    return payload ? payload.sub : null;
+  }
+  return null;
 }
 
-function signToken(partnerId) {
-  const secret = process.env.PARTNER_TOKEN_SECRET || process.env.SUPABASE_SERVICE_KEY || '';
-  const body = Buffer.from(JSON.stringify({ sub: partnerId, exp: Date.now() + 30 * 24 * 60 * 60 * 1000 })).toString('base64url');
-  const sig = crypto.createHmac('sha256', secret).update(body).digest('base64url');
-  return body + '.' + sig;
-}
+const VALID_ACTION = {
+  register: register,
+  login: login,
+  marketplace: marketplace,
+  select: select,
+  dashboard: dashboard,
+  product: productDetail,
+  stats: stats,
+  commissions: commissions,
+  payouts: payouts,
+  withdraw: withdraw,
+  profile: profile,
+  materials: materials,
+  update: updateProfile,
+};
 
-function verifyToken(token) {
+export default async function handler(req, res) {
+  const db = getDb();
+  if (!db) return json(res, 500, { error: 'Database not configured.' });
+
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const action = url.searchParams.get('action') || '';
+
   try {
-    const secret = process.env.PARTNER_TOKEN_SECRET || process.env.SUPABASE_SERVICE_KEY || '';
-    if (!secret) return null;
-    const [body, sig] = String(token || '').split('.');
-    if (!body || !sig) return null;
-    const expected = crypto.createHmac('sha256', secret).update(body).digest('base64url');
-    if (expected !== sig) return null;
-    const payload = JSON.parse(Buffer.from(body, 'base64url').toString());
-    if (!payload || !payload.sub || !payload.exp || Date.now() > payload.exp) return null;
-    return payload.sub;
+    // Public
+    if (action === 'register') return await register(req, res, db);
+    if (action === 'login') return await login(req, res, db);
+    if (action === 'marketplace' || action === 'materials' && !isAuthed(req)) {
+      // marketplace is public, materials requires auth (handled below)
+      if (action === 'marketplace') return await marketplace(req, res, db);
+    }
+
+    // Everything else requires auth
+    const partnerId = getPartnerId(req);
+    if (!partnerId) return json(res, 401, { error: 'Unauthorized. Please log in.' });
+
+    if (action === 'materials') return await materials(req, res, db, partnerId);
+    if (action === 'select') return await select(req, res, db, partnerId);
+    if (action === 'dashboard') return await dashboard(req, res, db, partnerId);
+    if (action === 'product') return await productDetail(req, res, db, partnerId, url);
+    if (action === 'stats') return await stats(req, res, db, partnerId);
+    if (action === 'commissions') return await commissions(req, res, db, partnerId);
+    if (action === 'payouts') return await payouts(req, res, db, partnerId);
+    if (action === 'withdraw') return await withdraw(req, res, db, partnerId);
+    if (action === 'profile') return await profile(req, res, db, partnerId);
+    if (action === 'update') return await updateProfile(req, res, db, partnerId);
+
+    return json(res, 400, { error: 'Unknown action.' });
   } catch (e) {
-    return null;
+    return json(res, 500, { error: 'Server error: ' + (e.message || '') });
   }
 }
 
-function getPartnerId(req, url) {
-  const h = req.headers.authorization || '';
-  if (h.startsWith('Bearer ')) return verifyToken(h.slice(7));
-  return null;
+// Voice/eye helpers
+function isAuthed(req) { return !!getPartnerId(req); }
+
+// ---------------------------------------------------------------------------
+// AUTH
+// ---------------------------------------------------------------------------
+async function register(req, res, db) {
+  if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
+  const { name, email, phone, bank_name, account_number, account_name } = req.body || {};
+  if (!name || !email) return json(res, 400, { error: 'Name and email are required.' });
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json(res, 400, { error: 'Invalid email.' });
+  if (!bank_name || !account_number || !account_name) {
+    return json(res, 400, { error: 'Bank name, account number, and account name are required.' });
+  }
+  if (!/^\d{10}$/.test(String(account_number || '').replace(/\s/g, ''))) {
+    return json(res, 400, { error: 'Please enter a valid 10-digit account number.' });
+  }
+
+  const emailNorm = email.toLowerCase().trim();
+  const { data: existing } = await db.from('partners').select('id').eq('email', emailNorm).maybeSingle();
+  if (existing) return json(res, 409, { error: 'An account with this email already exists.' });
+
+  let code = generateCode(name);
+  for (let i = 0; i < 10; i++) {
+    const { data: dup } = await db.from('partners').select('id').eq('code', code).maybeSingle();
+    if (!dup) break;
+    code = generateCode(name);
+  }
+
+  const { data, error } = await db.from('partners').insert({
+    code,
+    name: name.trim(),
+    email: emailNorm,
+    phone: phone || null,
+    bank_name: bank_name.trim(),
+    account_number: String(account_number).replace(/\s/g, ''),
+    account_name: account_name.trim(),
+    status: 'active',
+  }).select('id, code, name, email, bank_name, account_number, account_name').single();
+
+  if (error) return json(res, 500, { error: 'Failed to create account.' });
+  const token = signToken({ sub: data.id, exp: Date.now() + 30 * 24 * 60 * 60 * 1000 }, partnerSecret());
+  return json(res, 200, { ok: true, ...data, token });
+}
+
+async function login(req, res, db) {
+  if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
+  const { email } = req.body || {};
+  if (!email) return json(res, 400, { error: 'Email is required.' });
+
+  const { data } = await db.from('partners')
+    .select('id, code, name, email, bank_name, account_number, account_name')
+    .eq('email', email.toLowerCase().trim()).eq('status', 'active').maybeSingle();
+
+  if (!data) return json(res, 404, { error: 'No active partner account found with that email.' });
+  const token = signToken({ sub: data.id, exp: Date.now() + 30 * 24 * 60 * 60 * 1000 }, partnerSecret());
+  return json(res, 200, { ok: true, ...data, token });
+}
+
+// ---------------------------------------------------------------------------
+// MARKETPLACE — all active products the affiliate can promote
+// ---------------------------------------------------------------------------
+async function marketplace(req, res, db) {
+  const { data: products, error } = await db
+    .from('products').select('id, slug, name, tagline, description, image_url, price_kobo, commission_type, commission_value, checkout_url, status')
+    .eq('status', 'active').order('created_at', { ascending: true });
+
+  if (error) return json(res, 500, { error: 'Failed to load products.' });
+
+  const list = (products || []).map(p => ({
+    id: p.id, slug: p.slug, name: p.name, tagline: p.tagline, description: p.description,
+    image_url: p.image_url, price_kobo: p.price_kobo,
+    commission_type: p.commission_type, commission_value: p.commission_value,
+    // Human-readable commission label
+    commission_label: p.commission_type === 'fixed'
+      ? '₦' + (+p.commission_value).toLocaleString()
+      : Math.round(+p.commission_value) + '%',
+  }));
+
+  // If the viewer is authed, include which products they already promote
+  const partnerId = getPartnerId(req);
+  if (partnerId) {
+    const { data: mine } = await db.from('affiliate_products')
+      .select('product_id').eq('partner_id', partnerId);
+    const promoted = new Set((mine || []).map(r => r.product_id));
+    list.forEach(p => { p.selected = promoted.has(p.id); });
+  }
+
+  return json(res, 200, { ok: true, products: list });
+}
+
+// ---------------------------------------------------------------------------
+// SELECT — add/remove a product the affiliate promotes
+// ---------------------------------------------------------------------------
+async function select(req, res, db, partnerId) {
+  if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
+  const { product_id, action } = req.body || {};
+  if (!product_id) return json(res, 400, { error: 'product_id required.' });
+  const mode = action === 'remove' ? 'remove' : 'add';
+
+  const { data: product } = await db.from('products')
+    .select('id, slug, status').eq('id', product_id).eq('status', 'active').maybeSingle();
+  if (!product) return json(res, 404, { error: 'Product not found or inactive.' });
+
+  if (mode === 'remove') {
+    await db.from('affiliate_products').delete().eq('partner_id', partnerId).eq('product_id', product_id);
+    return json(res, 200, { ok: true, selected: false });
+  }
+
+  const { error } = await db.from('affiliate_products').upsert(
+    { partner_id: partnerId, product_id: product_id, status: 'active' },
+    { onConflict: 'partner_id,product_id' }
+  );
+  if (error) return json(res, 500, { error: 'Failed to select product.' });
+  return json(res, 200, { ok: true, selected: true });
+}
+
+// ---------------------------------------------------------------------------
+// DASHBOARD — auto single or multi product view
+// ---------------------------------------------------------------------------
+async function dashboard(req, res, db, partnerId) {
+  const { data: partner } = await db.from('partners')
+    .select('id, code, name, email').eq('id', partnerId).maybeSingle();
+  if (!partner) return json(res, 404, { error: 'Partner not found.' });
+
+  // Affiliate's active products
+  const { data: affRows } = await db.from('affiliate_products')
+    .select('product_id').eq('partner_id', partnerId).eq('status', 'active');
+  const productIds = (affRows || []).map(r => r.product_id);
+  let products = [];
+  if (productIds.length) {
+    const { data: prods } = await db.from('products')
+      .select('id, slug, name, tagline, description, image_url, price_kobo, commission_type, commission_value, checkout_url')
+      .in('id', productIds).eq('status', 'active');
+    products = prods || [];
+  }
+
+  // Per-product clicks
+  const { data: referrals } = productIds.length
+    ? await db.from('referrals').select('id, product_id').eq('partner_id', partnerId).in('product_id', productIds)
+    : { data: [] };
+  const clicksByProduct = {};
+  (referrals || []).forEach(r => { if (r.product_id) clicksByProduct[r.product_id] = (clicksByProduct[r.product_id] || 0) + 1; });
+
+  // Per-product commissions
+  const { data: comms } = productIds.length
+    ? await db.from('commissions').select('id, product_id, commission_kobo, amount_kobo, status, created_at, customer_email').eq('affiliate_id', partnerId).in('product_id', productIds)
+    : { data: [] };
+
+  const perProduct = products.map(p => {
+    const pc = comms.filter(c => c.product_id === p.id);
+    const sales = pc.length;
+    const pendingK = pc.filter(c => c.status === 'pending').reduce((s, c) => s + c.commission_kobo, 0);
+    const earnedK = pc.filter(c => c.status === 'approved' || c.status === 'processing' || c.status === 'paid').reduce((s, c) => s + c.commission_kobo, 0);
+    return {
+      id: p.id, slug: p.slug, name: p.name, tagline: p.tagline, description: p.description,
+      image_url: p.image_url, price_kobo: p.price_kobo,
+      commission_type: p.commission_type, commission_value: p.commission_value,
+      commission_label: p.commission_type === 'fixed' ? '₦' + (+p.commission_value).toLocaleString() : Math.round(+p.commission_value) + '%',
+      link: buildReferralLink(p, partner.code),
+      clicks: clicksByProduct[p.id] || 0,
+      sales, pending_kobo: pendingK, earned_kobo: earnedK,
+      has_marketing: false, // enriched below
+    };
+  });
+
+  // Marketing materials flag
+  if (perProduct.length) {
+    const { data: mats } = await db.from('marketing_materials').select('product_id').in('product_id', productIds);
+    const hasMats = new Set((mats || []).map(m => m.product_id));
+    perProduct.forEach(p => { p.has_marketing = hasMats.has(p.id); });
+  }
+
+  // Totals for the multi view
+  const commissions = comms || [];
+  const totalClicks = (referrals || []).length;
+  const totalSales = commissions.length;
+  const earned = commissions.filter(c => c.status === 'approved' || c.status === 'processing' || c.status === 'paid')
+    .reduce((s, c) => s + c.commission_kobo, 0);
+  const pending = commissions.filter(c => c.status === 'pending').reduce((s, c) => s + c.commission_kobo, 0);
+
+  const { data: payouts } = await db.from('payouts')
+    .select('amount_kobo, status').eq('partner_id', partnerId);
+  const payoutRows = payouts || [];
+  const paidPayouts = payoutRows.filter(p => p.status === 'processing' || p.status === 'completed')
+    .reduce((s, p) => s + p.amount_kobo, 0);
+  const requestedWithdrawals = payoutRows.filter(p => p.status === 'pending')
+    .reduce((s, p) => s + p.amount_kobo, 0);
+  const available = Math.max(0, earned - paidPayouts - requestedWithdrawals);
+
+  const recentSales = commissions
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, 10);
+
+  return json(res, 200, {
+    ok: true,
+    partner,
+    mode: perProduct.length === 1 ? 'single' : perProduct.length > 1 ? 'multi' : 'none',
+    products: perProduct,
+    totals: { clicks: totalClicks, sales: totalSales, earned_kobo: earned, pending_kobo: pending, available_kobo: available, requested_withdrawals_kobo: requestedWithdrawals },
+    recentSales,
+  }, { 'Cache-Control': 'no-store' });
+}
+
+// ---------------------------------------------------------------------------
+// PRODUCT DETAIL — per-product dashboard
+// ---------------------------------------------------------------------------
+async function productDetail(req, res, db, partnerId, url) {
+  const product_id = url.searchParams.get('product_id') || '';
+  if (!product_id) return json(res, 400, { error: 'product_id required.' });
+
+  const { data: partner } = await db.from('partners').select('id, code, name, email').eq('id', partnerId).maybeSingle();
+  if (!partner) return json(res, 404, { error: 'Partner not found.' });
+
+  const { data: product } = await db.from('products')
+    .select('id, slug, name, tagline, description, image_url, price_kobo, commission_type, commission_value, checkout_url')
+    .eq('id', product_id).eq('status', 'active').maybeSingle();
+  if (!product) return json(res, 404, { error: 'Product not found or inactive.' });
+
+  // Confirm the affiliate actually promotes this product
+  const { data: rel } = await db.from('affiliate_products')
+    .select('id').eq('partner_id', partnerId).eq('product_id', product_id).eq('status', 'active').maybeSingle();
+  if (!rel) return json(res, 403, { error: 'You are not promoting this product.' });
+
+  const [{ data: referrals }, { data: comms }, { data: mats }] = await Promise.all([
+    db.from('referrals').select('id').eq('partner_id', partnerId).eq('product_id', product_id),
+    db.from('commissions').select('id, customer_email, amount_kobo, commission_kobo, status, created_at')
+      .eq('affiliate_id', partnerId).eq('product_id', product_id).order('created_at', { ascending: false }),
+    db.from('marketing_materials').select('id, type, title, url').eq('product_id', product_id).order('created_at', { ascending: true }),
+  ]);
+
+  const sales = comms || [];
+  const clicks = (referrals || []).length;
+  const earned = sales.filter(c => c.status === 'approved' || c.status === 'processing' || c.status === 'paid')
+    .reduce((s, c) => s + c.commission_kobo, 0);
+  const pending = sales.filter(c => c.status === 'pending').reduce((s, c) => s + c.commission_kobo, 0);
+
+  return json(res, 200, {
+    ok: true,
+    product: {
+      ...product,
+      commission_label: product.commission_type === 'fixed' ? '₦' + (+product.commission_value).toLocaleString() : Math.round(+product.commission_value) + '%',
+      link: buildReferralLink(product, partner.code),
+      clicks, sales: sales.length, earned_kobo: earned, pending_kobo: pending,
+    },
+    sales,
+    materials: mats || [],
+  }, { 'Cache-Control': 'no-store' });
+}
+
+// ---------------------------------------------------------------------------
+// STATS / COMMISSIONS / PAYOUTS / WITHDRAW / PROFILE / MATERIALS
+// ---------------------------------------------------------------------------
+async function stats(req, res, db, partnerId) {
+  const [{ data: comms }, { data: payouts }] = await Promise.all([
+    db.from('commissions').select('commission_kobo, status').eq('affiliate_id', partnerId),
+    db.from('payouts').select('amount_kobo, status').eq('partner_id', partnerId),
+  ]);
+  const commissions = comms || [];
+  const payoutRows = payouts || [];
+  const earned = commissions.filter(c => c.status === 'approved' || c.status === 'processing' || c.status === 'paid')
+    .reduce((s, c) => s + c.commission_kobo, 0);
+  const pending = commissions.filter(c => c.status === 'pending').reduce((s, c) => s + c.commission_kobo, 0);
+  const paidPayouts = payoutRows.filter(p => p.status === 'processing' || p.status === 'completed').reduce((s, p) => s + p.amount_kobo, 0);
+  const requestedWithdrawals = payoutRows.filter(p => p.status === 'pending').reduce((s, p) => s + p.amount_kobo, 0);
+  const available = Math.max(0, earned - paidPayouts - requestedWithdrawals);
+  const { data: partner } = await db.from('partners').select('code').eq('id', partnerId).maybeSingle();
+  return json(res, 200, {
+    ok: true, clicks: 0, conversions: commissions.length,
+    earned_kobo: earned, pending_kobo: pending, available_kobo: available,
+    requested_withdrawals_kobo: requestedWithdrawals, code: partner ? partner.code : null,
+  }, { 'Cache-Control': 'no-store' });
+}
+
+async function commissions(req, res, db, partnerId) {
+  const { data } = await db.from('commissions')
+    .select('id, product_id, customer_email, amount_kobo, commission_kobo, status, created_at')
+    .eq('affiliate_id', partnerId).order('created_at', { ascending: false }).limit(100);
+
+  const rows = data || [];
+  const productIds = [...new Set(rows.map(r => r.product_id).filter(Boolean))];
+  let productMap = {};
+  if (productIds.length) {
+    const { data: prods } = await db.from('products').select('id, name').in('id', productIds);
+    (prods || []).forEach(p => { productMap[p.id] = p.name; });
+  }
+  const list = rows.map(r => ({ ...r, product_name: productMap[r.product_id] || '-' }));
+  return json(res, 200, { ok: true, commissions: list }, { 'Cache-Control': 'no-store' });
+}
+
+async function payouts(req, res, db, partnerId) {
+  const { data } = await db.from('payouts')
+    .select('id, amount_kobo, status, created_at, completed_at')
+    .eq('partner_id', partnerId).order('created_at', { ascending: false }).limit(100);
+  return json(res, 200, { ok: true, payouts: data || [] }, { 'Cache-Control': 'no-store' });
+}
+
+async function withdraw(req, res, db, partnerId) {
+  if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
+  const { amount_kobo } = req.body || {};
+  if (!amount_kobo) return json(res, 400, { error: 'amount_kobo required.' });
+  const amt = parseInt(amount_kobo, 10);
+  if (!amt || amt <= 0) return json(res, 400, { error: 'Invalid amount.' });
+  const MIN = parseInt(process.env.MIN_WITHDRAWAL_KOBO || '200000', 10);
+  if (amt < MIN) return json(res, 400, { error: 'Minimum withdrawal is ₦' + (MIN / 100) + '.' });
+
+  const [{ data: comms }, { data: payouts }, { data: partner }] = await Promise.all([
+    db.from('commissions').select('commission_kobo, status').eq('affiliate_id', partnerId),
+    db.from('payouts').select('amount_kobo, status').eq('partner_id', partnerId),
+    db.from('partners').select('id, code, name, email, bank_name, account_number, account_name').eq('id', partnerId).eq('status', 'active').maybeSingle(),
+  ]);
+
+  if (!partner) return json(res, 404, { error: 'Partner not found.' });
+
+  const earned = (comms || []).filter(c => c.status === 'approved' || c.status === 'processing' || c.status === 'paid')
+    .reduce((s, c) => s + c.commission_kobo, 0);
+  const paidPayouts = (payouts || []).filter(p => p.status === 'processing' || p.status === 'completed').reduce((s, p) => s + p.amount_kobo, 0);
+  const requestedWithdrawals = (payouts || []).filter(p => p.status === 'pending').reduce((s, p) => s + p.amount_kobo, 0);
+  const available = Math.max(0, earned - paidPayouts - requestedWithdrawals);
+
+  if (amt > available) return json(res, 400, { error: 'Amount exceeds your available balance.' });
+
+  const { data: payoutRow, error } = await db.from('payouts').insert({
+    partner_id: partnerId, amount_kobo: amt, status: 'pending',
+  }).select('id, amount_kobo, status, created_at').single();
+  if (error) return json(res, 500, { error: 'Failed to create withdrawal request.' });
+
+  await notifyWithdrawal(db, partner, payoutRow);
+
+  return json(res, 200, { ok: true, payout: payoutRow });
 }
 
 async function notifyWithdrawal(db, partner, payoutRow) {
@@ -61,307 +430,49 @@ async function notifyWithdrawal(db, partner, payoutRow) {
         requested_at: payoutRow.created_at,
       }),
     });
-  } catch (e) {
-    // notification failure must not break the withdrawal request
-  }
+  } catch (e) { /* notification must not break the request */ }
 }
 
-export default async function handler(req, res) {
-  const db = getDb();
-  if (!db) return json(res, 500, { error: 'Database not configured.' });
-
-  const url = new URL(req.url, `http://${req.headers.host}`);
-  const action = url.searchParams.get('action') || '';
-
-  try {
-    switch (action) {
-      case 'register':
-        return await register(req, res, db, url);
-      case 'login':
-        return await login(req, res, db, url);
-      case 'dashboard':
-      case 'stats':
-      case 'commissions':
-      case 'withdraw':
-      case 'payouts':
-      case 'products': {
-        const partnerId = getPartnerId(req, url);
-        if (!partnerId) {
-          return json(res, 401, { error: 'Unauthorized. Please log in.' });
-        }
-        if (action === 'dashboard') return await dashboard(req, res, db, partnerId);
-        if (action === 'stats') return await stats(req, res, db, partnerId);
-        if (action === 'commissions') return await commissions(req, res, db, partnerId);
-        if (action === 'withdraw') return await withdraw(req, res, db, partnerId);
-        if (action === 'payouts') return await payouts(req, res, db, partnerId);
-        return await products(req, res, db, partnerId);
-      }
-      default:
-        return json(res, 400, { error: 'Unknown action. Valid: register, login, dashboard, stats, commissions, withdraw, payouts, products.' });
-    }
-  } catch (e) {
-    return json(res, 500, { error: 'Server error: ' + (e.message || '') });
-  }
-}
-
-async function register(req, res, db, url) {
-  if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
-  const { name, email, phone, bank_name, account_number, account_name } = req.body || {};
-  if (!name || !email) return json(res, 400, { error: 'Name and email are required.' });
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json(res, 400, { error: 'Invalid email.' });
-  if (!bank_name || !account_number || !account_name) {
-    return json(res, 400, { error: 'Bank name, account number, and account name are required.' });
-  }
-
-  const { data: existing } = await db.from('partners').select('id').eq('email', email.toLowerCase()).maybeSingle();
-  if (existing) return json(res, 409, { error: 'An account with this email already exists.' });
-
-  let code = generateCode(name);
-  for (let i = 0; i < 10; i++) {
-    const { data: dup } = await db.from('partners').select('id').eq('code', code).maybeSingle();
-    if (!dup) break;
-    code = generateCode(name);
-  }
-
-  const { data, error } = await db.from('partners').insert({
-    code,
-    name: name.trim(),
-    email: email.toLowerCase().trim(),
-    phone: phone || null,
-    bank_name: bank_name.trim(),
-    account_number: account_number.trim(),
-    account_name: account_name.trim(),
-  }).select('id, code, name, email, bank_name, account_number, account_name').single();
-
-  if (error) return json(res, 500, { error: 'Failed to create account.' });
-  const siteUrl = process.env.SITE_URL || 'https://partners.tomidewilliams.com';
-  const token = signToken(data.id);
-  return json(res, 200, { ok: true, ...data, siteUrl, token });
-}
-
-async function login(req, res, db, url) {
-  if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
-  const { email } = req.body || {};
-  if (!email) return json(res, 400, { error: 'Email is required.' });
-
+async function profile(req, res, db, partnerId) {
   const { data } = await db.from('partners')
-    .select('id, code, name, email, bank_name, account_number, account_name')
-    .eq('email', email.toLowerCase().trim()).eq('status', 'active').maybeSingle();
-
-  if (!data) return json(res, 404, { error: 'No active partner account found with that email.' });
-  const siteUrl = process.env.SITE_URL || 'https://partners.tomidewilliams.com';
-  const token = signToken(data.id);
-  return json(res, 200, { ok: true, ...data, siteUrl, token });
+    .select('id, code, name, email, phone, bank_name, account_number, account_name').eq('id', partnerId).maybeSingle();
+  if (!data) return json(res, 404, { error: 'Partner not found.' });
+  return json(res, 200, { ok: true, profile: data }, { 'Cache-Control': 'no-store' });
 }
 
-async function dashboard(req, res, db, partnerId) {
-  if (!partnerId) return json(res, 400, { error: 'partner_id required.' });
-
-  const [clicksRes, convRes, payoutsRes, partnerRes, offersRes] = await Promise.all([
-    db.from('referrals').select('id', { count: 'exact', head: true }).eq('partner_id', partnerId),
-    db.from('conversions').select('id, offer_id, customer_email, amount_kobo, commission_kobo, status, created_at')
-      .eq('partner_id', partnerId).order('created_at', { ascending: false }).limit(20),
-    db.from('payouts').select('amount_kobo, status').eq('partner_id', partnerId),
-    db.from('partners').select('id, code, name, email').eq('id', partnerId).maybeSingle(),
-    db.from('offers').select('*').eq('status', 'active').order('created_at', { ascending: true })
-  ]);
-
-  const clicks = clicksRes.count || 0;
-  const recentConversions = convRes.data || [];
-
-  const { data: allConvs } = await db.from('conversions').select('commission_kobo, status').eq('partner_id', partnerId);
-  const convList = allConvs || recentConversions;
-
-  const earned = convList.filter(c => c.status === 'approved' || c.status === 'paid').reduce((s, c) => s + c.commission_kobo, 0);
-  const pending = convList.filter(c => c.status === 'pending').reduce((s, c) => s + c.commission_kobo, 0);
-
-  const payoutRows = payoutsRes.data || [];
-  const paidPayouts = payoutRows.filter(p => p.status === 'processing' || p.status === 'completed')
-    .reduce((s, p) => s + p.amount_kobo, 0);
-  const requestedWithdrawals = payoutRows.filter(p => p.status === 'pending')
-    .reduce((s, p) => s + p.amount_kobo, 0);
-
-  const available = Math.max(0, earned - paidPayouts - requestedWithdrawals);
-
-  const offers = offersRes.data || [];
-  const offerMap = {};
-  offers.forEach(o => { offerMap[o.id] = o.name; });
-
-  const commissionsList = recentConversions.map(c => ({
-    ...c,
-    offer_name: offerMap[c.offer_id] || '-'
-  }));
-
-  const siteUrl = process.env.SITE_URL || 'https://partners.tomidewilliams.com';
-
-  return json(res, 200, {
-    ok: true,
-    stats: {
-      clicks,
-      conversions: convList.length,
-      earned_kobo: earned,
-      pending_kobo: pending,
-      available_kobo: available,
-      requested_withdrawals_kobo: requestedWithdrawals,
-    },
-    partner: partnerRes.data || null,
-    offers,
-    commissions: commissionsList,
-    siteUrl
-  }, { 'Cache-Control': 'no-store' });
-}
-
-async function stats(req, res, db, partnerId) {
-  if (!partnerId) return json(res, 400, { error: 'partner_id required.' });
-
-  const [clicksRes, convRes, payoutsRes, partnerRes] = await Promise.all([
-    db.from('referrals').select('id', { count: 'exact', head: true }).eq('partner_id', partnerId),
-    db.from('conversions').select('commission_kobo, status').eq('partner_id', partnerId),
-    db.from('payouts').select('amount_kobo, status').eq('partner_id', partnerId),
-    db.from('partners').select('code').eq('id', partnerId).maybeSingle(),
-  ]);
-
-  const clicks = clicksRes.count || 0;
-  const conversions = convRes.data || [];
-  const earned = conversions.filter(c => c.status === 'approved' || c.status === 'paid').reduce((s, c) => s + c.commission_kobo, 0);
-  const pending = conversions.filter(c => c.status === 'pending').reduce((s, c) => s + c.commission_kobo, 0);
-
-  const payoutRows = payoutsRes.data || [];
-  const paidPayouts = payoutRows.filter(p => p.status === 'processing' || p.status === 'completed')
-    .reduce((s, p) => s + p.amount_kobo, 0);
-  const requestedWithdrawals = payoutRows.filter(p => p.status === 'pending')
-    .reduce((s, p) => s + p.amount_kobo, 0);
-
-  const available = Math.max(0, earned - paidPayouts - requestedWithdrawals);
-
-  return json(res, 200, {
-    ok: true,
-    clicks,
-    conversions: conversions.length,
-    earned_kobo: earned,
-    pending_kobo: pending,
-    available_kobo: available,
-    requested_withdrawals_kobo: requestedWithdrawals,
-    code: partnerRes.data ? partnerRes.data.code : null,
-  }, { 'Cache-Control': 'no-store' });
-}
-
-async function commissions(req, res, db, partnerId) {
-  if (!partnerId) return json(res, 400, { error: 'partner_id required.' });
-
-  const { data } = await db.from('conversions')
-    .select('id, offer_id, customer_email, amount_kobo, commission_kobo, status, created_at')
-    .eq('partner_id', partnerId).order('created_at', { ascending: false }).limit(50);
-
-  const offerIds = [...new Set((data || []).map(c => c.offer_id).filter(Boolean))];
-  let offerMap = {};
-  if (offerIds.length) {
-    const { data: offers } = await db.from('offers').select('id, name').in('id', offerIds);
-    (offers || []).forEach(o => { offerMap[o.id] = o.name; });
-  }
-  const commissionsList = (data || []).map(c => ({ ...c, offer_name: offerMap[c.offer_id] || '-' }));
-  return json(res, 200, { ok: true, commissions: commissionsList }, { 'Cache-Control': 'no-store' });
-}
-
-async function withdraw(req, res, db, partnerId) {
+async function updateProfile(req, res, db, partnerId) {
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
-  const { amount_kobo } = req.body || {};
-  if (!partnerId || !amount_kobo) return json(res, 400, { error: 'partner_id and amount_kobo required.' });
-  const amt = parseInt(amount_kobo, 10);
-  if (!amt || amt <= 0) return json(res, 400, { error: 'Invalid amount.' });
+  const { name, phone, bank_name, account_number, account_name } = req.body || {};
 
-  const [convRes, payoutsRes, partnerRes] = await Promise.all([
-    db.from('conversions').select('commission_kobo, status').eq('partner_id', partnerId),
-    db.from('payouts').select('amount_kobo, status').eq('partner_id', partnerId),
-    db.from('partners').select('id, code, name, email, bank_name, account_number, account_name')
-      .eq('id', partnerId).eq('status', 'active').maybeSingle(),
-  ]);
-
-  if (!partnerRes.data) return json(res, 404, { error: 'Partner not found.' });
-
-  const earned = (convRes.data || []).filter(c => c.status === 'approved' || c.status === 'paid')
-    .reduce((s, c) => s + c.commission_kobo, 0);
-  const paidPayouts = (payoutsRes.data || []).filter(p => p.status === 'processing' || p.status === 'completed')
-    .reduce((s, p) => s + p.amount_kobo, 0);
-  const pendingWithdrawals = (payoutsRes.data || []).filter(p => p.status === 'pending')
-    .reduce((s, p) => s + p.amount_kobo, 0);
-  const available = Math.max(0, earned - paidPayouts - pendingWithdrawals);
-
-  if (amt > available) return json(res, 400, { error: 'Amount exceeds your available balance.' });
-
-  const { data: payoutRow, error } = await db.from('payouts').insert({
-    partner_id: partnerId,
-    amount_kobo: amt,
-    status: 'pending',
-  }).select('id, amount_kobo, status, created_at').single();
-
-  if (error) return json(res, 500, { error: 'Failed to create withdrawal request.' });
-
-  await notifyWithdrawal(db, partnerRes.data, payoutRow);
-
-  return json(res, 200, { ok: true, payout: payoutRow });
-}
-
-async function payouts(req, res, db, partnerId) {
-  if (!partnerId) return json(res, 400, { error: 'partner_id required.' });
-
-  const { data } = await db.from('payouts')
-    .select('id, amount_kobo, status, created_at')
-    .eq('partner_id', partnerId).order('created_at', { ascending: false }).limit(50);
-  return json(res, 200, { ok: true, payouts: data || [] }, { 'Cache-Control': 'no-store' });
-}
-
-async function products(req, res, db, partnerId) {
-  if (!partnerId) return json(res, 400, { error: 'partner_id required.' });
-
-  const [partnerRes, offersRes, referralsRes, convsRes] = await Promise.all([
-    db.from('partners').select('id, code').eq('id', partnerId).eq('status', 'active').maybeSingle(),
-    db.from('offers').select('*').eq('status', 'active').order('created_at', { ascending: true }),
-    db.from('referrals').select('offer_id').eq('partner_id', partnerId),
-    db.from('conversions').select('offer_id, commission_kobo, status').eq('partner_id', partnerId),
-  ]);
-
-  const partner = partnerRes.data;
-  if (!partner) return json(res, 404, { error: 'Partner not found.' });
-
-  const offers = offersRes.data || [];
-  const referrals = referralsRes.data || [];
-  const conversions = convsRes.data || [];
-
-  const clicksByOffer = {};
-  referrals.forEach(r => {
-    if (r.offer_id) clicksByOffer[r.offer_id] = (clicksByOffer[r.offer_id] || 0) + 1;
-  });
-
-  const convsByOffer = {};
-  const earnedByOffer = {};
-  conversions.forEach(c => {
-    if (c.offer_id) {
-      convsByOffer[c.offer_id] = (convsByOffer[c.offer_id] || 0) + 1;
-      if (c.status === 'approved' || c.status === 'paid') {
-        earnedByOffer[c.offer_id] = (earnedByOffer[c.offer_id] || 0) + c.commission_kobo;
-      }
+  const u = {};
+  if (name !== undefined) { if (!String(name).trim()) return json(res, 400, { error: 'Name cannot be empty.' }); u.name = name.trim(); }
+  if (phone !== undefined) u.phone = phone;
+  if (account_number !== undefined && String(account_number).replace(/\s/g, '') !== '') {
+    if (!/^\d{10}$/.test(String(account_number).replace(/\s/g, ''))) {
+      return json(res, 400, { error: 'Please enter a valid 10-digit account number.' });
     }
-  });
+    u.account_number = String(account_number).replace(/\s/g, '');
+  }
+  if (bank_name !== undefined) u.bank_name = bank_name;
+  if (account_name !== undefined) u.account_name = account_name;
 
-  const siteUrl = process.env.SITE_URL || 'https://partners.tomidewilliams.com';
+  if (Object.keys(u).length === 0) return json(res, 400, { error: 'Nothing to update.' });
 
-  const productList = offers.map(o => {
-    const checkout = o.checkout_url || (siteUrl + '/checkout');
-    const link = checkout + '?pp=' + partner.code;
-    return {
-      id: o.id,
-      slug: o.slug,
-      name: o.name,
-      description: o.description,
-      price_kobo: o.price_kobo,
-      commission_rate: o.commission_rate,
-      link,
-      clicks: clicksByOffer[o.id] || 0,
-      conversions: convsByOffer[o.id] || 0,
-      earned_kobo: earnedByOffer[o.id] || 0,
-    };
-  });
+  const { data, error } = await db.from('partners').update(u).eq('id', partnerId)
+    .select('id, code, name, email, phone, bank_name, account_number, account_name').single();
+  if (error) return json(res, 500, { error: 'Failed to update profile.' });
+  return json(res, 200, { ok: true, profile: data });
+}
 
-  return json(res, 200, { ok: true, products: productList }, { 'Cache-Control': 'no-store' });
+async function materials(req, res, db, partnerId, url) {
+  const product_id = url.searchParams.get('product_id') || '';
+  if (!product_id) return json(res, 400, { error: 'product_id required.' });
+
+  const { data: rel } = await db.from('affiliate_products')
+    .select('id').eq('partner_id', partnerId).eq('product_id', product_id).eq('status', 'active').maybeSingle();
+  if (!rel) return json(res, 403, { error: 'You are not promoting this product.' });
+
+  const { data: mats } = await db.from('marketing_materials')
+    .select('id, type, title, url').eq('product_id', product_id).order('created_at', { ascending: true });
+  return json(res, 200, { ok: true, materials: mats || [] }, { 'Cache-Control': 'no-store' });
 }

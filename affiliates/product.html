@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product &middot; Partners</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+  .ptop{display:flex;gap:22px;align-items:center;flex-wrap:wrap;margin-bottom:28px;}
+  .pheroimg{width:96px;height:96px;border-radius:14px;background:linear-gradient(135deg,#1c1c1c,#0c0c0c);display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--line);flex:0 0 auto;}
+  .pheroimg img{width:100%;height:100%;object-fit:cover;}
+  .pheroimg .ph{font-size:44px;font-weight:800;color:#7A0A15;}
+  .phero h1{font-size:24px;font-weight:800;color:#fff;margin:0;}
+  .phero .sub{font-size:13px;color:var(--muted);margin-top:4px;}
+  .linkbox{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:24px;}
+  .linkbox .lb{flex:1;min-width:200px;font-size:12.5px;color:#9B0D1A;word-break:break-all;font-weight:600;}
+  .wa{background:#25D366;border:1px solid #25D366;color:#fff;}
+  .wa:hover{background:#1eb857;box-shadow:0 10px 24px -12px rgba(37,211,102,.6);}
+  .mat{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+  .mat a{display:flex;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;color:#fff;text-decoration:none;font-size:13px;font-weight:600;}
+  .mat a:hover{border-color:rgba(122,10,21,.5);}
+</style>
+</head>
+<body data-page="myproducts">
+
+<div class="main" id="main">
+  <div class="page-head">
+    <a href="/affiliates/my-products" class="link" style="font-size:13px;">&larr; Back to My Products</a>
+  </div>
+  <div id="view"></div>
+</div>
+
+<script src="/assets/sidebar.js"></script>
+<script>
+(function () {
+  if (!App.getToken()) { window.location.href = '/affiliates/login'; return; }
+  var pid = new URLSearchParams(window.location.search).get('product_id') || '';
+  if (!pid) { window.location.href = '/affiliates/my-products'; return; }
+  var view = document.getElementById('view');
+
+  App.api('product', { params: { product_id: pid } }).then(function (d) {
+    if (!d.ok) { view.innerHTML = '<div class="empty">' + App.esc(d.error || 'Product unavailable.') + '</div>'; return; }
+    render(d);
+  });
+
+  function render(d) {
+    var p = d.product;
+    var html = '';
+
+    html += '<div class="ptop">' +
+      '<div class="pheroimg">' + (p.image_url ? '<img src="' + App.esc(p.image_url) + '">' : '<div class="ph">' + App.esc(p.name.slice(0, 1).toUpperCase()) + '</div>') + '</div>' +
+      '<div class="phero"><h1>' + App.esc(p.name) + '</h1>' +
+      '<div class="sub">' + App.esc(p.tagline || p.description || '') + '</div></div>' +
+    '</div>';
+
+    // Link + share
+    if (p.link) {
+      html += '<div class="linkbox">' +
+        '<div class="lb">' + App.esc(p.link) + '</div>' +
+        '<button class="copy-btn" data-copy="' + App.esc(p.link) + '" onclick="App.copyLink(this, this.getAttribute(\'data-copy\'))">Copy link</button>' +
+        '<button class="btn wa" onclick="App.shareWhatsApp(App.getPartner && \'' + App.esc(p.link) + '\', \'Check out ' + App.esc(p.name) + ' — ' + App.esc(p.commission_label || '') + ' off for you via my link!\')">Share on WhatsApp</button>' +
+      '</div>';
+    } else {
+      html += '<div class="empty" style="color:#888;">Link not ready — check back soon.</div>';
+    }
+
+    // Stats
+    html += '<div class="grid cols-4" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">' +
+      '<div class="card stat-card"><div class="lbl">Clicks</div><div class="num">' + (p.clicks || 0) + '</div></div>' +
+      '<div class="card stat-card"><div class="lbl">Sales</div><div class="num">' + (p.sales || 0) + '</div></div>' +
+      '<div class="card stat-card"><div class="lbl">Pending</div><div class="num" style="color:var(--amber);">' + App.naira(p.pending_kobo) + '</div></div>' +
+      '<div class="card stat-card accent"><div class="lbl">Earned</div><div class="num" style="color:var(--green);">' + App.naira(p.earned_kobo) + '</div></div>' +
+    '</div>';
+
+    // Marketing materials
+    if (d.materials && d.materials.length) {
+      html += '<div class="section-head"><h2>Marketing Materials</h2></div><div class="mat">';
+      d.materials.forEach(function (m) {
+        var label = m.title || ([ 'asset', 'image', 'file' ].indexOf(m.type) >= 0 ? 'Asset' : m.type);
+        html += '<a href="' + App.esc(m.url) + '" target="_blank" rel="noopener">&#128279; ' + App.esc(label) + '</a>';
+      });
+      html += '</div>';
+    }
+
+    // Recent sales
+    html += '<div class="section-head"><h2>Recent Sales</h2><span class="count">' + (p.sales || 0) + ' total</span></div>';
+    if (d.sales && d.sales.length) {
+      html += '<div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Customer</th><th class="num">Order</th><th class="num">Commission</th><th>Status</th></tr></thead><tbody>';
+      d.sales.forEach(function (s) {
+        html += '<tr><td>' + App.fmtDate(s.created_at) + '</td><td>' + App.esc(s.customer_email || '-') + '</td><td class="num">' + App.naira(s.amount_kobo) + '</td><td class="num">' + App.naira(s.commission_kobo) + '</td><td><span class="status ' + App.esc(s.status) + '">' + App.esc(s.status) + '</span></td></tr>';
+      });
+      html += '</tbody></table></div>';
+    } else {
+      html += '<div class="empty">No sales yet for this product. Share your link to start earning.</div>';
+    }
+
+    view.innerHTML = html;
+  }
+})();
+</script>
+</body>
+</html>

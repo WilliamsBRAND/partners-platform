@@ -3,10 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Funds &middot; Partners</title>
+<title>Earnings &middot; Partners</title>
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/app.css">
 </head>
@@ -14,9 +12,9 @@
 
 <div class="main" id="main">
   <div class="page-head">
-    <div class="page-eyebrow">Funds</div>
+    <div class="page-eyebrow">Earnings</div>
     <h1 class="page-title">Your Earnings</h1>
-    <div class="page-sub">Track what you've earned, what's pending, and request a withdrawal.</div>
+    <div class="page-sub">Track your approved, pending, and available balances and request a payout.</div>
   </div>
 
   <div class="balance-card">
@@ -39,33 +37,15 @@
     <div class="err" id="withdrawErr"></div>
   </div>
 
-  <div class="grid cols-3">
-    <div class="card stat-card">
-      <div class="lbl">Total Earned</div>
-      <div class="num" id="sEarned"><span class="skeleton" style="width:90px;height:28px;"></span></div>
-      <div class="foot">Approved + paid commissions</div>
-    </div>
-    <div class="card stat-card">
-      <div class="lbl">Pending</div>
-      <div class="num" id="sPending"><span class="skeleton" style="width:90px;height:28px;"></span></div>
-      <div class="foot">Awaiting admin approval</div>
-    </div>
-    <div class="card stat-card">
-      <div class="lbl">Requested Withdrawals</div>
-      <div class="num" id="sRequested"><span class="skeleton" style="width:90px;height:28px;"></span></div>
-      <div class="foot">Pending payout requests</div>
-    </div>
+  <div class="grid cols-3" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">
+    <div class="card stat-card"><div class="lbl">Total Earned</div><div class="num" id="sEarned"><span class="skeleton" style="width:90px;height:28px;"></span></div><div class="foot">Approved + paid commissions</div></div>
+    <div class="card stat-card"><div class="lbl">Pending</div><div class="num" style="color:var(--amber);" id="sPending"><span class="skeleton" style="width:90px;height:28px;"></span></div><div class="foot">Awaiting admin approval</div></div>
+    <div class="card stat-card"><div class="lbl">Requested Withdrawals</div><div class="num" id="sRequested"><span class="skeleton" style="width:90px;height:28px;"></span></div><div class="foot">Pending payout requests</div></div>
   </div>
 
-  <div class="section-head">
-    <h2>Payout History</h2>
-    <span class="count" id="payoutCount">0 payouts</span>
-  </div>
+  <div class="section-head"><h2>Payout History</h2><span class="count" id="payoutCount">0 payouts</span></div>
   <div class="tbl-wrap">
-    <table>
-      <thead><tr><th>Date</th><th class="num">Amount</th><th>Reference</th><th>Status</th></tr></thead>
-      <tbody id="payoutBody"></tbody>
-    </table>
+    <table><thead><tr><th>Date</th><th class="num">Amount</th><th>Status</th></tr></thead><tbody id="payoutBody"></tbody></table>
     <div class="empty" id="emptyPayout" style="display:none;">No payouts yet.</div>
   </div>
 </div>
@@ -73,11 +53,7 @@
 <script src="/assets/sidebar.js"></script>
 <script>
 (function () {
-  var partner = (function () { try { return JSON.parse(localStorage.getItem('partners_partner')); } catch (e) { return null; } })();
-  if (!partner || !partner.id) return;
-
-  var statsCacheKey = 'partners_funds_stats_' + partner.id;
-  var payoutsCacheKey = 'partners_funds_payouts_' + partner.id;
+  if (!App.getToken()) { window.location.href = '/affiliates/login'; return; }
   var availableKobo = 0;
 
   function refreshBtn() {
@@ -88,10 +64,10 @@
   function renderStats(d) {
     if (!d) return;
     availableKobo = d.available_kobo || 0;
-    document.getElementById('sAvailable').textContent = '₦' + App.fmt(availableKobo);
-    document.getElementById('sEarned').textContent = '₦' + App.fmt(d.earned_kobo || 0);
-    document.getElementById('sPending').textContent = '₦' + App.fmt(d.pending_kobo || 0);
-    document.getElementById('sRequested').textContent = '₦' + App.fmt(d.requested_withdrawals_kobo || 0);
+    document.getElementById('sAvailable').textContent = App.naira(availableKobo);
+    document.getElementById('sEarned').textContent = App.naira(d.earned_kobo || 0);
+    document.getElementById('sPending').textContent = App.naira(d.pending_kobo || 0);
+    document.getElementById('sRequested').textContent = App.naira(d.requested_withdrawals_kobo || 0);
     refreshBtn();
   }
 
@@ -101,7 +77,7 @@
     if (payouts.length) {
       var html = '';
       payouts.forEach(function (p) {
-        html += '<tr><td>' + App.fmtDate(p.created_at) + '</td><td class="num">₦' + App.fmt(p.amount_kobo) + '</td><td>' + App.esc(p.paystack_transfer_ref || '-') + '</td><td><span class="status ' + App.esc(p.status) + '">' + App.esc(p.status) + '</span></td></tr>';
+        html += '<tr><td>' + App.fmtDate(p.created_at) + '</td><td class="num">' + App.naira(p.amount_kobo) + '</td><td><span class="status ' + App.esc(p.status) + '">' + App.esc(p.status) + '</span></td></tr>';
       });
       document.getElementById('payoutBody').innerHTML = html;
       document.querySelector('.tbl-wrap table').style.display = '';
@@ -113,33 +89,12 @@
     }
   }
 
-  // Instant render cached
-  try {
-    var cs = JSON.parse(localStorage.getItem(statsCacheKey));
-    if (cs) renderStats(cs);
-    var cp = JSON.parse(localStorage.getItem(payoutsCacheKey));
-    if (cp) renderPayouts(cp);
-  } catch (e) {}
-
-  var token = (function () { try { return localStorage.getItem('partners_token'); } catch (e) { return ''; } })();
-
-  fetch('/api/partner?action=stats', { headers: { 'Authorization': 'Bearer ' + token } })
-    .then(function (r) { return r.json(); })
-    .then(function (d) {
-      if (d.ok) {
-        renderStats(d);
-        try { localStorage.setItem(statsCacheKey, JSON.stringify(d)); } catch (e) {}
-      }
-    }).catch(function () {});
-
-  fetch('/api/partner?action=payouts', { headers: { 'Authorization': 'Bearer ' + token } })
-    .then(function (r) { return r.json(); })
-    .then(function (d) {
-      if (d.ok) {
-        renderPayouts(d.payouts || []);
-        try { localStorage.setItem(payoutsCacheKey, JSON.stringify(d.payouts || [])); } catch (e) {}
-      }
-    }).catch(function () {});
+  App.api('stats').then(function (d) {
+    if (d && d.ok) renderStats(d);
+  });
+  App.api('payouts').then(function (d) {
+    if (d && d.ok) renderPayouts(d.payouts || []);
+  });
 })();
 </script>
 </body>

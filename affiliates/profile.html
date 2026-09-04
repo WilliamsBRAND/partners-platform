@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile &middot; Partners</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+  .form-card{max-width:520px;}
+  .frow{margin-bottom:16px;}
+  .frow label{display:block;font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:7px;}
+  .frow input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:9px;padding:12px 14px;color:#fff;font-size:14px;font-family:'Montserrat',sans-serif;outline:none;}
+  .frow input:focus{border-color:rgba(122,10,21,.6);}
+  .code-pill{display:inline-block;background:rgba(122,10,21,.16);border:1px solid rgba(122,10,21,.4);color:#e88a93;font-weight:700;font-family:'Archivo',monospace;padding:8px 16px;border-radius:9px;font-size:15px;letter-spacing:.5px;}
+</style>
+</head>
+<body data-page="profile">
+
+<div class="main" id="main">
+  <div class="page-head">
+    <div class="page-eyebrow">Profile</div>
+    <h1 class="page-title">Your Details</h1>
+    <div class="page-sub">Your referral code stays with your account. Update your payout bank details here.</div>
+  </div>
+
+  <div class="card form-card">
+    <div style="margin-bottom:20px;">
+      <div class="frow"><label>Your referral code</label><span class="code-pill" id="code">—</span></div>
+    </div>
+    <div class="frow"><label>Full name</label><input id="name" type="text"></div>
+    <div class="frow"><label>Email (login)</label><input id="email" type="email" disabled></div>
+    <div class="frow"><label>Phone</label><input id="phone" type="tel"></div>
+    <div class="frow"><label>Bank name</label><input id="bank_name" type="text"></div>
+    <div class="frow"><label>Account number</label><input id="account_number" type="text" maxlength="10"></div>
+    <div class="frow"><label>Account name</label><input id="account_name" type="text"></div>
+    <div class="err" id="err"></div>
+    <button class="btn" id="save" style="width:100%;">Save changes</button>
+  </div>
+</div>
+
+<script src="/assets/sidebar.js"></script>
+<script>
+(function () {
+  if (!App.getToken()) { window.location.href = '/affiliates/login'; return; }
+  var errEl = document.getElementById('err');
+
+  function fill(p) {
+    document.getElementById('code').textContent = p.code || '—';
+    document.getElementById('name').value = p.name || '';
+    document.getElementById('email').value = p.email || '';
+    document.getElementById('phone').value = p.phone || '';
+    document.getElementById('bank_name').value = p.bank_name || '';
+    document.getElementById('account_number').value = p.account_number || '';
+    document.getElementById('account_name').value = p.account_name || '';
+  }
+
+  App.api('profile').then(function (d) {
+    if (d && d.ok) fill(d.profile);
+  });
+
+  document.getElementById('save').addEventListener('click', function () {
+    var btn = document.getElementById('save');
+    var body = {
+      name: document.getElementById('name').value,
+      phone: document.getElementById('phone').value,
+      bank_name: document.getElementById('bank_name').value,
+      account_number: document.getElementById('account_number').value,
+      account_name: document.getElementById('account_name').value,
+    };
+    errEl.textContent = '';
+    btn.disabled = true; btn.textContent = 'Saving...';
+    App.api('update', { method: 'POST', body: JSON.stringify(body) }).then(function (d) {
+      btn.disabled = false; btn.textContent = 'Save changes';
+      if (d && d.ok) {
+        App.snack('Profile saved.');
+        try {
+          var p = JSON.parse(localStorage.getItem('partners_partner')) || {};
+          p.name = d.profile.name;
+          localStorage.setItem('partners_partner', JSON.stringify(p));
+        } catch (e) {}
+      } else {
+        errEl.textContent = (d && d.error) || 'Something went wrong.';
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -5,12 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Home &middot; Partners</title>
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/app.css">
+<style>
+  .prprod{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s,border-color .15s;}
+  .prprod:hover{transform:translateY(-2px);border-color:rgba(122,10,21,.45);}
+  .primg{height:130px;background:linear-gradient(135deg,#1c1c1c,#0c0c0c);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .primg img{width:100%;height:100%;object-fit:cover;}
+  .primg .ph{font-size:38px;font-weight:800;color:#7A0A15;}
+  .prbody{padding:16px;display:flex;flex-direction:column;gap:8px;flex:1;}
+  .prbody h3{font-size:16px;font-weight:800;color:#fff;margin:0;}
+  .prstats{display:flex;gap:14px;font-size:12.5px;color:var(--muted);}
+  .prstats b{color:#fff;}
+  .prfoot{margin-top:auto;padding-top:12px;}
+  .linkbox{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;}
+  .linkbox .lb{flex:1;min-width:180px;font-size:12px;color:#9B0D1A;word-break:break-all;font-weight:600;}
+</style>
 </head>
-<body data-page="home">
+<body data-page="dashboard">
 
 <div class="main" id="main">
   <div class="page-head">
@@ -18,149 +30,86 @@
     <h1 class="page-title" id="greet">Dashboard</h1>
     <div class="page-sub">Track your referrals, commissions, and earnings at a glance.</div>
   </div>
-
-  <div class="balance-card">
-    <div class="bl">
-      <div class="bl-lbl">Available to withdraw</div>
-      <div class="bl-num" id="sAvailable"><span class="skeleton" style="width:120px;height:40px;"></span></div>
-      <div class="bl-note">Approved commissions only. You'll be paid by manual bank transfer.</div>
-    </div>
-    <a class="btn" href="/affiliates/funds">Request Withdrawal</a>
-  </div>
-
-  <div class="grid cols-4">
-    <div class="card stat-card">
-      <div class="top"><div class="lbl">Total Clicks</div><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-7"/></svg></div></div>
-      <div class="num" id="sClicks"><span class="skeleton" style="width:50px;height:28px;"></span></div>
-    </div>
-    <div class="card stat-card">
-      <div class="top"><div class="lbl">Conversions</div><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3 3.5-4.5 6.5-4.5s5.7 1.5 6.5 4.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18.5 15.6c1.2.6 2.2 1.6 2.9 2.9"/></svg></div></div>
-      <div class="num" id="sConversions"><span class="skeleton" style="width:50px;height:28px;"></span></div>
-    </div>
-    <div class="card stat-card accent">
-      <div class="top"><div class="lbl">Total Earned</div><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6.5c-1-1-2.5-1.5-5-1.5-3 0-5 1.2-5 3.5 0 4.5 10 2.2 10 6.5 0 2.3-2 3.5-5 3.5-2.5 0-4-.5-5-1.5"/></svg></div></div>
-      <div class="num" id="sEarnings"><span class="skeleton" style="width:90px;height:28px;"></span></div>
-    </div>
-    <div class="card stat-card">
-      <div class="top"><div class="lbl">Pending</div><div class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div></div>
-      <div class="num" id="sPending"><span class="skeleton" style="width:90px;height:28px;"></span></div>
-    </div>
-  </div>
-
-  <div class="section-head">
-    <h2>Your Referral Links</h2>
-    <span class="count" id="offerCount">Offers</span>
-  </div>
-  <div class="grid" id="offersGrid" style="grid-template-columns:1fr;">
-    <div class="card offer-card"><span class="skeleton" style="width:100%;height:80px;"></span></div>
-  </div>
-
-  <div class="section-head">
-    <h2>Recent Commissions</h2>
-    <span class="count" id="commCount">0 sales</span>
-  </div>
-  <div class="tbl-wrap">
-    <table>
-      <thead><tr><th>Date</th><th>Offer</th><th>Customer</th><th class="num">Commission</th><th>Status</th></tr></thead>
-      <tbody id="commBody"></tbody>
-    </table>
-    <div class="empty" id="emptyComm" style="display:none;">No commissions yet. Share your link to start earning.</div>
-  </div>
+  <div id="view"></div>
 </div>
 
-<script>
-(function () {
-  var partner = null;
-  try { partner = JSON.parse(localStorage.getItem('partners_partner')); } catch (e) {}
-  if (!partner || !partner.id) return;
-
-  var hour = new Date().getHours();
-  var g = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('greet').textContent = g + ', ' + (partner.name || 'partner') + '.';
-})();
-</script>
 <script src="/assets/sidebar.js"></script>
 <script>
 (function () {
-  var partner = (function () { try { return JSON.parse(localStorage.getItem('partners_partner')); } catch (e) { return null; } })();
-  if (!partner || !partner.id) return;
-  var cacheKey = 'partners_dash_cache_' + partner.id;
+  if (!App.getToken()) { window.location.href = '/affiliates/login'; return; }
 
-  function render(data) {
-    if (!data) return;
-    var stats = data.stats || {};
-    var offers = data.offers || [];
-    var comms = data.commissions || [];
-    var siteUrl = data.siteUrl || partner.siteUrl || window.location.origin;
+  var partner = (function () { try { return JSON.parse(localStorage.getItem('partners_partner')); } catch (e) { return {}; } })();
+  var hour = new Date().getHours();
+  var g = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('greet').textContent = g + ', ' + (partner.name || 'partner') + '.';
 
-    // Render stats
-    document.getElementById('sAvailable').textContent = '₦' + App.fmt(stats.available_kobo || 0);
-    document.getElementById('sClicks').textContent = stats.clicks || 0;
-    document.getElementById('sConversions').textContent = stats.conversions || 0;
-    document.getElementById('sEarnings').textContent = '₦' + App.fmt(stats.earned_kobo || 0);
-    document.getElementById('sPending').textContent = '₦' + App.fmt(stats.pending_kobo || 0);
+  var view = document.getElementById('view');
 
-    // Render offers
-    var grid = document.getElementById('offersGrid');
-    document.getElementById('offerCount').textContent = offers.length + ' offer' + (offers.length !== 1 ? 's' : '');
-    if (!offers.length) {
-      grid.innerHTML = '<div class="empty">No offers available right now. Check back soon.</div>';
+  App.api('dashboard').then(function (d) {
+    if (!d.ok) { view.innerHTML = '<div class="empty">' + App.esc(d.error || 'Something went wrong.') + '</div>'; return; }
+
+    var html = '';
+    var t = d.totals || {};
+
+    // Balance card
+    html += '<div class="balance-card"><div class="bl">' +
+      '<div class="bl-lbl">Available to withdraw</div>' +
+      '<div class="bl-num">' + App.naira(t.available_kobo) + '</div>' +
+      '<div class="bl-note">Approved commissions only. You\'ll be paid by manual bank transfer.</div>' +
+      '</div>' +
+      '<a class="btn" href="/affiliates/funds">Request Withdrawal</a></div>';
+
+    // Totals
+    html += '<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">' +
+      '<div class="card stat-card"><div class="lbl">Total Clicks</div><div class="num">' + (t.clicks || 0) + '</div></div>' +
+      '<div class="card stat-card"><div class="lbl">Total Sales</div><div class="num">' + (t.sales || 0) + '</div></div>' +
+      '<div class="card stat-card"><div class="lbl">Pending</div><div class="num" style="color:var(--amber);">' + App.naira(t.pending_kobo) + '</div></div>' +
+      '<div class="card stat-card accent"><div class="lbl">Total Earned</div><div class="num" style="color:var(--green);">' + App.naira(t.earned_kobo) + '</div></div>' +
+    '</div>';
+
+    // Products section
+    if (d.mode === 'none') {
+      html += '<div class="section-head"><h2>Products</h2></div>' +
+        '<div class="empty" style="color:#888;">You have no products yet. <a href="/affiliates/marketplace" style="color:#7A0A15;">Find products to promote</a></div>';
     } else {
-      var html = '';
-      offers.forEach(function (o) {
-        var checkout = o.checkout_url || (siteUrl + '/checkout');
-        var link = checkout + '?pp=' + partner.code;
-        var price = o.price_kobo ? '₦' + Math.round(o.price_kobo / 100).toLocaleString() : '';
-        var rate = o.commission_rate != null ? Math.round(o.commission_rate * 100) + '%' : '30%';
-        html += '<div class="offer-card">' +
-          '<div class="oh"><div><h3>' + App.esc(o.name) + '</h3>' +
-          (price ? '<div class="mini-stat">' + price + ' &middot; <span style="color:#aaa;">' + App.esc(o.description || '') + '</span></div>' : '<div class="od">' + App.esc(o.description || '') + '</div>') +
-          '</div><span class="earn">Earn ' + rate + '</span></div>' +
-          '<div class="link-row"><div class="link-val">' + App.esc(link) + '</div>' +
-          '<button class="copy-btn" data-copy="' + App.esc(link) + '" onclick="App.copyLink(this, this.getAttribute(\'data-copy\'))">Copy</button></div>' +
-          '</div>';
+      var heading = d.mode === 'single' ? (d.products[0] ? d.products[0].name : 'Your Product') : 'Products You Promote';
+      html += '<div class="section-head"><h2>' + (d.mode === 'single' ? 'Your Product' : 'Your Products') + '</h2>' +
+        (d.mode === 'multi' ? '<a class="count" href="/affiliates/my-products" style="color:#9B0D1A;text-decoration:none;">View all &rarr;</a>' : '') + '</div>';
+
+      html += '<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));">';
+      d.products.forEach(function (p) {
+        html += '<div class="prprod">' +
+          '<div class="primg">' + (p.image_url ? '<img src="' + App.esc(p.image_url) + '">' : '<div class="ph">' + App.esc(p.name.slice(0, 1).toUpperCase()) + '</div>') + '</div>' +
+          '<div class="prbody">' +
+            '<h3>' + App.esc(p.name) + '</h3>' +
+            '<div class="prstats"><span>Clicks <b>' + (p.clicks || 0) + '</b></span><span>Sales <b>' + (p.sales || 0) + '</b></span><span>Earned <b>' + App.naira(p.earned_kobo) + '</b></span></div>' +
+            '<div class="linkbox">' +
+              '<div class="lb">' + App.esc(p.link || 'Link not ready') + '</div>' +
+              (p.link ? '<button class="copy-btn" data-copy="' + App.esc(p.link) + '" onclick="App.copyLink(this, this.getAttribute(\'data-copy\'))">Copy</button>' : '') +
+            '</div>' +
+            '<div class="prfoot">' +
+              '<a class="btn" style="text-decoration:none;width:100%;text-align:center;" href="/affiliates/product?product_id=' + p.id + '">View ' + App.esc(p.name) + '</a>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
       });
-      grid.innerHTML = html;
+      html += '</div>';
     }
 
-    // Render commissions
-    document.getElementById('commCount').textContent = comms.length + ' sale' + (comms.length !== 1 ? 's' : '');
-    if (comms.length) {
-      var commHtml = '';
-      comms.forEach(function (c) {
-        commHtml += '<tr><td>' + App.fmtDate(c.created_at) + '</td><td>' + App.esc(c.offer_name || '-') + '</td><td>' + App.esc(c.customer_email) + '</td><td class="num">₦' + App.fmt(c.commission_kobo) + '</td><td><span class="status ' + App.esc(c.status) + '">' + App.esc(c.status) + '</span></td></tr>';
+    // Recent sales
+    html += '<div class="section-head"><h2>Recent Sales</h2><span class="count">' + (t.sales || 0) + ' total</span></div>';
+    if (d.recentSales && d.recentSales.length) {
+      html += '<div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Customer</th><th class="num">Commission</th><th>Status</th></tr></thead><tbody>';
+      d.recentSales.forEach(function (s) {
+        html += '<tr><td>' + App.fmtDate(s.created_at) + '</td><td>' + App.esc(s.customer_email || '-') + '</td><td class="num">' + App.naira(s.commission_kobo) + '</td><td><span class="status ' + App.esc(s.status) + '">' + App.esc(s.status) + '</span></td></tr>';
       });
-      document.getElementById('commBody').innerHTML = commHtml;
-      document.querySelector('.tbl-wrap table').style.display = '';
-      document.getElementById('emptyComm').style.display = 'none';
+      html += '</tbody></table></div>';
     } else {
-      document.getElementById('commBody').innerHTML = '';
-      document.querySelector('.tbl-wrap table').style.display = 'none';
-      document.getElementById('emptyComm').style.display = '';
+      html += '<div class="empty">No sales yet. Share your link to start earning.</div>';
     }
-  }
 
-  // 1. Instant render from local cache (0ms instant UI)
-  try {
-    var cached = JSON.parse(localStorage.getItem(cacheKey));
-    if (cached) render(cached);
-  } catch (e) {}
-
-  // 2. Fresh background fetch using consolidated single-call dashboard endpoint
-  var token = (function () { try { return localStorage.getItem('partners_token'); } catch (e) { return ''; } })();
-  fetch('/api/partner?action=dashboard', { headers: { 'Authorization': 'Bearer ' + token } })
-    .then(function (r) { return r.json(); })
-    .then(function (d) {
-      if (d.ok) {
-        render(d);
-        try { localStorage.setItem(cacheKey, JSON.stringify(d)); } catch (e) {}
-      } else if (d.error === 'Unauthorized. Please log in.') {
-        localStorage.removeItem('partners_partner');
-        localStorage.removeItem('partners_token');
-        window.location.href = '/affiliates/login';
-      }
-    })
-    .catch(function () {});
+    view.innerHTML = html;
+  });
 })();
 </script>
 </body>

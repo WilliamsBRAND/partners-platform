@@ -10,7 +10,6 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Montserrat',sans-serif;background:#0a0a0a;color:#fff;min-height:100vh;}
-
 .login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
 .login-card{width:100%;max-width:360px;background:#111;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:36px 28px;}
 .login-card .logo{font-family:'Archivo',sans-serif;font-weight:900;font-size:22px;color:#7A0A15;margin-bottom:20px;}
@@ -21,72 +20,63 @@ body{font-family:'Montserrat',sans-serif;background:#0a0a0a;color:#fff;min-heigh
 .login-card .btn{width:100%;padding:13px;border:none;border-radius:10px;background:#7A0A15;color:#fff;font-weight:700;font-size:15px;cursor:pointer;font-family:'Montserrat',sans-serif;}
 .login-card .btn:hover{background:#9B0D1A;}
 .err{color:#c0392b;font-size:12px;margin-bottom:10px;}
-
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid rgba(255,255,255,.06);}
 .topbar .logo{font-family:'Archivo',sans-serif;font-weight:900;font-size:18px;color:#7A0A15;}
 .topbar .right{display:flex;align-items:center;gap:16px;}
 .topbar .logout{font-size:13px;color:#666;text-decoration:none;cursor:pointer;}
 .topbar .logout:hover{color:#7A0A15;}
-
-.wrap{max-width:960px;margin:0 auto;padding:28px 24px 60px;}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 24px 60px;}
 .page-title{font-family:'Archivo',sans-serif;font-size:22px;font-weight:800;margin-bottom:24px;}
-
-.tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,.06);}
-.tab{padding:12px 20px;font-size:14px;font-weight:600;color:#666;cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
+.tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;}
+.tab{padding:12px 18px;font-size:14px;font-weight:600;color:#666;cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
 .tab:hover{color:#aaa;}
 .tab.active{color:#7A0A15;border-bottom-color:#7A0A15;}
-
+.tab .badge{background:#7A0A15;color:#fff;border-radius:999px;padding:1px 8px;font-size:11px;margin-left:6px;font-weight:700;}
 .panel{display:none;}
 .panel.active{display:block;}
-
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}
 .stat{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:20px 16px;}
 .stat .num{font-family:'Archivo',sans-serif;font-size:26px;font-weight:900;color:#fff;}
 .stat .lbl{font-size:11px;color:#666;margin-top:2px;}
 .stat.accent .num{color:#7A0A15;}
-
-table{width:100%;border-collapse:collapse;}
+table{width:100%;border-collapse:collapse;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;overflow:hidden;}
 th{text-align:left;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06);}
 td{padding:11px 12px;font-size:13px;color:#aaa;border-bottom:1px solid rgba(255,255,255,.04);}
 td:first-child{color:#fff;}
+td .grn{color:#4ade80;font-size:12px;}
 .status{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;}
-.status.active{background:rgba(34,197,94,.1);color:#22c55e;}
-.status.pending{background:rgba(251,191,36,.1);color:#fbbf24;}
+.status.active,.status.completed,.status.paid{background:rgba(34,197,94,.1);color:#22c55e;}
+.status.pending,.status.processing{background:rgba(251,191,36,.1);color:#fbbf24;}
 .status.approved{background:rgba(34,197,94,.1);color:#22c55e;}
-.status.paid{background:rgba(96,165,250,.1);color:#60a5fa;}
-.status.completed{background:rgba(96,165,250,.1);color:#60a5fa;}
-.status.rejected{background:rgba(239,68,68,.1);color:#ef4444;}
-.status.inactive{background:rgba(255,255,255,.05);color:#666;}
-
-.action-btn{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:transparent;color:#aaa;transition:all .2s;font-family:'Montserrat',sans-serif;}
+.status.reversed,.status.rejected,.status.failed,.status.inactive{background:rgba(239,68,68,.1);color:#ef4444;}
+.action-btn{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:transparent;color:#aaa;transition:all .2s;font-family:'Montserrat',sans-serif;margin:1px;}
 .action-btn:hover{background:rgba(255,255,255,.05);color:#fff;}
 .action-btn.approve{border-color:rgba(34,197,94,.3);color:#22c55e;}
 .action-btn.approve:hover{background:rgba(34,197,94,.1);}
 .action-btn.reject{border-color:rgba(239,68,68,.3);color:#ef4444;}
 .action-btn.reject:hover{background:rgba(239,68,68,.1);}
-
+.action-btn.warn{border-color:rgba(251,191,36,.3);color:#fbbf24;}
 .empty{text-align:center;padding:40px;color:#444;font-size:14px;}
 .snackbar{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a1a;border:1px solid rgba(255,255,255,.1);padding:12px 24px;border-radius:10px;font-size:14px;color:#fff;opacity:0;transition:transform .3s,opacity .3s;z-index:999;}
 .snackbar.show{transform:translateX(-50%) translateY(0);opacity:1;}
-
-.offer-form{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;}
+.offer-form{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;margin-bottom:20px;}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-grid.g3{grid-template-columns:1fr 1fr 1fr;}
 .fld{display:block;font-size:11px;color:#666;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
-.offer-form input,.offer-form textarea{width:100%;padding:12px 14px;font-size:14px;font-family:'Montserrat',sans-serif;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;outline:none;}
-.offer-form input:focus,.offer-form textarea:focus{border-color:#7A0A15;}
+.offer-form input,.offer-form textarea,.offer-form select{width:100%;padding:11px 13px;font-size:14px;font-family:'Montserrat',sans-serif;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;outline:none;margin-bottom:10px;}
+.offer-form input:focus,.offer-form textarea:focus,.offer-form select:focus{border-color:#7A0A15;}
 .offer-form textarea{resize:vertical;}
-.form-actions{display:flex;gap:10px;margin-top:16px;}
+.form-actions{display:flex;gap:10px;margin-top:8px;}
 .btn.primary{padding:12px 22px;border:none;border-radius:10px;background:#7A0A15;color:#fff;font-weight:700;font-size:14px;cursor:pointer;font-family:'Montserrat',sans-serif;}
 .btn.primary:hover{background:#9B0D1A;}
 .btn.ghost{padding:12px 18px;border:1px solid rgba(255,255,255,.15);border-radius:10px;background:transparent;color:#888;font-weight:600;font-size:13px;cursor:pointer;font-family:'Montserrat',sans-serif;}
 .btn.ghost:hover{color:#fff;}
-.link-out{font-size:12px;color:#4ade80;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle;}
-
-@media(max-width:700px){
-  .stats{grid-template-columns:1fr 1fr;}
-  .form-grid{grid-template-columns:1fr;}
-  td,th{padding:8px 6px;font-size:12px;}
-}
+.mat-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;}
+.notif{background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.15);border-left:4px solid #fbbf24;border-radius:10px;padding:14px 16px;margin-bottom:12px;}
+.notif .t{font-weight:700;color:#fff;font-size:14px;margin-bottom:4px;}
+.notif .s{font-size:13px;color:#aaa;line-height:1.5;}
+.notif .amt{color:#fbbf24;font-weight:700;}
+@media(max-width:700px){.stats{grid-template-columns:1fr 1fr;}.form-grid,.form-grid.g3{grid-template-columns:1fr;}td,th{padding:8px 6px;font-size:12px;}}
 </style>
 </head>
 <body>
@@ -97,7 +87,7 @@ td:first-child{color:#fff;}
     <h2>Admin Access</h2>
     <p>Enter the admin password to continue.</p>
     <div class="err" id="loginErr"></div>
-    <input type="password" id="adminPass" placeholder="Admin password" />
+    <input type="password" id="adminPass" placeholder="Admin password" onkeydown="if(event.key==='Enter')doLogin()" />
     <button class="btn" onclick="doLogin()">Enter</button>
   </div>
 </div>
@@ -105,89 +95,81 @@ td:first-child{color:#fff;}
 <div id="dashWrap" style="display:none;">
   <div class="topbar">
     <div class="logo">Partners Admin</div>
-    <div class="right">
-      <a class="logout" onclick="sessionStorage.removeItem('partners_admin_token');document.getElementById('dashWrap').style.display='none';document.getElementById('loginWrap').style.display='';">Logout</a>
-    </div>
+    <div class="right"><a class="logout" onclick="logout()">Logout</a></div>
   </div>
 
   <div class="wrap">
-    <div class="page-title">Partner Program</div>
-
-    <div class="stats">
-      <div class="stat"><div class="num" id="aPartners">-</div><div class="lbl">Partners</div></div>
-      <div class="stat"><div class="num" id="aClicks">-</div><div class="lbl">Total Clicks</div></div>
-      <div class="stat accent"><div class="num" id="aConversions">-</div><div class="lbl">Conversions</div></div>
-      <div class="stat"><div class="num" id="aPending">-</div><div class="lbl">Pending Payout</div></div>
-    </div>
+    <div class="page-title">Partner Program — Multi-Product</div>
 
     <div class="tabs">
-      <div class="tab active" onclick="switchTab('offers',this)">Offers</div>
-      <div class="tab" onclick="switchTab('partners',this)">Partners</div>
-      <div class="tab" onclick="switchTab('commissions',this)">Commissions</div>
-      <div class="tab" onclick="switchTab('payouts',this)">Payouts</div>
+      <div class="tab active" data-panel="panelProducts" onclick="switchTab('panelProducts',this)">Products</div>
+      <div class="tab" data-panel="panelAffiliates" onclick="switchTab('panelAffiliates',this)">Affiliates</div>
+      <div class="tab" data-panel="panelCommissions" onclick="switchTab('panelCommissions',this)">Commissions</div>
+      <div class="tab" data-panel="panelPayouts" onclick="switchTab('panelPayouts',this)">Payouts</div>
+      <div class="tab" data-panel="panelNotif" onclick="switchTab('panelNotif',this);loadNotifs()">Payout Requests<span class="badge" id="notifBadge" style="display:none;">0</span></div>
     </div>
 
-    <div class="panel active" id="panelOffers">
-      <div class="offer-form" id="offerForm">
+    <!-- PRODUCTS -->
+    <div class="panel active" id="panelProducts">
+      <div class="offer-form" id="productForm">
         <input type="hidden" id="editId" value="" />
-        <h3 style="font-family:'Archivo',sans-serif;font-size:16px;font-weight:800;margin-bottom:16px;">Build an Offer</h3>
+        <h3 style="font-family:'Archivo',sans-serif;font-size:16px;font-weight:800;margin-bottom:16px;">Build a Product</h3>
         <div class="form-grid">
-          <div>
-            <label class="fld">Offer name</label>
-            <input id="oName" placeholder="e.g. NEXORA" />
+          <div><label class="fld">Product name</label><input id="pName" placeholder="e.g. NEXORA" /></div>
+          <div><label class="fld">Checkout URL (full)</label><input id="pUrl" placeholder="https://nexora.tomidewilliams.com/checkout" /></div>
+          <div><label class="fld">Tagline</label><input id="pTag" placeholder="Short tagline" /></div>
+          <div><label class="fld">Image URL</label><input id="pImg" placeholder="https://.../image.jpg" /></div>
+          <div><label class="fld">Price (₦, whole naira)</label><input id="pPrice" type="number" placeholder="7490" /></div>
+          <div><label class="fld">Reference prefix</label><input id="pPrefix" placeholder="NEXORA" /></div>
+        </div>
+        <label class="fld">Description</label>
+        <textarea id="pDesc" rows="2" placeholder="What is this product?"></textarea>
+        <div class="form-grid g3" style="margin-top:10px;">
+          <div><label class="fld">Commission type</label>
+            <select id="pCommType"><option value="percent">Percent (%)</option><option value="fixed">Fixed (₦)</option></select>
           </div>
-          <div>
-            <label class="fld">Product URL</label>
-            <input id="oUrl" placeholder="https://nexora.tomidewilliams.com/checkout" />
-          </div>
-          <div>
-            <label class="fld">Price (₦)</label>
-            <input id="oPrice" type="number" placeholder="6667" />
-          </div>
-          <div>
-            <label class="fld">Commission rate (%)</label>
-            <input id="oRate" type="number" step="0.01" placeholder="30" />
+          <div><label class="fld">Commission value</label><input id="pCommVal" type="number" step="0.01" placeholder="30 (percent) or 1500 (fixed)" /></div>
+          <div><label class="fld">Status</label>
+            <select id="pStatus"><option value="active">Active</option><option value="inactive">Inactive</option></select>
           </div>
         </div>
-        <label class="fld" style="margin-top:12px;">Description</label>
-        <textarea id="oDesc" rows="2" placeholder="What is this offer?"></textarea>
+        <label class="fld" style="margin-top:10px;">Paystack secret key (product's own)</label>
+        <input id="pPaySecret" type="password" placeholder="sk_test_... / sk_live_..." autocomplete="off" />
         <div class="form-actions">
-          <button class="btn primary" onclick="saveOffer()">+ Add Offer</button>
-          <button class="btn ghost" id="oCancelBtn" style="display:none;" onclick="resetOfferForm()">Cancel edit</button>
+          <button class="btn primary" onclick="saveProduct()">+ Save Product</button>
+          <button class="btn ghost" id="pCancelBtn" style="display:none;" onclick="resetProductForm()">Cancel edit</button>
         </div>
       </div>
 
-      <div style="margin-top:20px;">
-        <table>
-          <thead><tr><th>Name</th><th>Product URL</th><th>Price</th><th>Rate</th><th>Status</th><th>Action</th></tr></thead>
-          <tbody id="offBody"></tbody>
-        </table>
-        <div class="empty" id="emptyOff">No offers yet. Add your first offer above.</div>
+      <div style="margin-top:6px;">
+        <table><thead><tr><th>Name</th><th>Price</th><th>Commission</th><th>Status</th><th>Mats</th><th>Affiliates</th><th>Action</th></tr></thead><tbody id="prodBody"></tbody></table>
+        <div class="empty" id="emptyProd">No products yet. Add your first product above.</div>
       </div>
     </div>
 
-    <div class="panel" id="panelPartners">
-      <table>
-        <thead><tr><th>Code</th><th>Name</th><th>Email</th><th>Bank Details</th><th>Sales</th><th>Earned</th><th>Status</th></tr></thead>
-        <tbody id="pBody"></tbody>
-      </table>
-      <div class="empty" id="emptyP">No partners yet.</div>
+    <!-- AFFILIATES -->
+    <div class="panel" id="panelAffiliates">
+      <div id="affSummary" style="margin-bottom:14px;"></div>
+      <table><thead><tr><th>Code</th><th>Name</th><th>Email</th><th>Products</th><th>Sales</th><th>Earned</th><th>Pending</th><th>Status</th></tr></thead><tbody id="affBody"></tbody></table>
+      <div class="empty" id="emptyAff">No affiliates yet.</div>
     </div>
 
+    <!-- COMMISSIONS -->
     <div class="panel" id="panelCommissions">
-      <table>
-        <thead><tr><th>Date</th><th>Partner</th><th>Offer</th><th>Customer</th><th>Sale</th><th>Commission</th><th>Status</th><th>Action</th></tr></thead>
-        <tbody id="cBody"></tbody>
-      </table>
-      <div class="empty" id="emptyC">No commissions yet.</div>
+      <table><thead><tr><th>Date</th><th>Affiliate</th><th>Product</th><th>Customer</th><th>Sale</th><th>Commission</th><th>Status</th><th>Action</th></tr></thead><tbody id="commBody"></tbody></table>
+      <div class="empty" id="emptyComm">No commissions yet.</div>
     </div>
 
+    <!-- PAYOUTS -->
     <div class="panel" id="panelPayouts">
-      <table>
-        <thead><tr><th>Date</th><th>Partner</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead>
-        <tbody id="payBody"></tbody>
-      </table>
-      <div class="empty" id="emptyPay">No withdrawals yet.</div>
+      <table><thead><tr><th>Date</th><th>Affiliate</th><th>Bank</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody id="payBody"></tbody></table>
+      <div class="empty" id="emptyPay">No payout requests yet.</div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="panel" id="panelNotif">
+      <h3 style="font-family:'Archivo',sans-serif;font-size:16px;font-weight:800;margin-bottom:16px;">Pending Payout Requests</h3>
+      <div id="notifList"><div class="empty">No pending payout requests.</div></div>
     </div>
   </div>
 </div>
@@ -195,174 +177,222 @@ td:first-child{color:#fff;}
 <div class="snackbar" id="snackbar"></div>
 
 <script>
-(function(){
-  if(sessionStorage.getItem('partners_admin_token')) showDash();
-})();
+(function(){ if(sessionStorage.getItem('partners_admin_token')) showDash(); })();
 
-function api(url, method, body){
-  var opts = {method:method||'GET'};
-  opts.headers = {'Authorization':'Bearer '+sessionStorage.getItem('partners_admin_token')};
+function token(){return sessionStorage.getItem('partners_admin_token');}
+function api(url,method,body){
+  var opts={method:method||'GET'};opts.headers={'Authorization':'Bearer '+token()};
   if(body){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(body);}
   return fetch(url,opts).then(function(r){return r.json();});
 }
-
+function onUnauthorized(d){sessionStorage.removeItem('partners_admin_token');document.getElementById('dashWrap').style.display='none';document.getElementById('loginWrap').style.display='';document.getElementById('loginErr').textContent=(d&&d.error)||'Session expired.';}
 function doLogin(){
-  var pass = document.getElementById('adminPass').value;
-  fetch('/api/admin?action=auth',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({password:pass})
-  }).then(function(r){return r.json();}).then(function(d){
-    if(d.ok){
-      sessionStorage.setItem('partners_admin_token',d.token);
-      showDash();
-    }
-    else{document.getElementById('loginErr').textContent=d.error||'Wrong password.';}
-  }).catch(function(){document.getElementById('loginErr').textContent='Network error.';});
+  var pass=document.getElementById('adminPass').value;
+  fetch('/api/admin?action=auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pass})})
+    .then(function(r){return r.json();}).then(function(d){
+      if(d.ok){sessionStorage.setItem('partners_admin_token',d.token);showDash();}
+      else{document.getElementById('loginErr').textContent=d.error||'Wrong password.';}
+    }).catch(function(){document.getElementById('loginErr').textContent='Network error.';});
+}
+function logout(){sessionStorage.removeItem('partners_admin_token');document.getElementById('dashWrap').style.display='none';document.getElementById('loginWrap').style.display='';}
+function showDash(){document.getElementById('loginWrap').style.display='none';document.getElementById('dashWrap').style.display='';loadProducts();loadAffiliations();loadCommissions();loadPayouts();loadNotifs();}
+function switchTab(panel,el){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  el.classList.add('active');
+  document.getElementById(panel).classList.add('active');
+  refreshBadge();
+}
+function refreshBadge(){badge(true);}
+
+// ---- PRODUCTS ----
+function loadProducts(){
+  api('/api/admin?action=products').then(function(d){
+    if(!d.ok){if(d.error==='Unauthorized.')onUnauthorized(d);return;}
+    var body=document.getElementById('prodBody'), empty=document.getElementById('emptyProd');
+    if(!d.products.length){empty.style.display='';body.innerHTML='';return;}
+    empty.style.display='none';var h='';
+    d.products.forEach(function(p){
+      var comm=p.commission_type==='fixed'?'₦'+Number(p.commission_value).toLocaleString():Math.round(p.commission_value)+'%';
+      h+='<tr><td>'+esc(p.name)+'</td>'+
+        '<td>'+(p.price_kobo?'₦'+Math.round(p.price_kobo/100).toLocaleString():'-')+'</td>'+
+        '<td>'+comm+'</td>'+
+        '<td><span class="status '+p.status+'">'+p.status+'</span></td>'+
+        '<td>'+(p.material_count||0)+' <button class="action-btn warn" data-id="'+p.id+'" onclick="openMats(this.dataset.id)">Mats</button></td>'+
+        '<td>'+(p.affiliate_count||0)+'</td>'+
+        '<td><button class="action-btn" data-id="'+p.id+'" onclick="editProduct(this.dataset.id)">Edit</button> '+
+        '<button class="action-btn '+(p.status==='active'?'reject':'approve')+'" data-id="'+p.id+'" data-st="'+(p.status==='active'?'inactive':'active')+'" onclick="toggleProduct(this.dataset.id,this.dataset.st)">'+(p.status==='active'?'Deactivate':'Activate')+'</button></td></tr>';
+    });
+    body.innerHTML=h;
+  }).catch(function(){});
 }
 
-function onUnauthorized(d){
-  sessionStorage.removeItem('partners_admin_token');
-  document.getElementById('dashWrap').style.display='none';
-  document.getElementById('loginWrap').style.display='';
-  document.getElementById('loginErr').textContent=(d&&d.error)||'Session expired. Please log in again.';
+function resetProductForm(){
+  ['pName','pUrl','pTag','pImg','pPrice','pPrefix','pDesc','pCommVal','pPaySecret'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('pCommType').value='percent';
+  document.getElementById('pStatus').value='active';
+  document.getElementById('editId').value='';
+  document.getElementById('pCancelBtn').style.display='none';
+  document.getElementById('pPaySecret').removeAttribute('data-secret');
+}
+function editProduct(id){
+  api('/api/admin?action=products').then(function(d){
+    if(!d.ok)return;
+    var p=(d.products||[]).find(function(x){return x.id===id;}); if(!p)return;
+    document.getElementById('pName').value=p.name||'';
+    document.getElementById('pUrl').value=p.checkout_url||'';
+    document.getElementById('pTag').value=p.tagline||'';
+    document.getElementById('pImg').value=p.image_url||'';
+    document.getElementById('pPrice').value=p.price_kobo?Math.round(p.price_kobo/100):'';
+    document.getElementById('pPrefix').value=p.reference_prefix||'';
+    document.getElementById('pDesc').value=p.description||'';
+    document.getElementById('pCommType').value=p.commission_type||'percent';
+    document.getElementById('pCommVal').value=p.commission_value||'';
+    document.getElementById('pStatus').value=p.status||'active';
+    document.getElementById('pPaySecret').value=(p.paystack_secret_key?'••••••••••':'');
+    document.getElementById('pPaySecret').setAttribute('data-secret','1');
+    document.getElementById('pCancelBtn').style.display='';
+    document.getElementById('editId').value=id;
+    document.getElementById('productForm').scrollIntoView({behavior:'smooth'});
+  });
+}
+function saveProduct(){
+  var id=document.getElementById('editId').value;
+  var secret=document.getElementById('pPaySecret').value;
+  var secretField=(document.getElementById('pPaySecret').getAttribute('data-secret')==='1' && (secret===''||secret.indexOf('•')===0)) ? undefined : secret;
+  var body={
+    name:document.getElementById('pName').value,
+    checkout_url:document.getElementById('pUrl').value,
+    tagline:document.getElementById('pTag').value,
+    image_url:document.getElementById('pImg').value,
+    price_kobo:Math.round((parseFloat(document.getElementById('pPrice').value)||0)*100),
+    reference_prefix:document.getElementById('pPrefix').value,
+    description:document.getElementById('pDesc').value,
+    commission_type:document.getElementById('pCommType').value,
+    commission_value:parseFloat(document.getElementById('pCommVal').value),
+    status:document.getElementById('pStatus').value
+  };
+  if(secretField!==undefined) body.paystack_secret_key=secretField;
+  var url='/api/admin?action=product'; var method=id?'PATCH':'POST';
+  api(url,method,id?{id:id,...body}:body).then(function(d){
+    if(!d.ok){if(d.error==='Unauthorized.'){onUnauthorized(d);return;}showSnack(d.error||'Failed.');}
+    else{showSnack('Saved.');resetProductForm();loadProducts();}
+  }).catch(function(){showSnack('Network error.');});
+}
+function toggleProduct(id,status){
+  api('/api/admin?action=product','PATCH',{id:id,status:status}).then(function(d){
+    if(!d.ok){if(d.error==='Unauthorized.'){onUnauthorized(d);return;}showSnack(d.error||'Failed.');}
+    else{showSnack('Updated.');loadProducts();}
+  });
+}
+function openMats(id){
+  var title=prompt('Material type (asset, image, video, file, link):','asset');
+  if(title===null)return;
+  var url=prompt('Material URL:','');
+  if(!url){return;}
+  api('/api/admin?action=materials','POST',{product_id:id,type:title.trim()||'asset',url:url.trim()}).then(function(d){
+    if(!d.ok){if(d.error==='Unauthorized.'){onUnauthorized(d);return;}showSnack(d.error||'Failed.');}
+    else{showSnack('Material added.');loadProducts();}
+  });
 }
 
-function showDash(){
-  document.getElementById('loginWrap').style.display='none';
-  document.getElementById('dashWrap').style.display='';
-  loadAll();
-}
-
-function loadAll(){
-  api('/api/admin?action=all').then(function(d){
-    if(!d.ok){ if(d.error==='Unauthorized.'){onUnauthorized(d);} return; }
-    document.getElementById('aPartners').textContent=d.partners?d.partners.length:0;
-    document.getElementById('aClicks').textContent=d.totalClicks||0;
-    document.getElementById('aConversions').textContent=d.totalConversions||0;
-    document.getElementById('aPending').textContent='\u20A6'+Math.round((d.pendingPayout||0)/100).toLocaleString();
-
-    renderOffers(d.offers||[]);
-
-    if(d.partners&&d.partners.length){
-      var h='';
-      d.partners.forEach(function(p){
-        var bank = (p.bank_name||p.account_number||p.account_name) ? esc(p.bank_name||'-') + ' &middot; ' + esc(p.account_number||'-') + ' &middot; ' + esc(p.account_name||'-') : '-';
-        h+='<tr><td><code style="color:#7A0A15;">'+esc(p.code)+'</code></td><td>'+esc(p.name)+'</td><td>'+esc(p.email)+'</td><td style="font-size:11px;color:#4ade80;">'+bank+'</td><td>'+(p.sale_count||0)+'</td><td>\u20A6'+Math.round((p.total_earned||0)/100).toLocaleString()+'</td><td><span class="status '+p.status+'">'+p.status+'</span></td></tr>';
+// ---- AFFILIATES ----
+function loadAffiliations(){
+  api('/api/admin?action=affiliates').then(function(d){
+    if(!d.ok){if(d.error==='Unauthorized.'){onUnauthorized(d);return;}return;}
+    var body=document.getElementById('affBody'), empty=document.getElementById('affEmpty');
+    var summary='';
+    if(!d.affiliates.length){empty.style.display='';body.innerHTML='';}
+    else{
+      empty.style.display='none';var h='';
+      d.affiliates.forEach(function(a){
+        var prods=a.products&&a.products.length?a.products.map(function(x){return x.name;}).join(', '):'-';
+        h+='<tr><td><code style="color:#7A0A15;">'+esc(a.code)+'</code></td><td>'+esc(a.name)+'</td><td>'+esc(a.email)+'</td>'+
+          '<td style="font-size:11px;color:#4ade80;">'+esc(prods)+'</td>'+
+          '<td>'+(a.sales||0)+'</td><td>₦'+Math.round((a.earned_kobo||0)/100).toLocaleString()+'</td>'+
+          '<td>₦'+Math.round((a.pending_kobo||0)/100).toLocaleString()+'</td>'+
+          '<td><span class="status '+a.status+'">'+a.status+'</span></td></tr>';
       });
-      document.getElementById('pBody').innerHTML=h;
-      document.getElementById('emptyP').style.display='none';
-    }
-
-    if(d.commissions&&d.commissions.length){
-      var h='';
-      d.commissions.forEach(function(c){
-        var b='';
-        if(c.status==='pending'){
-          b='<button class="action-btn approve" onclick="updateStatus(\'commission\',\''+c.id+'\',\'approved\')">Approve</button> <button class="action-btn reject" onclick="updateStatus(\'commission\',\''+c.id+'\',\'rejected\')">Reject</button>';
-        }
-        h+='<tr><td>'+fmtDate(c.created_at)+'</td><td>'+esc(c.partner_code||'-')+'</td><td>'+esc(c.offer_name||'-')+'</td><td>'+esc(c.customer_email)+'</td><td>\u20A6'+Math.round(c.amount_kobo/100).toLocaleString()+'</td><td>\u20A6'+Math.round(c.commission_kobo/100).toLocaleString()+'</td><td><span class="status '+c.status+'">'+c.status+'</span></td><td>'+b+'</td></tr>';
-      });
-      document.getElementById('cBody').innerHTML=h;
-      document.getElementById('emptyC').style.display='none';
-    }
-
-    if(d.payouts&&d.payouts.length){
-      var h='';
-      d.payouts.forEach(function(p){
-        var act='';
-        if(p.status==='pending'||p.status==='processing'){
-          act='<button class="action-btn approve" onclick="updateStatus(\'payout\',\''+p.id+'\',\'completed\')">Mark Paid</button>';
-        }
-        h+='<tr><td>'+fmtDate(p.created_at)+'</td><td>'+esc(p.partner_code||'-')+'</td><td>\u20A6'+Math.round(p.amount_kobo/100).toLocaleString()+'</td><td><span class="status '+p.status+'">'+p.status+'</span></td><td>'+act+'</td></tr>';
-      });
-      document.getElementById('payBody').innerHTML=h;
-      document.getElementById('emptyPay').style.display='none';
+      body.innerHTML=h;
     }
   }).catch(function(){});
 }
 
-function renderOffers(offers){
-  var offBody = document.getElementById('offBody');
-  var emptyOff = document.getElementById('emptyOff');
-  if(!offers.length){ emptyOff.style.display=''; offBody.innerHTML=''; return; }
-  emptyOff.style.display='none';
-  var h='';
-  offers.forEach(function(o){
-    h+='<tr><td>'+esc(o.name)+'</td><td><span class="link-out">'+esc(o.checkout_url||'-')+'</span></td><td>'+(o.price_kobo?'\u20A6'+Math.round(o.price_kobo/100).toLocaleString():'-')+'</td><td>'+Math.round((o.commission_rate||0)*100)+'%</td><td><span class="status '+o.status+'">'+o.status+'</span></td><td>'+
-      '<button class="action-btn" data-id="'+o.id+'" onclick="editOffer(this.dataset.id)">Edit</button> '+
-      '<button class="action-btn '+(o.status==='active'?'reject':'approve')+'" data-id="'+o.id+'" data-st="'+(o.status==='active'?'inactive':'active')+'" onclick="toggleOffer(this.dataset.id,this.dataset.st)">'+(o.status==='active'?'Deactivate':'Activate')+'</button></td></tr>';
-  });
-  offBody.innerHTML=h;
+// ---- COMMISSIONS ----
+function loadCommissions(){
+  api('/api/admin?action=commissions').then(function(d){
+    if(!d.ok){if(d.error==='Unauthorized.'){onUnauthorized(d);return;}return;}
+    var body=document.getElementById('commBody'), empty=document.getElementById('emptyComm');
+    if(!d.commissions.length){empty.style.display='';body.innerHTML='';return;}
+    empty.style.display='none';var h='';
+    d.commissions.forEach(function(c){
+      var b='';
+      if(c.status==='pending'){
+        b='<button class="action-btn approve" onclick="setComm(\''+c.id+'\',\'approved\')">Approve</button> <button class="action-btn warn" onclick="setComm(\''+c.id+'\',\'processing\')">Pay</button> <button class="action-btn reject" onclick="setComm(\''+c.id+'\',\'reversed\')">Reverse</button>';
+      } else if(c.status==='approved'){
+        b='<button class="action-btn approve" onclick="setComm(\''+c.id+'\',\'processing\')">Mark Paying</button> <button class="action-btn reject" onclick="setComm(\''+c.id+'\',\'reversed\')">Reverse</button>';
+      } else if(c.status==='processing'){
+        b='<button class="action-btn approve" onclick="setComm(\''+c.id+'\',\'paid\')">Mark Paid</button>';
+      }
+      h+='<tr><td>'+fmtDate(c.created_at)+'</td><td>'+esc(c.affiliate_code||c.affiliate_name||'-')+'</td><td>'+esc(c.product_name||'-')+'</td><td>'+esc(c.customer_email||'-')+'</td>'+
+        '<td>₦'+Math.round((c.amount_kobo||0)/100).toLocaleString()+'</td><td>₦'+Math.round((c.commission_kobo||0)/100).toLocaleString()+'</td>'+
+        '<td><span class="status '+c.status+'">'+c.status+'</span></td><td>'+b+'</td></tr>';
+    });
+    body.innerHTML=h;
+  }).catch(function(){});
 }
+function setComm(id,status){setStatus('commission-status',{id:id,status:status},loadCommissions);}
 
-function editOffer(id){
-  api('/api/admin?action=offer').then(function(d){
-    if(!d.ok){ if(d.error==='Unauthorized.'){onUnauthorized(d);} return; }
-    var o = (d.offers||[]).find(function(x){return x.id===id;});
-    if(!o) return;
-    document.getElementById('oName').value = o.name||'';
-    document.getElementById('oUrl').value = o.checkout_url||'';
-    document.getElementById('oPrice').value = o.price_kobo? Math.round(o.price_kobo/100):'';
-    document.getElementById('oRate').value = o.commission_rate!=null? Math.round(o.commission_rate*100):'';
-    document.getElementById('oDesc').value = o.description||'';
-    document.getElementById('oCancelBtn').style.display='';
-    document.getElementById('editId').value = id;
-    document.getElementById('offerForm').scrollIntoView({behavior:'smooth'});
-  });
+// ---- PAYOUTS ----
+function loadPayouts(){
+  api('/api/admin?action=payouts').then(function(d){
+    if(!d.ok){if(d.error==='Unauthorized.'){onUnauthorized(d);return;}return;}
+    var body=document.getElementById('payBody'), empty=document.getElementById('emptyPay');
+    if(!d.payouts.length){empty.style.display='';body.innerHTML='';return;}
+    empty.style.display='none';var h='';
+    d.payouts.forEach(function(p){
+      var bank=(p.bank_name||p.account_number)?'<span class="grn">'+esc((p.bank_name||'-')+' • '+(p.account_number||'-')+' • '+(p.account_name||''))+'</span>':'-';
+      var act='';
+      if(p.status==='pending'||p.status==='processing') act='<button class="action-btn approve" onclick="setPay(\''+p.id+'\',\'completed\')">Mark Paid</button>';
+      if(p.status==='pending') act+=' <button class="action-btn reject" onclick="setPay(\''+p.id+'\',\'failed\')">Reject</button>';
+      h+='<tr><td>'+fmtDate(p.created_at)+'</td><td>'+esc(p.partner_name||p.partner_code||'-')+'</td><td>'+bank+'</td>'+
+        '<td>₦'+Math.round((p.amount_kobo||0)/100).toLocaleString()+'</td>'+
+        '<td><span class="status '+p.status+'">'+p.status+'</span></td><td>'+act+'</td></tr>';
+    });
+    body.innerHTML=h;
+  }).catch(function(){});
 }
-
-function resetOfferForm(){
-  document.getElementById('oName').value='';
-  document.getElementById('oUrl').value='';
-  document.getElementById('oPrice').value='';
-  document.getElementById('oRate').value='';
-  document.getElementById('oDesc').value='';
-  document.getElementById('editId').value='';
-  document.getElementById('oCancelBtn').style.display='none';
-}
-
-function saveOffer(){
-  var id = document.getElementById('editId').value;
-  var body = {
-    name: document.getElementById('oName').value,
-    checkout_url: document.getElementById('oUrl').value,
-    price_kobo: Math.round((parseFloat(document.getElementById('oPrice').value)||0)*100),
-    commission_rate: (parseFloat(document.getElementById('oRate').value)||30)/100,
-    description: document.getElementById('oDesc').value,
-  };
-  var url = '/api/admin?action=offer';
-  var method = id?'PATCH':'POST';
-  api(url,method,id?{id:id,...body}:body).then(function(d){
-    if(!d.ok){ if(d.error==='Unauthorized.'){onUnauthorized(d);return;} showSnack(d.error||'Failed.'); }
-    else{showSnack('Saved.');resetOfferForm();loadAll();}
+function setPay(id,status){setStatus('payout-status',{id:id,status:status},loadPayouts);}
+function setStatus(action,body,cb){
+  api('/api/admin?action='+action,'POST',body).then(function(d){
+    if(!d.ok){if(d.error==='Unauthorized.'){onUnauthorized(d);return;}showSnack(d.error||'Failed.');}
+    else{showSnack('Updated.');cb&&cb();loadNotifs();}
   }).catch(function(){showSnack('Network error.');});
 }
 
-function toggleOffer(id,status){
-  api('/api/admin?action=offer','PATCH',{id:id,status:status}).then(function(d){
-    if(!d.ok){ if(d.error==='Unauthorized.'){onUnauthorized(d);return;} showSnack(d.error||'Failed.'); }
-    else{showSnack('Updated.');loadAll();}
-  }).catch(function(){showSnack('Network error.');});
+// ---- NOTIFICATIONS ----
+function loadNotifs(){
+  api('/api/admin?action=notifications').then(function(d){
+    if(!d.ok){if(d.error==='Unauthorized.'){onUnauthorized(d);return;}return;}
+    var badge=document.getElementById('notifBadge');
+    badge.textContent=d.count||0; badge.style.display=d.count?'':'none';
+    if(!d.notifications.length){
+      document.getElementById('notifList').innerHTML='<div class="empty">No pending payout requests.</div>';return;
+    }
+    var h='';
+    d.notifications.forEach(function(n){
+      h+='<div class="notif"><div class="t">Payout request — '+esc(n.partner_name)+'</div>'+
+        '<div class="s">Amount: <span class="amt">'+esc(n.amount_naira)+'</span> &middot; Requested '+fmtDate(n.requested_at)+'</div>'+
+        '<div class="s">'+esc(n.bank_name)+' • '+esc(n.account_number)+' • '+esc(n.account_name)+'</div>'+
+        '<div class="s" style="margin-top:8px;"><button class="action-btn approve" onclick="setPay(\''+n.id+'\',\'completed\')">Mark Paid</button> <button class="action-btn reject" onclick="setPay(\''+n.id+'\',\'failed\')">Reject</button></div></div>';
+    });
+    document.getElementById('notifList').innerHTML=h;
+  }).catch(function(){});
 }
 
-function updateStatus(type,id,status){
-  api('/api/admin?action=update','POST',{type:type,id:id,status:status}).then(function(d){
-    if(!d.ok){ if(d.error==='Unauthorized.'){onUnauthorized(d);return;} showSnack(d.error||'Failed.'); }
-    else{showSnack('Updated.');loadAll();}
-  }).catch(function(){showSnack('Network error.');});
-}
-
-function switchTab(name,el){
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
-  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
-  (el||event.target).classList.add('active');
-  document.getElementById('panel'+name.charAt(0).toUpperCase()+name.slice(1)).classList.add('active');
-}
-
-function fmtDate(s){if(!s)return'-';return new Date(s).toLocaleDateString('en-NG',{day:'numeric',month:'short',year:'numeric'});}
-function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML;}
-function showSnack(msg){var el=document.getElementById('snackbar');el.textContent=msg;el.classList.add('show');setTimeout(function(){el.classList.remove('show');},2500);}
+function fmtDate(s){if(!s)return'-';try{return new Date(s).toLocaleDateString('en-NG',{day:'numeric',month:'short',year:'numeric'});}catch(e){return'-';}}
+function esc(t){if(t==null)return'';var d=document.createElement('div');d.textContent=String(t);return d.innerHTML;}
+function showSnack(msg){var el=document.getElementById('snackbar');el.textContent=msg;el.classList.add('show');window.clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},2500);}
 </script>
 </body>
 </html>

@@ -141,6 +141,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;}
       <a href="#how">How it works</a>
       <a href="#earn">Earn</a>
       <a href="#faq">FAQ</a>
+      <a href="/affiliates/register">Sign up</a>
     </div>
     <a class="btn btn-primary nav-cta" href="/affiliates/login">Sign in</a>
   </div>
@@ -149,8 +150,8 @@ footer{border-top:1px solid var(--line);padding:30px 0;}
 <header class="hero">
   <div class="inner">
     <span class="tag">Partner Program</span>
-    <h1>Make Up to <em>₦200K</em> From Products You Didn&rsquo;t Create</h1>
-    <p class="lead">Join the partner program and earn for every sale you drive. Share your link, track your earnings, and get paid on time.</p>
+    <h1>Would You Like to Make 7 Figures Without Creating Your Own Product?</h1>
+    <p class="lead">Join the partner program. Share your link, and get paid every time someone buys through your link. Track payments and make withdrawals &mdash; all in one place.</p>
     <div class="hero-btns">
       <a class="btn btn-primary btn-lg" href="/affiliates/register">Become a partner</a>
       <a class="btn btn-outline btn-lg" href="#how">How it works</a>
@@ -248,8 +249,13 @@ fetch('/api/offers')
     var html='';
     list.forEach(function(o){
       var price=o.price_kobo?'NGN '+Math.round(o.price_kobo/100).toLocaleString():'';
-      var rate=o.commission_rate!=null?Math.round(o.commission_rate*100)+'%':'30%';
-      html+='<div class="offer"><div class="ot">'+o.slug+'</div><h3>'+o.name+'</h3><p>'+o.description+'</p><div class="rate">Earn <b>'+rate+'</b>'+(price?' &middot; '+price:'')+'</div><a class="btn btn-primary" href="/affiliates/login">Promote this</a></div>';
+      var rate=o.commission_label||(o.commission_rate!=null&&o.commission_rate>0?Math.round(o.commission_rate*100)+'%':'30%');
+    var cta;
+    try {
+      cta = (JSON.parse(localStorage.getItem('partners_partner')) && JSON.parse(localStorage.getItem('partners_partner')).id)
+        ? '/affiliates/marketplace' : '/affiliates/register';
+    } catch (e) { cta = '/affiliates/register'; }
+    html+='<div class="offer"><div class="ot">'+o.slug+'</div><h3>'+o.name+'</h3><p>'+o.description+'</p><div class="rate">Earn <b>'+rate+'</b>'+(price?' &middot; '+price:'')+'</div><a class="btn btn-primary" href="'+cta+'">'+((cta==='/affiliates/marketplace')?'Get my link':'Promote this')+'</a></div>';
     });
     box.innerHTML=html;
   })

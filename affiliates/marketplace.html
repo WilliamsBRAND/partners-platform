@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Products &middot; Partners</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+  .mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;}
+  .pcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s,border-color .15s;}
+  .pcard:hover{transform:translateY(-2px);border-color:rgba(122,10,21,.45);}
+  .pimg{height:170px;background:linear-gradient(135deg,#1c1c1c,#0c0c0c);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .pimg img{width:100%;height:100%;object-fit:cover;}
+  .pimg .ph{font-size:44px;font-weight:800;letter-spacing:.02em;color:#7A0A15;}
+  .pbody{padding:18px;display:flex;flex-direction:column;gap:8px;flex:1;}
+  .pbody h3{font-size:17px;font-weight:800;color:#fff;}
+  .ptag{font-size:12.5px;color:var(--muted);line-height:1.5;flex:1;}
+  .pmeta{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding-top:6px;border-top:1px solid var(--line);}
+  .pprice{color:#fff;font-weight:700;}
+  .pcomm{color:var(--green);font-weight:700;}
+  .foot-btn{padding-top:12px;}
+  .btn.w  {background:#fff;color:#111;}
+  .btn.w:hover{background:#e7e7e7;box-shadow:0 10px 24px -12px rgba(255,255,255,.3);}
+  .btn.sel{background:rgba(34,197,94,.14);border:1.5px solid rgba(34,197,94,.45);color:var(--green);}
+</style>
+</head>
+<body data-page="marketplace">
+
+<div class="main" id="main">
+  <div class="page-head">
+    <div class="page-eyebrow">Marketplace</div>
+    <h1 class="page-title">Products to Promote</h1>
+    <div class="page-sub">Pick any product you want to promote. We'll generate a unique tracked link for each one.</div>
+  </div>
+  <div id="grid" class="mgrid"></div>
+</div>
+
+<script src="/assets/sidebar.js"></script>
+<script>
+(function () {
+  var token = App.getToken();
+  if (!token) { window.location.href = '/affiliates/login'; return; }
+  var grid = document.getElementById('grid');
+
+  App.api('marketplace').then(function (d) {
+    if (!d.ok || !d.products || !d.products.length) {
+      grid.innerHTML = '<div class="empty">No products available right now. Check back soon.</div>';
+      return;
+    }
+    var html = '';
+    d.products.forEach(function (p) {
+      html += '<div class="pcard" data-id="' + p.id + '">' +
+        '<div class="pimg">' + (p.image_url ? '<img src="' + App.esc(p.image_url) + '" alt="' + App.esc(p.name) + '">' : '<div class="ph">' + App.esc(p.name.slice(0, 1).toUpperCase()) + '</div>') + '</div>' +
+        '<div class="pbody">' +
+          '<h3>' + App.esc(p.name) + '</h3>' +
+          (p.tagline ? '<div class="ptag">' + App.esc(p.tagline) + '</div>' : '') +
+          '<div class="pmeta">' +
+            '<span class="pprice">' + (p.price_kobo ? App.naira(p.price_kobo) : '—') + '</span>' +
+            '<span class="pcomm">Earn ' + App.esc(p.commission_label || '') + '</span>' +
+          '</div>' +
+          '<div class="foot-btn">' +
+            (p.selected
+              ? '<button class="btn dark w-100 btn-sel" data-id="' + p.id + '" data-act="remove" style="width:100%;">Promoting — Remove</button>'
+              : '<button class="btn w-100 btn-add" data-id="' + p.id + '" data-act="add" style="width:100%;">Promote this product</button>') +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    });
+    grid.innerHTML = html;
+    bindButtons();
+  });
+
+  function bindButtons() {
+    grid.querySelectorAll('button[data-id]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-id');
+        var act = btn.getAttribute('data-act');
+        btn.disabled = true;
+        App.selectProduct(id, act).then(function (d) {
+          if (d && d.ok) {
+            App.snack(act === 'add' ? 'Added to My Products. Your link is ready!' : 'Removed from My Products.');
+            if (act === 'add') {
+              // refresh so it reflects selected state
+              App.api('marketplace').then(function (dr) { return dr; }).then(replaceGrid);
+            } else {
+              replaceGrid({ products: null, ok: false });
+            }
+          } else {
+            btn.disabled = false;
+            App.snack((d && d.error) || 'Something went wrong.');
+          }
+        });
+      });
+    });
+  }
+
+  function replaceGrid() {
+    App.api('marketplace').then(function (d) {
+      if (d && d.ok) {
+        var g = document.getElementById('grid');
+        var html = '';
+        d.products.forEach(function (p) {
+          html += '<div class="pcard">' +
+            '<div class="pimg">' + (p.image_url ? '<img src="' + App.esc(p.image_url) + '">' : '<div class="ph">' + App.esc(p.name.slice(0, 1).toUpperCase()) + '</div>') + '</div>' +
+            '<div class="pbody">' +
+              '<h3>' + App.esc(p.name) + '</h3>' +
+              (p.tagline ? '<div class="ptag">' + App.esc(p.tagline) + '</div>' : '') +
+              '<div class="pmeta">' +
+                '<span class="pprice">' + (p.price_kobo ? App.naira(p.price_kobo) : '—') + '</span>' +
+                '<span class="pcomm">Earn ' + App.esc(p.commission_label || '') + '</span>' +
+              '</div>' +
+              '<div class="foot-btn">' +
+                (p.selected
+                  ? '<button class="btn dark w-100 btn-sel" data-id="' + p.id + '" data-act="remove" style="width:100%;">Promoting — Remove</button>'
+                  : '<button class="btn w-100 btn-add" data-id="' + p.id + '" data-act="add" style="width:100%;">Promote this product</button>') +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        });
+        g.innerHTML = html;
+        bindButtons();
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>
