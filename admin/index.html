@@ -71,7 +71,23 @@
 .action-btn.warn:hover{background:rgba(251,191,36,.1);}
 .status.reversed{background:rgba(239,68,68,.12);color:var(--red);}
 td .grn{color:var(--green);font-size:12px;}
-@media(max-width:760px){.p-form .pgrid,.p-form .pgrid.g3{grid-template-columns:1fr;}.admin-main{padding:24px 18px 56px;}}
+.aff-link{background:none;border:none;padding:0;cursor:pointer;font-weight:700;color:#fff;font-size:13.5px;font-family:'Archivo',sans-serif;text-align:left;}
+.aff-link:hover{color:var(--crimson-dark);text-decoration:underline;}
+.aff-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;}
+.aff-overlay.show{display:flex;}
+.aff-modal{background:var(--panel);border:1px solid var(--line);border-radius:14px;width:100%;max-width:520px;max-height:88vh;overflow:auto;padding:0;}
+.aff-modal .hd{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line);}
+.aff-modal .hd h3{margin:0;font-size:17px;font-weight:800;color:#fff;}
+.aff-modal .hd button{background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1;}
+.aff-modal .hd button:hover{color:#fff;}
+.aff-modal .bd{padding:20px 22px;}
+.aff-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.aff-row:last-child{border-bottom:none;}
+.aff-row .k{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+.aff-row .v{font-size:14px;color:#fff;text-align:right;word-break:break-word;font-weight:600;}
+.aff-row .v.muted{color:var(--muted-2);font-weight:400;}
+.aff-sec{margin-top:18px;}
+.aff-sec h4{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--crimson-dark);margin:0 0 6px;}
 </style>
 </head>
 <body data-page="admin">
@@ -508,7 +524,8 @@ function loadAffiliations(){
       empty.style.display='none';var h='';
       d.affiliates.forEach(function(a){
         var prods=a.products&&a.products.length?a.products.map(function(x){return x.name;}).join(', '):'-';
-        h+='<tr><td><code style="color:var(--crimson-dark);">'+esc(a.code)+'</code></td><td>'+esc(a.name)+'</td><td>'+esc(a.email)+'</td>'+
+        h+='<tr><td><code style="color:var(--crimson-dark);">'+esc(a.code)+'</code></td>'+
+          '<td><button class="aff-link" onclick=\'openAffiliate('+JSON.stringify(a).replace(/'/g,"&#39;")+')\'>'+esc(a.name)+'</button></td><td>'+esc(a.email)+'</td>'+
           '<td style="font-size:11px;color:#4ade80;">'+esc(prods)+'</td>'+
           '<td>'+(a.sales||0)+'</td><td>₦'+Math.round((a.earned_kobo||0)/100).toLocaleString()+'</td>'+
           '<td>₦'+Math.round((a.pending_kobo||0)/100).toLocaleString()+'</td>'+
@@ -594,6 +611,43 @@ function loadNotifs(){
 function fmtDate(s){if(!s)return'-';try{return new Date(s).toLocaleDateString('en-NG',{day:'numeric',month:'short',year:'numeric'});}catch(e){return'-';}}
 function esc(t){if(t==null)return'';var d=document.createElement('div');d.textContent=String(t);return d.innerHTML;}
 function showSnack(msg){var el=document.getElementById('snackbar');if(!el){el=document.createElement('div');el.id='snackbar';el.className='snackbar';document.body.appendChild(el);}el.textContent=msg;el.classList.add('show');window.clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},2500);}
+
+// ---- AFFILIATE DETAIL MODAL ----
+function openAffiliate(a){
+  var o=document.getElementById('affOverlay');
+  if(!o){
+    o=document.createElement('div');o.id='affOverlay';o.className='aff-overlay';document.body.appendChild(o);
+  }
+  var prods=(a.products&&a.products.length)?a.products.map(function(x){return '<div class="aff-row"><span class="k">Product</span><span class="v">'+esc(x.name)+'</span></div>';}).join(''):'<div class="aff-row"><span class="k">Product</span><span class="v muted">None selected yet</span></div>';
+  o.innerHTML='<div class="aff-modal"><div class="hd"><h3>Affiliate — '+esc(a.code)+'</h3><button onclick="closeAffiliate()">&times;</button></div>'+
+    '<div class="bd">'+
+      '<div class="aff-row"><span class="k">Name</span><span class="v">'+esc(a.name)+'</span></div>'+
+      '<div class="aff-row"><span class="k">Email</span><span class="v '+(a.email?'':'muted')+'">'+esc(a.email||'—')+'</span></div>'+
+      '<div class="aff-row"><span class="k">Phone</span><span class="v '+(a.phone?'':'muted')+'">'+esc(a.phone||'—')+'</span></div>'+
+      '<div class="aff-row"><span class="k">Status</span><span class="v">'+esc(a.status)+'</span></div>'+
+      '<div class="aff-row"><span class="k">Joined</span><span class="v">'+fmtDate(a.created_at)+'</span></div>'+
+      '<div class="aff-sec"><h4>Payout Details</h4>'+
+        '<div class="aff-row"><span class="k">Bank</span><span class="v '+(a.bank_name?'':'muted')+'">'+esc(a.bank_name||'—')+'</span></div>'+
+        '<div class="aff-row"><span class="k">Account No</span><span class="v '+(a.account_number?'':'muted')+'">'+esc(a.account_number||'—')+'</span></div>'+
+        '<div class="aff-row"><span class="k">Account Name</span><span class="v '+(a.account_name?'':'muted')+'">'+esc(a.account_name||'—')+'</span></div>'+
+      '</div>'+
+      '<div class="aff-sec"><h4>Performance</h4>'+
+        '<div class="aff-row"><span class="k">Sales</span><span class="v">'+(a.sales||0)+'</span></div>'+
+        '<div class="aff-row"><span class="k">Earned</span><span class="v">₦'+Math.round((a.earned_kobo||0)/100).toLocaleString()+'</span></div>'+
+        '<div class="aff-row"><span class="k">Pending</span><span class="v">₦'+Math.round((a.pending_kobo||0)/100).toLocaleString()+'</span></div>'+
+      '</div>'+
+      '<div class="aff-sec"><h4>Promoted Products</h4>'+prods+'</div>'+
+    '</div></div>';
+  o.classList.add('show');
+}
+function closeAffiliate(){
+  var o=document.getElementById('affOverlay');
+  if(o)o.classList.remove('show');
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAffiliate();});
+document.addEventListener('click',function(e){
+  if(e.target&&e.target.id==='affOverlay')closeAffiliate();
+});
 </script>
 </body>
 </html>
