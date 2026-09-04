@@ -43,7 +43,7 @@
     }
     var html = '';
     d.products.forEach(function (o) {
-      var price = o.price_kobo ? '&#8358;' + Math.round(o.price_kobo / 100).toLocaleString() : '';
+      var price = o.price_kobo ? '₦' + Math.round(o.price_kobo / 100).toLocaleString() : '';
       var rate = o.commission_rate != null ? Math.round(o.commission_rate * 100) + '%' : '30%';
       var desc = o.description || '';
       html += '<div class="card offer-card">' +
@@ -56,10 +56,10 @@
         '<div class="p-stats">' +
           '<div class="card stat-card" style="padding:14px;"><div class="lbl">Clicks</div><div class="num" style="font-size:22px;">' + (o.clicks || 0) + '</div></div>' +
           '<div class="card stat-card" style="padding:14px;"><div class="lbl">Sales</div><div class="num" style="font-size:22px;">' + (o.conversions || 0) + '</div></div>' +
-          '<div class="card stat-card" style="padding:14px;"><div class="lbl">Earned</div><div class="num" style="font-size:22px;color:#22c55e;">&#8358;' + App.fmt(o.earned_kobo || 0) + '</div></div>' +
+          '<div class="card stat-card" style="padding:14px;"><div class="lbl">Earned</div><div class="num" style="font-size:22px;color:#22c55e;">₦' + App.fmt(o.earned_kobo || 0) + '</div></div>' +
         '</div>' +
         '<div class="link-row"><div class="link-val">' + App.esc(o.link) + '</div>' +
-        '<button class="copy-btn" onclick="App.copyLink(this,\'' + App.esc(o.link).replace(/'/g, '&#39;') + '\')">Copy</button></div>' +
+        '<button class="copy-btn" data-copy="' + App.esc(o.link) + '" onclick="App.copyLink(this, this.getAttribute(\'data-copy\'))">Copy</button></div>' +
       '</div>';
     });
     grid.innerHTML = html;

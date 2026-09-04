@@ -22,7 +22,7 @@
   <div class="balance-card">
     <div class="bl">
       <div class="bl-lbl">Available to withdraw</div>
-      <div class="bl-num" id="sAvailable">&#8358;0</div>
+      <div class="bl-num" id="sAvailable">₦0</div>
       <div class="bl-note">Approved commissions only. Your request is emailed to us and paid by manual bank transfer.</div>
     </div>
     <button class="btn" id="withdrawBtn" onclick="App.toggleWithdraw()">Request Withdrawal</button>
@@ -86,10 +86,10 @@
     fetch('/api/partner?action=stats&partner_id=' + partner.id).then(function (r) { return r.json(); }).then(function (d) {
       if (d.ok) {
         availableKobo = d.available_kobo || 0;
-        document.getElementById('sAvailable').textContent = '&#8358;' + App.fmt(availableKobo);
-        document.getElementById('sEarned').textContent = '&#8358;' + App.fmt(d.earned_kobo || 0);
-        document.getElementById('sPending').textContent = '&#8358;' + App.fmt(d.pending_kobo || 0);
-        document.getElementById('sRequested').textContent = '&#8358;' + App.fmt(d.requested_withdrawals_kobo || 0);
+        document.getElementById('sAvailable').textContent = '₦' + App.fmt(availableKobo);
+        document.getElementById('sEarned').textContent = '₦' + App.fmt(d.earned_kobo || 0);
+        document.getElementById('sPending').textContent = '₦' + App.fmt(d.pending_kobo || 0);
+        document.getElementById('sRequested').textContent = '₦' + App.fmt(d.requested_withdrawals_kobo || 0);
         refreshBtn();
       }
     }).catch(function () {});
@@ -101,7 +101,7 @@
         document.getElementById('payoutCount').textContent = d.payouts.length + ' payout' + (d.payouts.length !== 1 ? 's' : '');
         var html = '';
         d.payouts.forEach(function (p) {
-          html += '<tr><td>' + App.fmtDate(p.created_at) + '</td><td class="num">&#8358;' + App.fmt(p.amount_kobo) + '</td><td>' + App.esc(p.paystack_transfer_ref || '-') + '</td><td><span class="status ' + App.esc(p.status) + '">' + App.esc(p.status) + '</span></td></tr>';
+          html += '<tr><td>' + App.fmtDate(p.created_at) + '</td><td class="num">₦' + App.fmt(p.amount_kobo) + '</td><td>' + App.esc(p.paystack_transfer_ref || '-') + '</td><td><span class="status ' + App.esc(p.status) + '">' + App.esc(p.status) + '</span></td></tr>';
         });
         document.getElementById('payoutBody').innerHTML = html;
         document.querySelector('.tbl-wrap table').style.display = '';

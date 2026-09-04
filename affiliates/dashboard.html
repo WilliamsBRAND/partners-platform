@@ -22,7 +22,7 @@
   <div class="balance-card">
     <div class="bl">
       <div class="bl-lbl">Available to withdraw</div>
-      <div class="bl-num" id="sAvailable">&#8358;0</div>
+      <div class="bl-num" id="sAvailable">₦0</div>
       <div class="bl-note">Approved commissions only. You'll be paid by manual bank transfer.</div>
     </div>
     <a class="btn" href="/affiliates/funds">Request Withdrawal</a>
@@ -96,14 +96,14 @@
     list.forEach(function (o) {
       var checkout = o.checkout_url || (siteUrl + '/checkout');
       var link = checkout + '?pp=' + partner.code;
-      var price = o.price_kobo ? '&#8358;' + Math.round(o.price_kobo / 100).toLocaleString() : '';
+      var price = o.price_kobo ? '₦' + Math.round(o.price_kobo / 100).toLocaleString() : '';
       var rate = o.commission_rate != null ? Math.round(o.commission_rate * 100) + '%' : '30%';
       html += '<div class="offer-card">' +
         '<div class="oh"><div><h3>' + App.esc(o.name) + '</h3>' +
         (price ? '<div class="mini-stat">' + price + ' &middot; <span style="color:#888;">' + App.esc(o.description || '') + '</span></div>' : '<div class="od">' + App.esc(o.description || '') + '</div>') +
         '</div><span class="earn">Earn ' + rate + '</span></div>' +
         '<div class="link-row"><div class="link-val">' + App.esc(link) + '</div>' +
-        '<button class="copy-btn" onclick="App.copyLink(this,\'' + App.esc(link).replace(/'/g, '&#39;') + '\')">Copy</button></div>' +
+        '<button class="copy-btn" data-copy="' + App.esc(link) + '" onclick="App.copyLink(this, this.getAttribute(\'data-copy\'))">Copy</button></div>' +
         '</div>';
     });
     grid.innerHTML = html;
@@ -114,9 +114,9 @@
       if (d.ok) {
         document.getElementById('sClicks').textContent = d.clicks || 0;
         document.getElementById('sConversions').textContent = d.conversions || 0;
-        document.getElementById('sEarnings').textContent = '&#8358;' + App.fmt(d.earned_kobo || 0);
-        document.getElementById('sPending').textContent = '&#8358;' + App.fmt(d.pending_kobo || 0);
-        document.getElementById('sAvailable').textContent = '&#8358;' + App.fmt(d.available_kobo || 0);
+        document.getElementById('sEarnings').textContent = '₦' + App.fmt(d.earned_kobo || 0);
+        document.getElementById('sPending').textContent = '₦' + App.fmt(d.pending_kobo || 0);
+        document.getElementById('sAvailable').textContent = '₦' + App.fmt(d.available_kobo || 0);
       }
     }).catch(function () {});
   }
@@ -127,7 +127,7 @@
         document.getElementById('commCount').textContent = d.commissions.length + ' sale' + (d.commissions.length !== 1 ? 's' : '');
         var html = '';
         d.commissions.forEach(function (c) {
-          html += '<tr><td>' + App.fmtDate(c.created_at) + '</td><td>' + App.esc(c.offer_name || '-') + '</td><td>' + App.esc(c.customer_email) + '</td><td class="num">&#8358;' + App.fmt(c.commission_kobo) + '</td><td><span class="status ' + App.esc(c.status) + '">' + App.esc(c.status) + '</span></td></tr>';
+          html += '<tr><td>' + App.fmtDate(c.created_at) + '</td><td>' + App.esc(c.offer_name || '-') + '</td><td>' + App.esc(c.customer_email) + '</td><td class="num">₦' + App.fmt(c.commission_kobo) + '</td><td><span class="status ' + App.esc(c.status) + '">' + App.esc(c.status) + '</span></td></tr>';
         });
         document.getElementById('commBody').innerHTML = html;
         document.querySelector('.tbl-wrap table').style.display = '';

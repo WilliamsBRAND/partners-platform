@@ -57,7 +57,7 @@
         return '<div class="lb-row' + (isMe ? ' me' : '') + '">' +
           '<div class="lb-rank">' + (i + 1) + '</div>' +
           '<div class="lb-who"><div class="n">' + App.esc(r.name) + me + '</div><div class="c">CODE: ' + App.esc(r.code) + '</div></div>' +
-          '<div class="lb-val"><div class="earned">&#8358;' + App.fmt(r.earned_kobo) + '</div><div class="sales">' + r.sales + ' sale' + (r.sales !== 1 ? 's' : '') + '</div></div>' +
+          '<div class="lb-val"><div class="earned">₦' + App.fmt(r.earned_kobo) + '</div><div class="sales">' + r.sales + ' sale' + (r.sales !== 1 ? 's' : '') + '</div></div>' +
         '</div>';
       }).join('');
       rows.innerHTML = html;
