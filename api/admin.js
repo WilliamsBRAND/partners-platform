@@ -85,14 +85,15 @@ async function products(req, res, db) {
     if (error) return json(res, 500, { error: 'Failed to load products.' });
 
     const enriched = await Promise.all((data || []).map(async (p) => {
-      const [{ data: mats }, { data: affCount2 }] = await Promise.all([
+      const [{ data: mats }, matCount, affCount] = await Promise.all([
         db.from('marketing_materials').select('id').eq('product_id', p.id),
+        db.from('marketing_materials').select('id', { count: 'exact', head: true }).eq('product_id', p.id),
         db.from('affiliate_products').select('id', { count: 'exact', head: true }).eq('product_id', p.id),
       ]);
       // Never expose the Paystack secret key to the browser.
       const publicProduct = { ...p };
       delete publicProduct.paystack_secret_key;
-      return { ...publicProduct, material_count: (mats || []).length, affiliate_count: affCount2.count || 0 };
+      return { ...publicProduct, material_count: (mats || []).length, affiliate_count: (affCount && affCount.count) || 0 };
     }));
     return json(res, 200, { ok: true, products: enriched });
   }
