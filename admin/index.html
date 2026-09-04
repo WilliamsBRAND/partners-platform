@@ -28,6 +28,8 @@
 .err{color:var(--red);font-size:13px;margin-bottom:8px;}
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:as .7s linear infinite;vertical-align:middle;margin-right:8px;}
 @keyframes as{to{transform:rotate(360deg);}}
+.loading{display:flex;align-items:center;gap:10px;padding:34px 0;color:var(--muted);font-size:13px;}
+.loading .bar{width:18px;height:18px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--crimson);border-radius:50%;animation:as .7s linear infinite;flex-shrink:0;}
 
 /* ---- Admin content extras (reuse app.css for sidebar/tables/cards) ---- */
 .content-admin{flex:1;min-width:0;}
@@ -297,6 +299,7 @@ function loadPanel(id){
   if(loaded[id])return;
   loaded[id]=true;
   window._panelsLoaded=loaded;
+  setPanelLoading(id);
   if(id==='panelOverview')loadOverview();
   else if(id==='panelProducts'){loadProducts();}
   else if(id==='panelAffiliates')loadAffiliations();
@@ -337,7 +340,18 @@ function badge(){
   }).catch(function(){});
 }
 
-// ---- OVERVIEW ----
+// Show a loading placeholder inside a panel's content area while its first
+// data call is in flight, so navigating never shows a blank void.
+function setPanelLoading(id){
+  var map = { panelOverview:'overviewStats', panelProducts:'prodBody', panelAffiliates:'affBody', panelCommissions:'commBody', panelPayouts:'payBody', panelNotif:'notifList' };
+  var el = document.getElementById(map[id]);
+  if(el){
+    el.innerHTML = '<div class="loading"><div class="bar"></div>Loading&hellip;</div>';
+    var empties = { panelProducts:'emptyProd', panelAffiliates:'emptyAff', panelCommissions:'emptyComm', panelPayouts:'emptyPay' };
+    if (empties[id]){ var e = document.getElementById(empties[id]); if(e) e.style.display='none'; }
+  }
+}
+
 function loadOverview(){
   Promise.all([
     api('/api/admin?action=products'),
