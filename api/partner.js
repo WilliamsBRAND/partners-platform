@@ -6,6 +6,9 @@ import {
   buildReferralLink,
   commissionFor,
   generateCode,
+  generatePartnerId,
+  hashPassword,
+  verifyPassword,
   signToken,
   verifyToken,
   koboToNaira,
@@ -38,6 +41,7 @@ const VALID_ACTION = {
   profile: profile,
   materials: materials,
   update: updateProfile,
+  changePassword: changePassword,
 };
 
 export default async function handler(req, res) {
@@ -70,6 +74,7 @@ export default async function handler(req, res) {
     if (action === 'withdraw') return await withdraw(req, res, db, partnerId);
     if (action === 'profile') return await profile(req, res, db, partnerId);
     if (action === 'update') return await updateProfile(req, res, db, partnerId);
+    if (action === 'change-password') return await changePassword(req, res, db, partnerId);
 
     return json(res, 400, { error: 'Unknown action.' });
   } catch (e) {
@@ -85,55 +90,57 @@ function isAuthed(req) { return !!getPartnerId(req); }
 // ---------------------------------------------------------------------------
 async function register(req, res, db) {
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
-  const { name, email, phone, bank_name, account_number, account_name } = req.body || {};
+  const { name, email, phone, password } = req.body || {};
   if (!name || !email) return json(res, 400, { error: 'Name and email are required.' });
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json(res, 400, { error: 'Invalid email.' });
-  if (!bank_name || !account_number || !account_name) {
-    return json(res, 400, { error: 'Bank name, account number, and account name are required.' });
-  }
-  if (!/^\d{10}$/.test(String(account_number || '').replace(/\s/g, ''))) {
-    return json(res, 400, { error: 'Please enter a valid 10-digit account number.' });
+  if (!password || String(password).length < 6) {
+    return json(res, 400, { error: 'Password must be at least 6 characters.' });
   }
 
   const emailNorm = email.toLowerCase().trim();
   const { data: existing } = await db.from('partners').select('id').eq('email', emailNorm).maybeSingle();
   if (existing) return json(res, 409, { error: 'An account with this email already exists.' });
 
-  let code = generateCode(name);
-  for (let i = 0; i < 10; i++) {
-    const { data: dup } = await db.from('partners').select('id').eq('code', code).maybeSingle();
-    if (!dup) break;
-    code = generateCode(name);
-  }
+  // Unique clean partner ID (also the referral code, used in pp=CODE links).
+  const { data: allCodes } = await db.from('partners').select('code');
+  const code = generatePartnerId((allCodes || []).map(r => r.code));
+  const password_hash = hashPassword(password);
 
   const { data, error } = await db.from('partners').insert({
     code,
     name: name.trim(),
     email: emailNorm,
     phone: phone || null,
-    bank_name: bank_name.trim(),
-    account_number: String(account_number).replace(/\s/g, ''),
-    account_name: account_name.trim(),
+    password_hash,
     status: 'active',
-  }).select('id, code, name, email, bank_name, account_number, account_name').single();
+  }).select('id, code, name, email, phone, bank_name, account_number, account_name').single();
 
-  if (error) return json(res, 500, { error: 'Failed to create account.' });
+  if (error) return json(res, 500, { error: error.message === 'null value in column "bank_name" violates not-null constraint' ? 'Sign up is fixed — please try again.' : 'Failed to create account.' });
   const token = signToken({ sub: data.id, exp: Date.now() + 30 * 24 * 60 * 60 * 1000 }, partnerSecret());
   return json(res, 200, { ok: true, ...data, token });
 }
 
 async function login(req, res, db) {
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
-  const { email } = req.body || {};
-  if (!email) return json(res, 400, { error: 'Email is required.' });
+  const { email, password } = req.body || {};
+  if (!email || !password) return json(res, 400, { error: 'Email and password are required.' });
 
   const { data } = await db.from('partners')
-    .select('id, code, name, email, bank_name, account_number, account_name')
+    .select('id, code, name, email, bank_name, account_number, account_name, password_hash')
     .eq('email', email.toLowerCase().trim()).eq('status', 'active').maybeSingle();
 
   if (!data) return json(res, 404, { error: 'No active partner account found with that email.' });
+
+  // Partners created before password support (or admin-imported) have no hash.
+  // Require them to set a password once rather than leaving a magic-login hole open.
+  if (!data.password_hash) return json(res, 403, { error: 'Set a password to continue.' });
+  if (!verifyPassword(password, data.password_hash)) {
+    return json(res, 401, { error: 'Incorrect password.' });
+  }
+
+  const safe = { id: data.id, code: data.code, name: data.name, email: data.email, bank_name: data.bank_name, account_number: data.account_number, account_name: data.account_name };
   const token = signToken({ sub: data.id, exp: Date.now() + 30 * 24 * 60 * 60 * 1000 }, partnerSecret());
-  return json(res, 200, { ok: true, ...data, token });
+  return json(res, 200, { ok: true, ...safe, token });
 }
 
 // ---------------------------------------------------------------------------
@@ -391,6 +398,11 @@ async function withdraw(req, res, db, partnerId) {
 
   if (!partner) return json(res, 404, { error: 'Partner not found.' });
 
+  const hasBank = partner.bank_name && partner.account_number && partner.account_name;
+  if (!hasBank) {
+    return json(res, 400, { ok: false, need_bank: true, error: 'Add your bank details in your profile before making a withdrawal.' });
+  }
+
   const earned = (comms || []).filter(c => c.status === 'approved' || c.status === 'processing' || c.status === 'paid')
     .reduce((s, c) => s + c.commission_kobo, 0);
   const paidPayouts = (payouts || []).filter(p => p.status === 'processing' || p.status === 'completed').reduce((s, p) => s + p.amount_kobo, 0);
@@ -462,6 +474,22 @@ async function updateProfile(req, res, db, partnerId) {
     .select('id, code, name, email, phone, bank_name, account_number, account_name').single();
   if (error) return json(res, 500, { error: 'Failed to update profile.' });
   return json(res, 200, { ok: true, profile: data });
+}
+
+async function changePassword(req, res, db, partnerId) {
+  if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
+  const { current_password, new_password } = req.body || {};
+  if (!current_password || !new_password) return json(res, 400, { error: 'Current and new password are required.' });
+  if (String(new_password).length < 6) return json(res, 400, { error: 'New password must be at least 6 characters.' });
+
+  const { data } = await db.from('partners').select('password_hash').eq('id', partnerId).maybeSingle();
+  if (!data) return json(res, 404, { error: 'Partner not found.' });
+  if (data.password_hash && !verifyPassword(current_password, data.password_hash)) {
+    return json(res, 401, { error: 'Current password is incorrect.' });
+  }
+  const { error } = await db.from('partners').update({ password_hash: hashPassword(new_password) }).eq('id', partnerId);
+  if (error) return json(res, 500, { error: 'Failed to update password.' });
+  return json(res, 200, { ok: true });
 }
 
 async function materials(req, res, db, partnerId, url) {

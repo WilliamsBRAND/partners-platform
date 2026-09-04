@@ -182,3 +182,30 @@ from partners p
 join products pr on pr.slug = 'nexora'
 where p.status = 'active'
 on conflict (partner_id, product_id) do nothing;
+
+-- ============================================================================
+-- 11. PASSWORD AUTH + CLEAN PARTNER IDS (v2.1)
+--     Partners sign up with name/email/phone/password (NO bank details at signup).
+--     Bank/payout details are added from the Profile and required before the
+--     first withdrawal. Every partner gets a clean unique ID (TWXXXXXX) that
+--     doubles as their referral code (pp=TWXXXXXX).
+-- ============================================================================
+alter table partners add column if not exists password_hash text;
+
+-- Normalise existing referral codes into clean unique IDs (TW + 6 digits).
+-- Only touches codes that aren't already in TWxxxxxx form.
+do $$
+declare
+  r record;
+  n int;
+  newid text;
+begin
+  for r in select id, code from partners where status = 'active' and (code is null or code !~ '^TW[0-9]{6}$') loop
+    loop
+      n := 1 + floor(random() * 999999);
+      newid := 'TW' || lpad(n::text, 6, '0');
+      exit when not exists (select 1 from partners where code = newid);
+    end loop;
+    update partners set code = newid where id = r.id;
+  end loop;
+end $$;

@@ -55,7 +55,7 @@ input::placeholder{color:#555;}
 
 <div class="card" id="formCard">
   <h1>Create your account</h1>
-  <p class="sub">Get your unique referral link and start earning. You'll need your bank details for payouts.</p>
+  <p class="sub">Get your unique ID and referral link. Add your bank details later in your profile.</p>
 
   <form id="regForm">
     <div class="field">
@@ -71,16 +71,12 @@ input::placeholder{color:#555;}
       <input type="tel" id="phone" placeholder="0801 234 5678" />
     </div>
     <div class="field">
-      <label>Bank Name</label>
-      <input type="text" id="bank_name" placeholder="e.g. GTBank, Access, Kuda" required />
+      <label>Password</label>
+      <input type="password" id="password" placeholder="At least 6 characters" required autocomplete="new-password" />
     </div>
     <div class="field">
-      <label>Account Number</label>
-      <input type="text" id="account_number" placeholder="e.g. 0123456789" inputmode="numeric" required />
-    </div>
-    <div class="field">
-      <label>Account Name</label>
-      <input type="text" id="account_name" placeholder="Name on account" required />
+      <label>Confirm Password</label>
+      <input type="password" id="confirm_password" placeholder="Re-enter your password" required autocomplete="new-password" />
     </div>
     <div class="err" id="err"></div>
     <button class="btn" type="submit" id="submitBtn">Create Account</button>
@@ -92,12 +88,12 @@ input::placeholder{color:#555;}
 <div class="card success" id="successCard">
   <div class="icon">✓</div>
   <h2>You're in!</h2>
-  <p>Your partner account is ready. Here's your referral code:</p>
+  <p>Your partner account is ready. Here's your unique partner ID:</p>
   <div class="code-box">
-    <div class="label">Your referral code</div>
+    <div class="label">Your partner ID</div>
     <div class="code" id="partnerCode"></div>
   </div>
-  <p style="font-size:13px;color:#999;line-height:1.6;margin-bottom:20px;">Head to the <b style="color:#fff;">Products</b> marketplace to choose what you want to promote and get your tracked links — then share them anywhere to start earning.</p>
+  <p style="font-size:13px;color:#999;line-height:1.6;margin-bottom:20px;">Head to the <b style="color:#fff;">Products</b> marketplace to choose what you want to promote and get your tracked links — then share them anywhere to start earning. Add your <b style="color:#fff;">bank details</b> in your profile before your first withdrawal.</p>
   <a href="/affiliates/marketplace" class="btn" style="text-decoration:none;text-align:center;display:block;">Go to Products</a>
   <a href="/affiliates/dashboard" class="link">Or go to Dashboard</a>
 </div>
@@ -115,14 +111,13 @@ input::placeholder{color:#555;}
     var name = document.getElementById('name').value.trim();
     var email = document.getElementById('email').value.trim();
     var phone = document.getElementById('phone').value.trim();
-    var bank_name = document.getElementById('bank_name').value.trim();
-    var account_number = document.getElementById('account_number').value.trim();
-    var account_name = document.getElementById('account_name').value.trim();
+    var password = document.getElementById('password').value;
+    var confirm_password = document.getElementById('confirm_password').value;
 
     if(!name){ errEl.textContent = 'Please enter your name.'; return; }
     if(!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ errEl.textContent = 'Please enter a valid email.'; return; }
-    if(!bank_name || !account_number || !account_name){ errEl.textContent = 'Please provide your bank details for payouts.'; return; }
-    if(!/^\d{10}$/.test(account_number.replace(/\s/g,''))){ errEl.textContent = 'Please enter a valid 10-digit account number.'; return; }
+    if(!password || password.length < 6){ errEl.textContent = 'Password must be at least 6 characters.'; return; }
+    if(password !== confirm_password){ errEl.textContent = 'Passwords do not match.'; return; }
 
     errEl.textContent = '';
     btn.disabled = true;
@@ -131,7 +126,7 @@ input::placeholder{color:#555;}
     fetch('/api/partner?action=register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name, email: email, phone: phone, bank_name: bank_name, account_number: account_number.replace(/\s/g,''), account_name: account_name })
+      body: JSON.stringify({ name: name, email: email, phone: phone, password: password })
     })
     .then(function(r){ return r.json(); })
     .then(function(d){

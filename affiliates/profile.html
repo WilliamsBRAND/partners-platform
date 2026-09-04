@@ -27,7 +27,8 @@
 
   <div class="card form-card">
     <div style="margin-bottom:20px;">
-      <div class="frow"><label>Your referral code</label><span class="code-pill" id="code">—</span></div>
+      <div class="frow"><label>Your partner ID</label><span class="code-pill" id="code">—</span></div>
+      <p style="font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:-8px;margin-bottom:6px;">This is your account ID and your referral code for links. Add your bank details below before your first withdrawal.</p>
     </div>
     <div class="frow"><label>Full name</label><input id="name" type="text"></div>
     <div class="frow"><label>Email (login)</label><input id="email" type="email" disabled></div>
@@ -37,6 +38,14 @@
     <div class="frow"><label>Account name</label><input id="account_name" type="text"></div>
     <div class="err" id="err"></div>
     <button class="btn" id="save" style="width:100%;">Save changes</button>
+  </div>
+
+  <div class="card form-card" style="margin-top:20px;">
+    <div class="frow"><label>Change password</label><input id="curpw" type="password" placeholder="Current password" autocomplete="current-password"></div>
+    <div class="frow"><label>New password</label><input id="newpw" type="password" placeholder="At least 6 characters" autocomplete="new-password"></div>
+    <div class="frow"><label>Confirm new password</label><input id="newpw2" type="password" placeholder="Re-enter new password" autocomplete="new-password"></div>
+    <div class="err" id="pwErr"></div>
+    <button class="btn" id="savePw" style="width:100%;background:rgba(255,255,255,.06);color:#fff;">Update password</button>
   </div>
 </div>
 
@@ -82,6 +91,30 @@
         } catch (e) {}
       } else {
         errEl.textContent = (d && d.error) || 'Something went wrong.';
+      }
+    });
+  });
+
+  var pwErr = document.getElementById('pwErr');
+  document.getElementById('savePw').addEventListener('click', function () {
+    var btn = document.getElementById('savePw');
+    var cur = document.getElementById('curpw').value;
+    var npw = document.getElementById('newpw').value;
+    var npw2 = document.getElementById('newpw2').value;
+    pwErr.textContent = '';
+    if (!cur) { pwErr.textContent = 'Enter your current password.'; return; }
+    if (!npw || npw.length < 6) { pwErr.textContent = 'New password must be at least 6 characters.'; return; }
+    if (npw !== npw2) { pwErr.textContent = 'New passwords do not match.'; return; }
+    btn.disabled = true; btn.textContent = 'Updating...';
+    App.api('change-password', { method: 'POST', body: JSON.stringify({ current_password: cur, new_password: npw }) }).then(function (d) {
+      btn.disabled = false; btn.textContent = 'Update password';
+      if (d && d.ok) {
+        App.snack('Password updated.');
+        document.getElementById('curpw').value = '';
+        document.getElementById('newpw').value = '';
+        document.getElementById('newpw2').value = '';
+      } else {
+        pwErr.textContent = (d && d.error) || 'Something went wrong.';
       }
     });
   });

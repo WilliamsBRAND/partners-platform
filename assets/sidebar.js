@@ -99,6 +99,11 @@
           setTimeout(function () { window.location.reload(); }, 900);
         } else {
           if (d.error === 'Unauthorized. Please log in.') { logout(); return; }
+          if (d.need_bank) {
+            errEl.textContent = 'Add your bank details to your profile to withdraw.';
+            setTimeout(function () { window.location.href = '/affiliates/profile'; }, 1400);
+            return;
+          }
           errEl.textContent = d.error || 'Something went wrong.';
         }
       })

@@ -48,12 +48,16 @@ input::placeholder{color:#555;}
 
 <div class="card">
   <h1>Welcome back</h1>
-  <p class="sub">Enter your email to access your dashboard.</p>
+  <p class="sub">Log in with your email and password.</p>
 
   <form id="loginForm">
     <div class="field">
       <label>Email Address</label>
       <input type="email" id="email" placeholder="you@example.com" required />
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Your password" required />
     </div>
     <div class="err" id="err"></div>
     <button class="btn" type="submit" id="submitBtn">Log In</button>
@@ -71,10 +75,12 @@ input::placeholder{color:#555;}
   form.addEventListener('submit', function(e){
     e.preventDefault();
     var email = document.getElementById('email').value.trim();
+    var password = document.getElementById('password').value;
     if(!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
       errEl.textContent = 'Please enter a valid email.';
       return;
     }
+    if(!password){ errEl.textContent = 'Please enter your password.'; return; }
     errEl.textContent = '';
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Logging in...';
@@ -82,7 +88,7 @@ input::placeholder{color:#555;}
     fetch('/api/partner?action=login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email })
+      body: JSON.stringify({ email: email, password: password })
     })
     .then(function(r){ return r.json(); })
     .then(function(d){

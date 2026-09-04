@@ -58,6 +58,39 @@ export function generateCode(name) {
   return (base + rand).slice(0, 12);
 }
 
+// Clean unique partner ID, e.g. TW000123. Used as both account ID and referral
+// code in links (pp=TW000123). Guarantees a 6-digit zero-padded numeric suffix.
+export function generatePartnerId(existingCodes) {
+  const used = new Set(existingCodes || []);
+  for (let i = 0; i < 100; i++) {
+    const n = 1 + Math.floor(Math.random() * 999999); // avoid leading and last weirdness
+    const id = 'TW' + String(n).padStart(6, '0');
+    if (!used.has(id)) return id;
+  }
+  // Extremely unlikely fallback — append a random alpha suffix
+  return 'TW' + String(1 + Math.floor(Math.random() * 999999)).padStart(6, '0') + Math.random().toString(36).slice(2, 5).toUpperCase();
+}
+
+// ---- Password hashing (Node built-in crypto.scryptSync — no extra dependency) ----
+// Format: "scrypt$<salt>$<hash>" where salt and hash are base64.
+export function hashPassword(password) {
+  const salt = crypto.randomBytes(16);
+  const hash = crypto.scryptSync(String(password), salt, 64);
+  return 'scrypt$' + salt.toString('base64') + '$' + hash.toString('base64');
+}
+
+export function verifyPassword(password, stored) {
+  if (!stored) return false;
+  const parts = String(stored).split('$');
+  if (parts.length !== 3 || parts[0] !== 'scrypt') return false;
+  const salt = Buffer.from(parts[1], 'base64');
+  const hash = crypto.scryptSync(String(password), salt, 64);
+  const a = Buffer.from(parts[2], 'base64');
+  const b = hash;
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
+}
+
 export function koboToNaira(kobo) {
   return ((kobo || 0) / 100).toFixed(2);
 }
