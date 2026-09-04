@@ -209,3 +209,17 @@ begin
     update partners set code = newid where id = r.id;
   end loop;
 end $$;
+
+-- ============================================================================
+-- 12. ADMINS — email + password admin accounts (v2.2)
+--     The admin dashboard now logs in with an admin email + password, mirroring
+--     partner auth. Seed the admin account with a scrypt hash (done by the
+--     migration runner, not SQL, because scrypt is unavailable in plain SQL).
+-- ============================================================================
+create table if not exists admins (
+  id uuid primary key default gen_random_uuid(),
+  email text unique not null,
+  name text,
+  password_hash text,
+  created_at timestamptz default now()
+);

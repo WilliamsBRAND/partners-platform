@@ -1,7 +1,7 @@
 // Partners Admin API — product management, affiliate management, commissions,
 // payouts, and notifications. Admin auth via HMAC token (ADMIN_TOKEN_SECRET).
 import { getDb, json } from './_db.js';
-import { signToken, verifyToken, koboToNaira } from './_helpers.js';
+import { signToken, verifyToken, koboToNaira, verifyPassword } from './_helpers.js';
 
 function adminSecret() {
   return process.env.ADMIN_TOKEN_SECRET || process.env.ADMIN_PASSWORD || '';
@@ -18,9 +18,12 @@ function getToken(req) {
   return url.searchParams.get('token') || '';
 }
 
-function isAuthed(req) {
+async function isAuthed(req) {
   const payload = verifyToken(getToken(req), adminSecret());
-  return payload && payload.sub === 'admin';
+  if (!payload || !payload.sub) return false;
+  // Validate the token subject is a real admin account (defence in depth).
+  const { data } = await getDb().from('admins').select('id').eq('email', String(payload.sub).toLowerCase().trim()).maybeSingle();
+  return !!data;
 }
 
 export default async function handler(req, res) {
@@ -31,9 +34,9 @@ export default async function handler(req, res) {
   const action = url.searchParams.get('action') || '';
 
   try {
-    if (action === 'auth') return await auth(req, res);
+    if (action === 'auth') return await auth(req, res, db);
 
-    if (!isAuthed(req)) return json(res, 401, { error: 'Unauthorized.' });
+    if (!(await isAuthed(req))) return json(res, 401, { error: 'Unauthorized.' });
 
     switch (action) {
       case 'products': return await products(req, res, db);
@@ -54,14 +57,23 @@ export default async function handler(req, res) {
   }
 }
 
-async function auth(req, res) {
+async function auth(req, res, db) {
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
-  const { password } = req.body || {};
-  const adminPass = process.env.ADMIN_PASSWORD || '';
-  if (!adminPass) return json(res, 500, { error: 'Admin password not configured.' });
-  if (password !== adminPass) return json(res, 401, { error: 'Wrong password.' });
-  const token = signToken({ sub: 'admin', exp: Date.now() + 12 * 60 * 60 * 1000 }, adminSecret());
-  return json(res, 200, { ok: true, token });
+  const { email, password } = req.body || {};
+  if (!email || !password) return json(res, 400, { error: 'Email and password are required.' });
+
+  const norm = String(email).toLowerCase().trim();
+  const { data } = await db.from('admins')
+    .select('id, email, name, password_hash')
+    .eq('email', norm).maybeSingle();
+
+  if (!data) return json(res, 401, { error: 'Invalid email or password.' });
+  if (!data.password_hash || !verifyPassword(password, data.password_hash)) {
+    return json(res, 401, { error: 'Invalid email or password.' });
+  }
+
+  const token = signToken({ sub: data.email, exp: Date.now() + 12 * 60 * 60 * 1000 }, adminSecret());
+  return json(res, 200, { ok: true, token, name: data.name || 'Admin', email: data.email });
 }
 
 // ---------------------------------------------------------------------------
