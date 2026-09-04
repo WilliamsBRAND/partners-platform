@@ -298,35 +298,8 @@ footer{border-top:1px solid var(--line);padding:48px 0 32px;background:var(--bla
       <h2>Choose What You Want to Promote</h2>
       <p>See what each offer is about, who it is for and how much you can earn from every sale.</p>
     </div>
-    <div class="offers-grid">
-      <div class="offer">
-        <div class="offer-tag">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-          Course
-        </div>
-        <h3>NEXORA</h3>
-        <p>Practical lessons to help people make money, grow their careers, build businesses, use AI and improve their lives.</p>
-        <div class="offer-stats">
-          <span class="stat-pill">&#8358;7,490 per sale</span>
-          <span class="stat-pill">30% commission</span>
-        </div>
-        <a class="btn btn-primary" href="/affiliates/register">Promote NEXORA</a>
-      </div>
-      <div class="offer">
-        <div class="offer-tag">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-          Programme
-        </div>
-        <h3>AAIM</h3>
-        <p>A hands-on programme teaching young professionals how to use AI to accelerate their careers, build side income and stand out in any industry.</p>
-        <div class="offer-stats">
-          <span class="stat-pill">&#8358;5,997 per sale</span>
-          <span class="stat-pill">30% commission</span>
-        </div>
-        <a class="btn btn-primary" href="/affiliates/register">Promote AAIM</a>
-      </div>
-    </div>
-    <p class="offers-note">More offers will be added regularly.</p>
+    <div class="offers-grid" id="offers-grid"></div>
+    <p class="offers-note">New offers are added regularly. Check back often.</p>
   </div>
 </section>
 
@@ -616,32 +589,83 @@ footer{border-top:1px solid var(--line);padding:48px 0 32px;background:var(--bla
 
 <script>
 (function(){
-  // Nav scroll state
-  var nav=document.getElementById('nav');
-  window.addEventListener('scroll',function(){
-    nav.classList.toggle('scrolled',window.scrollY>40);
-  },{passive:true});
 
-  // Scroll reveal
-  var targets=document.querySelectorAll('.section-head,.step,.offer,.dash-card,.benefit,.plat-tag,.payout-step,.faq-item,.promote-grid');
-  targets.forEach(function(el){el.classList.add('reveal');});
-  document.querySelectorAll('.step').forEach(function(el,i){el.classList.add('rd-'+(i+1));});
-  document.querySelectorAll('.offer').forEach(function(el,i){el.classList.add('rd-'+(i+1));});
-  document.querySelectorAll('.dash-card').forEach(function(el,i){el.classList.add('rd-'+(i+1));});
-  document.querySelectorAll('.benefit').forEach(function(el,i){el.classList.add('rd-'+(i%3+1));});
-  document.querySelectorAll('.faq-item').forEach(function(el,i){el.classList.add('rd-'+(i%4+1));});
+  // ===== OFFERS DATA =====
+  // To add a new offer, just append an object to this array. The page renders it automatically.
+  var OFFERS = [
+    {
+      name: 'NEXORA',
+      category: 'Career',
+      categoryIcon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>',
+      description: 'Practical lessons to help people make money, grow their careers, build businesses, use AI and improve their lives.',
+      priceRange: '\u20a65,000 \u2013 \u20a625,000',
+      commissionRate: 30,
+      commissionRange: '\u20a61,500 \u2013 \u20a67,500',
+      cta: 'Get Your Link'
+    },
+    {
+      name: 'AAIM',
+      category: 'AI',
+      categoryIcon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="12" cy="15" r="2"/></svg>',
+      description: 'A hands-on programme teaching young professionals how to use AI to accelerate their careers, build side income and stand out in any industry.',
+      priceRange: '\u20a655,000 \u2013 \u20a6100,000',
+      commissionRate: 30,
+      commissionRange: '\u20a616,500 \u2013 \u20a630,000',
+      cta: 'Get Your Link'
+    }
+  ];
 
-  var obs=new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if(e.isIntersecting){e.target.classList.add('in-view');obs.unobserve(e.target);}
+  // ===== RENDER OFFERS =====
+  var grid = document.getElementById('offers-grid');
+  if (grid) {
+    var html = '';
+    OFFERS.forEach(function(o) {
+      html += '<div class="offer">' +
+        '<div class="offer-tag">' + o.categoryIcon + ' ' + o.category + '</div>' +
+        '<h3>' + o.name + '</h3>' +
+        '<p>' + o.description + '</p>' +
+        '<div class="offer-stats">' +
+          '<span class="stat-pill">Earn ' + o.commissionRange + ' per sale</span>' +
+          '<span class="stat-pill">' + o.commissionRate + '% commission</span>' +
+        '</div>' +
+        '<a class="btn btn-primary" href="/affiliates/register">' + o.cta + '</a>' +
+      '</div>';
     });
-  },{threshold:0.1,rootMargin:'0px 0px -30px 0px'});
-  document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
+    grid.innerHTML = html;
+  }
 
-  // Hero load animation
-  document.querySelectorAll('.hero-tag,.hero h1,.hero .lead,.hero-btns').forEach(function(el,i){
-    el.style.opacity='0';el.style.transform='translateY(20px)';
-    setTimeout(function(){el.style.transition='opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1)';el.style.opacity='1';el.style.transform='translateY(0)';},150+i*120);
+  // ===== NAV SCROLL =====
+  var nav = document.getElementById('nav');
+  window.addEventListener('scroll', function() {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  }, {passive: true});
+
+  // ===== SCROLL REVEAL =====
+  function setupReveals() {
+    var targets = document.querySelectorAll('.section-head,.step,.offer,.dash-card,.benefit,.plat-tag,.payout-step,.faq-item,.promote-grid');
+    targets.forEach(function(el) { el.classList.add('reveal'); });
+    document.querySelectorAll('.step').forEach(function(el, i) { el.classList.add('rd-' + (i + 1)); });
+    document.querySelectorAll('.offer').forEach(function(el, i) { el.classList.add('rd-' + (i + 1)); });
+    document.querySelectorAll('.dash-card').forEach(function(el, i) { el.classList.add('rd-' + (i + 1)); });
+    document.querySelectorAll('.benefit').forEach(function(el, i) { el.classList.add('rd-' + (i % 3 + 1)); });
+    document.querySelectorAll('.faq-item').forEach(function(el, i) { el.classList.add('rd-' + (i % 4 + 1)); });
+  }
+  setupReveals();
+
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('in-view'); obs.unobserve(e.target); }
+    });
+  }, {threshold: 0.1, rootMargin: '0px 0px -30px 0px'});
+  document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
+
+  // ===== HERO LOAD ANIMATION =====
+  document.querySelectorAll('.hero-tag,.hero h1,.hero .lead,.hero-btns').forEach(function(el, i) {
+    el.style.opacity = '0'; el.style.transform = 'translateY(20px)';
+    setTimeout(function() {
+      el.style.transition = 'opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1)';
+      el.style.opacity = '1'; el.style.transform = 'translateY(0)';
+    }, 150 + i * 120);
   });
 })();
 </script>
