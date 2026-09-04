@@ -7,209 +7,250 @@
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --crimson:#7A0A15;
-  --crimson-dark:#9B0D1A;
+  --crimson-mid:#9B0D1A;
   --crimson-bright:#e88a93;
-  --white:#ffffff;
-  --offwhite:#f5f2ef;
+  --crimson-glow:rgba(122,10,21,.35);
   --black:#050505;
-  --bg:#0a0a0a;
-  --panel:#111111;
+  --bg:#080808;
+  --surface:#0e0e0e;
+  --surface-2:#141414;
+  --surface-3:#1a1a1a;
   --ink:#ffffff;
-  --gray:#999999;
-  --line:rgba(255,255,255,.08);
-  --line-strong:rgba(255,255,255,.14);
+  --ink-2:#cfcbc8;
+  --ink-3:#999999;
+  --line:rgba(255,255,255,.06);
+  --line-hover:rgba(255,255,255,.12);
+  --radius:16px;
+  --radius-sm:10px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{
-  font-family:'Archivo',sans-serif;
+  font-family:'Inter',sans-serif;
   color:var(--ink);
   background:var(--bg);
-  line-height:1.6;
+  line-height:1.65;
   font-size:16px;
   -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
 }
 a{text-decoration:none;color:inherit;}
-.wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
-.wrap-wide{max-width:1100px;margin:0 auto;padding:0 24px;}
+img{max-width:100%;display:block;}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px;}
 
-/* ===== TOP BAR ===== */
+/* ===== NAV ===== */
 .nav{
-  position:sticky;top:0;z-index:1200;
-  background:var(--black);
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:rgba(8,8,8,.8);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-bottom:1px solid var(--line);
+  transition:background .3s;
 }
-.nav-inner{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px;}
-.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:19px;color:#fff;letter-spacing:-.01em;}
-.brand .logo-ico{width:30px;height:30px;}
-.brand .bb{display:flex;flex-direction:column;line-height:1.05;}
-.brand .bb .b1{font-weight:800;font-size:19px;color:#fff;}
-.nav-links{display:flex;gap:26px;align-items:center;}
-.nav-links a{font-weight:600;font-size:14px;color:#c9c9c9;}
-.nav-links a:hover{color:var(--crimson-bright);}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:'Archivo',sans-serif;font-weight:700;font-size:14px;border-radius:8px;padding:10px 18px;cursor:pointer;border:1px solid transparent;transition:.15s;}
-.btn-primary{background:var(--crimson);color:#fff;}
-.btn-primary:hover{background:var(--crimson-dark);}
-.btn-outline{background:transparent;border-color:var(--crimson);color:var(--crimson);}
-.btn-outline:hover{background:var(--crimson);color:#fff;}
-.btn-lg{padding:14px 26px;font-size:16px;border-radius:10px;}
-.nav-cta{padding:9px 18px;font-size:13px;border-radius:8px;}
+.nav.scrolled{background:rgba(8,8,8,.95);}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px;}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;color:#fff;letter-spacing:-.02em;}
+.brand svg{width:28px;height:28px;}
+.nav-links{display:flex;gap:32px;align-items:center;}
+.nav-links a{font-weight:500;font-size:13px;color:var(--ink-3);letter-spacing:.01em;transition:color .2s;}
+.nav-links a:hover{color:var(--ink);}
+.nav-cta{display:inline-flex;align-items:center;gap:6px;font-family:'Archivo',sans-serif;font-weight:700;font-size:13px;border-radius:var(--radius-sm);padding:9px 20px;background:var(--crimson);color:#fff;border:none;cursor:pointer;transition:all .2s;letter-spacing:.01em;}
+.nav-cta:hover{background:var(--crimson-mid);transform:translateY(-1px);}
+
+/* ===== BUTTONS ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;border-radius:var(--radius-sm);padding:14px 28px;cursor:pointer;border:none;transition:all .25s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;}
+.btn::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent);opacity:0;transition:opacity .25s;}
+.btn:hover::after{opacity:1;}
+.btn-primary{background:var(--crimson);color:#fff;box-shadow:0 4px 24px -6px var(--crimson-glow);}
+.btn-primary:hover{background:var(--crimson-mid);transform:translateY(-2px);box-shadow:0 8px 32px -8px var(--crimson-glow);}
+.btn-outline{background:transparent;color:var(--ink);border:1px solid rgba(255,255,255,.15);}
+.btn-outline:hover{border-color:var(--crimson);color:var(--crimson-bright);transform:translateY(-2px);}
+.btn-lg{padding:16px 32px;font-size:16px;border-radius:12px;}
 
 /* ===== HERO ===== */
-.hero{background:var(--black);color:#fff;}
-.hero .inner{max-width:1000px;margin:0 auto;padding:88px 24px 72px;text-align:center;}
-.hero .tag{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--crimson-bright);border:1px solid rgba(122,10,21,.4);padding:6px 14px;border-radius:100px;margin-bottom:26px;}
-.hero h1{font-size:clamp(34px,5vw,52px);line-height:1.08;font-weight:800;letter-spacing:-.02em;margin-bottom:20px;}
-.hero h1 em{font-style:normal;color:var(--crimson-bright);}
-.hero p.lead{font-size:19px;color:#cfcbc8;max-width:640px;margin:0 auto 34px;font-weight:400;}
+.hero{position:relative;padding:160px 0 120px;overflow:hidden;}
+.hero::before{content:"";position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,var(--crimson-glow),transparent 70%);top:-180px;left:50%;transform:translateX(-50%);filter:blur(60px);animation:pulse 8s ease-in-out infinite alternate;}
+@keyframes pulse{0%{opacity:.4;transform:translateX(-50%) scale(1);}100%{opacity:.7;transform:translateX(-50%) scale(1.15);}}
+.hero-inner{text-align:center;position:relative;z-index:1;}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--crimson-bright);background:rgba(122,10,21,.1);border:1px solid rgba(122,10,21,.25);padding:8px 18px;border-radius:100px;margin-bottom:32px;}
+.hero-tag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--crimson-bright);animation:dot-pulse 2s ease-in-out infinite;}
+@keyframes dot-pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hero h1{font-family:'Archivo',sans-serif;font-size:clamp(38px,6vw,62px);font-weight:900;line-height:1.05;letter-spacing:-.03em;max-width:780px;margin:0 auto 24px;}
+.hero h1 .accent{color:var(--crimson-bright);}
+.hero .lead{font-size:18px;color:var(--ink-2);max-width:580px;margin:0 auto 40px;font-weight:400;line-height:1.7;}
 .hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
-.hero .btn-primary{background:var(--crimson);border-color:var(--crimson);}
-.hero .btn-primary:hover{background:var(--crimson-dark);}
-.hero .btn-outline{border-color:rgba(255,255,255,.35);color:#fff;}
-.hero .btn-outline:hover{border-color:var(--crimson);background:var(--crimson);}
 
-/* ===== SECTIONS ===== */
-section{padding:72px 0;}
-.section-head{text-align:center;max-width:660px;margin:0 auto 48px;}
-.section-head .eyebrow{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--crimson-bright);margin-bottom:14px;}
-.section-head h2{font-size:clamp(26px,4vw,34px);font-weight:800;letter-spacing:-.01em;color:#fff;line-height:1.15;margin-bottom:14px;}
-.section-head p{color:var(--gray);font-size:16px;}
+/* ===== SECTION SPACING ===== */
+section{padding:100px 0;}
+.section-head{text-align:center;max-width:620px;margin:0 auto 56px;}
+.section-head .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--crimson-bright);margin-bottom:16px;}
+.section-head .eyebrow::before,.section-head .eyebrow::after{content:"";width:20px;height:1px;background:var(--crimson);opacity:.4;}
+.section-head h2{font-family:'Archivo',sans-serif;font-size:clamp(28px,4.5vw,40px);font-weight:800;letter-spacing:-.025em;color:#fff;line-height:1.12;margin-bottom:16px;}
+.section-head p{color:var(--ink-3);font-size:17px;line-height:1.7;}
 
 /* ===== HOW IT WORKS ===== */
 .how{background:var(--black);}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
-.step{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:34px 28px;}
-.step .n{font-size:13px;font-weight:800;letter-spacing:.18em;color:var(--crimson-bright);margin-bottom:14px;}
-.step h3{font-size:19px;font-weight:700;color:#fff;margin-bottom:8px;}
-.step p{color:var(--gray);font-size:15px;}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:36px 28px;transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;}
+.step:hover{border-color:var(--line-hover);transform:translateY(-4px);box-shadow:0 12px 40px -12px rgba(0,0,0,.5);}
+.step-num{font-family:'Archivo',sans-serif;font-size:48px;font-weight:900;color:rgba(122,10,21,.15);line-height:1;margin-bottom:20px;}
+.step h3{font-family:'Archivo',sans-serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:8px;}
+.step p{color:var(--ink-3);font-size:14px;line-height:1.7;}
+.step-cta{text-align:center;margin-top:48px;}
 
 /* ===== OFFERS ===== */
+.offers{background:var(--bg);}
 .offers-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;}
-.offer{background:var(--panel);border:1px solid var(--line-strong);border-radius:14px;padding:30px 28px;display:flex;flex-direction:column;}
-.offer .ot{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin-bottom:8px;}
-.offer h3{font-size:24px;font-weight:800;color:#fff;margin-bottom:8px;}
-.offer p{color:var(--gray);font-size:15px;margin-bottom:22px;flex:1;}
-.offer .rate{font-size:15px;color:#cfcbc8;font-weight:600;margin-bottom:20px;}
-.offer .rate b{font-size:20px;color:var(--crimson-bright);}
-.offer .commission-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:22px;}
-.offer .comm-tag{background:rgba(122,10,21,.12);border:1px solid rgba(122,10,21,.3);color:var(--crimson-bright);padding:6px 14px;border-radius:999px;font-size:13px;font-weight:700;white-space:nowrap;}
+.offer{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:36px 32px;display:flex;flex-direction:column;transition:all .3s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;}
+.offer::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--crimson),transparent);opacity:0;transition:opacity .3s;}
+.offer:hover{border-color:var(--line-hover);transform:translateY(-4px);box-shadow:0 16px 48px -12px rgba(0,0,0,.6);}
+.offer:hover::before{opacity:1;}
+.offer-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px;}
+.offer-tag svg{width:14px;height:14px;opacity:.5;}
+.offer h3{font-family:'Archivo',sans-serif;font-size:26px;font-weight:800;color:#fff;margin-bottom:10px;letter-spacing:-.02em;}
+.offer p{color:var(--ink-3);font-size:15px;margin-bottom:24px;flex:1;line-height:1.7;}
+.offer-stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;}
+.stat-pill{background:rgba(122,10,21,.08);border:1px solid rgba(122,10,21,.2);color:var(--crimson-bright);padding:8px 16px;border-radius:100px;font-size:13px;font-weight:600;}
 .offer .btn{width:100%;}
-.offers-note{margin-top:28px;text-align:center;color:var(--gray);font-size:15px;}
+.offers-note{text-align:center;color:var(--ink-3);font-size:14px;margin-top:32px;}
 
 /* ===== DASHBOARD ===== */
 .dash{background:var(--black);}
 .dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
-.dash-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:30px 28px;}
-.dash-card .icon{width:44px;height:44px;border-radius:10px;background:rgba(122,10,21,.12);border:1px solid rgba(122,10,21,.25);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:20px;}
-.dash-card h3{font-size:18px;font-weight:700;color:#fff;margin-bottom:6px;}
-.dash-card p{color:var(--gray);font-size:14px;}
+.dash-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:32px 28px;transition:all .3s cubic-bezier(.4,0,.2,1);}
+.dash-card:hover{border-color:var(--line-hover);transform:translateY(-3px);box-shadow:0 8px 32px -8px rgba(0,0,0,.4);}
+.dash-icon{width:48px;height:48px;border-radius:12px;background:rgba(122,10,21,.08);border:1px solid rgba(122,10,21,.15);display:flex;align-items:center;justify-content:center;margin-bottom:18px;}
+.dash-card h3{font-family:'Archivo',sans-serif;font-size:17px;font-weight:700;color:#fff;margin-bottom:6px;}
+.dash-card p{color:var(--ink-3);font-size:14px;line-height:1.7;}
 
 /* ===== PROMOTE ===== */
-.promote{background:var(--black);}
-.promote-cols{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;}
-.promote-cols h3{font-size:24px;font-weight:800;color:#fff;margin-bottom:16px;line-height:1.2;}
-.promote-cols p{color:var(--gray);font-size:15px;margin-bottom:16px;}
-.promote-cols p:last-of-type{margin-bottom:0;}
+.promote{background:var(--bg);}
+.promote-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;}
+.promote-text p{color:var(--ink-3);font-size:15px;margin-bottom:16px;line-height:1.75;}
+.promote-text p:last-of-type{margin-bottom:0;}
+.promote-visual{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:40px 32px;text-align:center;position:relative;overflow:hidden;}
+.promote-visual::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(122,10,21,.05),transparent);pointer-events:none;}
+.promote-visual .vis-label{font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--crimson-bright);margin-bottom:12px;position:relative;z-index:1;}
+.promote-visual p{color:var(--ink-3);font-size:14px;position:relative;z-index:1;}
 
 /* ===== WHY JOIN ===== */
-.benefits{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
-.benefit{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px 24px;}
-.benefit h3{font-size:17px;font-weight:700;color:#fff;margin-bottom:6px;}
-.benefit p{color:var(--gray);font-size:14px;}
+.why{background:var(--black);}
+.benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.benefit{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:32px 24px;transition:all .3s cubic-bezier(.4,0,.2,1);}
+.benefit:hover{border-color:var(--line-hover);transform:translateY(-3px);}
+.benefit-icon{width:40px;height:40px;border-radius:10px;background:rgba(122,10,21,.08);border:1px solid rgba(122,10,21,.15);display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+.benefit h3{font-family:'Archivo',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:6px;}
+.benefit p{color:var(--ink-3);font-size:13px;line-height:1.7;}
+.why-cta{text-align:center;margin-top:48px;}
 
 /* ===== PLATFORMS ===== */
-.platforms{background:var(--black);}
-.plat-list{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:20px;}
-.plat-tag{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600;color:#cfcbc8;}
-.platforms .sub{text-align:center;color:var(--gray);font-size:15px;margin-top:8px;}
+.platforms{background:var(--bg);}
+.plat-list{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:24px;}
+.plat-tag{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 20px;font-size:13px;font-weight:500;color:var(--ink-2);transition:all .2s;}
+.plat-tag:hover{border-color:var(--line-hover);color:#fff;}
+.platforms .sub{text-align:center;color:var(--ink-3);font-size:15px;}
 
 /* ===== PAYOUTS ===== */
-.payouts-steps{max-width:700px;margin:0 auto;}
-.payout-step{display:flex;gap:20px;align-items:flex-start;margin-bottom:32px;position:relative;padding-left:36px;}
-.payout-step::before{content:"";position:absolute;left:13px;top:36px;bottom:-32px;width:1px;background:var(--line-strong);}
-.payout-step:last-child::before{display:none;}
-.payout-num{flex:0 0 28px;height:28px;border-radius:50%;background:rgba(122,10,21,.15);border:1.5px solid rgba(122,10,21,.4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--crimson-bright);position:absolute;left:0;}
-.payout-step h3{font-size:17px;font-weight:700;color:#fff;margin-bottom:4px;}
-.payout-step p{color:var(--gray);font-size:14px;}
+.payouts{background:var(--black);}
+.payouts-timeline{max-width:640px;margin:0 auto;position:relative;}
+.payouts-timeline::before{content:"";position:absolute;left:15px;top:20px;bottom:20px;width:1px;background:linear-gradient(to bottom,var(--crimson),rgba(122,10,21,.1));}
+.payout-step{display:flex;gap:24px;align-items:flex-start;margin-bottom:36px;position:relative;}
+.payout-step:last-child{margin-bottom:0;}
+.payout-dot{flex:0 0 32px;height:32px;border-radius:50%;background:var(--surface-2);border:2px solid var(--crimson);display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-size:12px;font-weight:800;color:var(--crimson-bright);position:relative;z-index:1;}
+.payout-step h3{font-family:'Archivo',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;}
+.payout-step p{color:var(--ink-3);font-size:14px;line-height:1.7;}
 
 /* ===== FAQ ===== */
-.faq{max-width:720px;margin:0 auto;}
-.faq details{border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin-bottom:12px;background:var(--panel);}
-.faq summary{font-weight:700;font-size:16px;color:#fff;cursor:pointer;}
-.faq details p{color:var(--gray);font-size:15px;margin-top:10px;}
+.faq{background:var(--bg);}
+.faq-list{max-width:680px;margin:0 auto;}
+.faq-item{border:1px solid var(--line);border-radius:var(--radius);margin-bottom:10px;background:var(--surface);overflow:hidden;transition:border-color .2s;}
+.faq-item:hover{border-color:var(--line-hover);}
+.faq-item summary{font-family:'Archivo',sans-serif;font-weight:600;font-size:15px;color:#fff;cursor:pointer;padding:20px 24px;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.faq-item summary::after{content:"";width:20px;height:20px;flex-shrink:0;background:url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%23999' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center no-repeat;transition:transform .25s;}
+.faq-item[open] summary::after{transform:rotate(180deg);}
+.faq-item p{color:var(--ink-3);font-size:14px;padding:0 24px 20px;line-height:1.75;}
 
-/* ===== CTA + FOOTER ===== */
-.cta{background:var(--black);color:#fff;text-align:center;}
-.cta .inner{max-width:660px;margin:0 auto;padding:76px 24px;}
-.cta .eyebrow{font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--crimson-bright);margin-bottom:14px;}
-.cta h2{font-size:clamp(26px,4vw,34px);font-weight:800;margin-bottom:16px;}
-.cta p{color:#cfcbc8;margin-bottom:30px;}
-.cta .btn-primary{background:var(--crimson);border-color:var(--crimson);}
-.cta .btn-primary:hover{background:var(--crimson-dark);}
-.cta .sub-note{font-size:13px;color:var(--gray);margin-top:14px;}
+/* ===== CTA ===== */
+.cta-section{background:var(--black);text-align:center;position:relative;overflow:hidden;}
+.cta-section::before{content:"";position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,var(--crimson-glow),transparent 70%);bottom:-200px;left:50%;transform:translateX(-50%);filter:blur(80px);opacity:.3;}
+.cta-inner{position:relative;z-index:1;max-width:600px;margin:0 auto;padding:0 28px;}
+.cta-inner .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--crimson-bright);margin-bottom:16px;}
+.cta-inner h2{font-family:'Archivo',sans-serif;font-size:clamp(28px,4.5vw,38px);font-weight:800;letter-spacing:-.02em;margin-bottom:16px;}
+.cta-inner p{color:var(--ink-2);margin-bottom:36px;font-size:17px;line-height:1.7;}
+.cta-inner .sub-note{font-size:13px;color:var(--ink-3);margin-top:16px;}
 
-footer{border-top:1px solid var(--line);padding:40px 0 30px;}
-.footer-top{display:flex;justify-content:space-between;gap:32px;margin-bottom:24px;flex-wrap:wrap;}
-.footer-brand{max-width:300px;}
-.footer-brand .name{font-weight:800;font-size:16px;color:#fff;margin-bottom:8px;}
-.footer-brand p{color:var(--gray);font-size:13px;line-height:1.6;}
-.footer-links{display:flex;gap:40px;flex-wrap:wrap;}
-.footer-col h4{font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--crimson-bright);margin-bottom:12px;}
-.footer-col a{display:block;color:var(--gray);font-size:13px;margin-bottom:8px;}
-.footer-col a:hover{color:var(--crimson-bright);}
-.footer-bottom{border-top:1px solid var(--line);padding-top:20px;display:flex;justify-content:space-between;gap:14px;color:var(--gray);font-size:12px;flex-wrap:wrap;}
+/* ===== FOOTER ===== */
+footer{border-top:1px solid var(--line);padding:48px 0 32px;background:var(--black);}
+.footer-top{display:flex;justify-content:space-between;gap:40px;margin-bottom:32px;flex-wrap:wrap;}
+.footer-brand{max-width:280px;}
+.footer-brand .name{font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;color:#fff;margin-bottom:8px;}
+.footer-brand p{color:var(--ink-3);font-size:13px;line-height:1.7;}
+.footer-links{display:flex;gap:48px;flex-wrap:wrap;}
+.footer-col h4{font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--crimson-bright);margin-bottom:14px;}
+.footer-col a{display:block;color:var(--ink-3);font-size:13px;margin-bottom:10px;transition:color .2s;}
+.footer-col a:hover{color:var(--ink);}
+.footer-bottom{border-top:1px solid var(--line);padding-top:20px;color:var(--ink-3);font-size:12px;}
 
 /* ===== SCROLL ANIMATIONS ===== */
-.reveal{opacity:0;transform:translateY(32px);transition:opacity .6s ease,transform .6s ease;}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1);}
 .reveal.in-view{opacity:1;transform:translateY(0);}
-.reveal-delay-1{transition-delay:.1s;}
-.reveal-delay-2{transition-delay:.2s;}
-.reveal-delay-3{transition-delay:.3s;}
-.reveal-delay-4{transition-delay:.35s;}
-.reveal-delay-5{transition-delay:.4s;}
+.rd-1{transition-delay:.08s;}.rd-2{transition-delay:.16s;}.rd-3{transition-delay:.24s;}.rd-4{transition-delay:.32s;}.rd-5{transition-delay:.4s;}.rd-6{transition-delay:.48s;}
 
-@media(max-width:720px){
+@media(max-width:768px){
+  .hero{padding:120px 0 80px;}
   .hero h1{font-size:32px;}
-  .steps,.offers-grid,.benefits,.dash-grid,.promote-cols{grid-template-columns:1fr;}
+  section{padding:72px 0;}
+  .steps,.offers-grid,.benefits,.dash-grid,.promote-grid{grid-template-columns:1fr;}
   .nav-inner{flex-wrap:wrap;height:auto;padding:12px 0;}
   .nav-links{display:none;}
-  .footer-links{gap:24px;}
+  .footer-links{gap:28px;}
+}
+@media(max-width:480px){
+  .hero h1{font-size:28px;}
+  .hero .lead{font-size:16px;}
+  .section-head h2{font-size:26px;}
+}
+@media(prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none;}
+  .hero::before{animation:none;}
+  .hero-tag::before{animation:none;}
 }
 </style>
 </head>
 <body>
 
-<nav class="top nav">
+<!-- NAV -->
+<nav class="nav" id="nav">
   <div class="wrap nav-inner">
     <a class="brand" href="/">
-      <svg class="logo-ico" viewBox="0 0 100 100" fill="none" aria-label="Tomide Williams">
-        <circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,0.15)" stroke-width="3"/>
-        <path d="M 25 35 L 75 35" stroke="#7A0A15" stroke-width="7"/>
-        <path d="M 50 35 L 50 75" stroke="#7A0A15" stroke-width="7"/>
-        <path d="M 20 25 L 35 80 L 50 55 L 65 80 L 80 25" stroke="#050505" stroke-width="12" stroke-linejoin="bevel"/>
-        <path d="M 20 25 L 35 80 L 50 55 L 65 80 L 80 25" stroke="#ffffff" stroke-width="4" stroke-linejoin="bevel"/>
+      <svg viewBox="0 0 100 100" fill="none" aria-label="Tomide Williams">
+        <circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,0.12)" stroke-width="2.5"/>
+        <path d="M 25 35 L 75 35" stroke="#7A0A15" stroke-width="6"/>
+        <path d="M 50 35 L 50 75" stroke="#7A0A15" stroke-width="6"/>
+        <path d="M 20 25 L 35 80 L 50 55 L 65 80 L 80 25" stroke="#050505" stroke-width="10" stroke-linejoin="bevel"/>
+        <path d="M 20 25 L 35 80 L 50 55 L 65 80 L 80 25" stroke="#ffffff" stroke-width="3.5" stroke-linejoin="bevel"/>
       </svg>
-      <span class="bb"><span class="b1">Tomide Williams</span></span>
+      Tomide Williams
     </a>
     <div class="nav-links">
       <a href="#how">How it works</a>
       <a href="#offers">Offers</a>
       <a href="#dashboard">Dashboard</a>
       <a href="#faq">FAQ</a>
-      <a href="/affiliates/register">Sign up</a>
     </div>
-    <a class="btn btn-primary nav-cta" href="/affiliates/login">Sign in</a>
+    <a class="nav-cta" href="/affiliates/login">Sign in</a>
   </div>
 </nav>
 
+<!-- HERO -->
 <header class="hero">
-  <div class="inner">
-    <span class="tag">Partner Program</span>
-    <h1>Make 6 Figures Recommending My Products and Services</h1>
+  <div class="wrap hero-inner">
+    <div class="hero-tag">Partner Program</div>
+    <h1>Make <span class="accent">6 Figures</span> Recommending My Products and Services</h1>
     <p class="lead">Join my partner programme, get your unique link and earn every time someone buys through it. Track your sales, earnings and withdrawals in one place.</p>
     <div class="hero-btns">
       <a class="btn btn-primary btn-lg" href="/affiliates/register">Become a partner</a>
@@ -228,29 +269,29 @@ footer{border-top:1px solid var(--line);padding:40px 0 30px;}
     </div>
     <div class="steps">
       <div class="step">
-        <div class="n">01</div>
+        <div class="step-num">01</div>
         <h3>Create Your Account</h3>
         <p>Sign up for free and get access to your partner dashboard.</p>
       </div>
       <div class="step">
-        <div class="n">02</div>
+        <div class="step-num">02</div>
         <h3>Choose What to Promote</h3>
         <p>Choose from my available courses, programmes, events, products and services. You can promote one offer or several.</p>
       </div>
       <div class="step">
-        <div class="n">03</div>
+        <div class="step-num">03</div>
         <h3>Share and Earn</h3>
         <p>Get your unique link and share it with your audience. When someone buys through your link, you earn a commission.</p>
       </div>
     </div>
-    <div style="text-align:center;margin-top:40px;">
+    <div class="step-cta">
       <a class="btn btn-primary btn-lg" href="/affiliates/register">Create My Free Account</a>
     </div>
   </div>
 </section>
 
 <!-- AVAILABLE OFFERS -->
-<section id="offers">
+<section class="offers" id="offers">
   <div class="wrap">
     <div class="section-head">
       <div class="eyebrow">Available Offers</div>
@@ -259,22 +300,28 @@ footer{border-top:1px solid var(--line);padding:40px 0 30px;}
     </div>
     <div class="offers-grid">
       <div class="offer">
-        <div class="ot">Course</div>
+        <div class="offer-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Course
+        </div>
         <h3>NEXORA</h3>
         <p>Practical lessons to help people make money, grow their careers, build businesses, use AI and improve their lives.</p>
-        <div class="commission-row">
-          <span class="comm-tag">Earn &#8358;7,490 per sale</span>
-          <span class="comm-tag">30% commission</span>
+        <div class="offer-stats">
+          <span class="stat-pill">&#8358;7,490 per sale</span>
+          <span class="stat-pill">30% commission</span>
         </div>
         <a class="btn btn-primary" href="/affiliates/register">Promote NEXORA</a>
       </div>
       <div class="offer">
-        <div class="ot">Programme</div>
+        <div class="offer-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+          Programme
+        </div>
         <h3>AAIM</h3>
         <p>A hands-on programme teaching young professionals how to use AI to accelerate their careers, build side income and stand out in any industry.</p>
-        <div class="commission-row">
-          <span class="comm-tag">Earn &#8358;5,997 per sale</span>
-          <span class="comm-tag">30% commission</span>
+        <div class="offer-stats">
+          <span class="stat-pill">&#8358;5,997 per sale</span>
+          <span class="stat-pill">30% commission</span>
         </div>
         <a class="btn btn-primary" href="/affiliates/register">Promote AAIM</a>
       </div>
@@ -284,7 +331,7 @@ footer{border-top:1px solid var(--line);padding:40px 0 30px;}
 </section>
 
 <!-- DASHBOARD -->
-<section class="how" id="dashboard">
+<section class="dash" id="dashboard">
   <div class="wrap">
     <div class="section-head">
       <div class="eyebrow">Your Partner Dashboard</div>
@@ -293,67 +340,62 @@ footer{border-top:1px solid var(--line);padding:40px 0 30px;}
     </div>
     <div class="dash-grid">
       <div class="dash-card">
-        <div class="icon">
+        <div class="dash-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
         </div>
         <h3>Your Links</h3>
         <p>Get a different tracking link for every offer you promote.</p>
       </div>
       <div class="dash-card">
-        <div class="icon">
+        <div class="dash-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
         </div>
         <h3>Clicks and Sales</h3>
         <p>See how many people clicked your links and how many completed their payments.</p>
       </div>
       <div class="dash-card">
-        <div class="icon">
+        <div class="dash-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/><path d="M6 12h.01M18 12h.01"/></svg>
         </div>
         <h3>Your Earnings</h3>
         <p>See your pending commission, available balance and total earnings.</p>
       </div>
       <div class="dash-card">
-        <div class="icon">
+        <div class="dash-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
         </div>
         <h3>Withdrawals</h3>
         <p>Request a withdrawal and follow its status from your dashboard.</p>
       </div>
     </div>
-    <div style="text-align:center;margin-top:40px;">
-      <a class="btn btn-outline btn-lg" href="#how">View How It Works</a>
-    </div>
   </div>
 </section>
 
-<!-- PROMOTE ONE OR MORE -->
-<section class="how" id="promote">
+<!-- PROMOTE -->
+<section class="promote" id="promote">
   <div class="wrap">
     <div class="section-head">
       <div class="eyebrow">One Account. Many Ways to Earn.</div>
       <h2>Promote the Offers That Fit Your Audience</h2>
     </div>
-    <div class="promote-cols">
-      <div>
+    <div class="promote-grid">
+      <div class="promote-text">
         <p>You do not have to promote everything.</p>
         <p>Choose the courses, programmes, events, products or services your audience will find useful.</p>
         <p>If you promote one offer, your dashboard will focus on that offer.</p>
         <p>If you promote several offers, you will see the performance of each one separately.</p>
       </div>
-      <div style="background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:32px 28px;text-align:center;">
-        <div style="margin-bottom:16px;">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
-        </div>
-        <div style="font-size:13px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--crimson-bright);margin-bottom:8px;">Dashboard Preview</div>
-        <p style="color:var(--gray);font-size:14px;">Total clicks, successful sales, pending commission and available balance &mdash; all in one view.</p>
+      <div class="promote-visual">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;"><rect x="3" y="12" width="4" height="9" rx="1"/><rect x="10" y="7" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>
+        <div class="vis-label">Dashboard Preview</div>
+        <p>Total clicks, successful sales, pending commission and available balance &mdash; all in one view.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- WHY JOIN -->
-<section id="why">
+<section class="why" id="why">
   <div class="wrap">
     <div class="section-head">
       <div class="eyebrow">Why Become a Partner?</div>
@@ -361,37 +403,55 @@ footer{border-top:1px solid var(--line);padding:40px 0 30px;}
     </div>
     <div class="benefits">
       <div class="benefit">
+        <div class="benefit-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
         <h3>Free to Join</h3>
         <p>You do not have to pay before you can become a partner.</p>
       </div>
       <div class="benefit">
+        <div class="benefit-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
         <h3>Nothing to Create</h3>
         <p>You do not need to create your own course, programme, event, product or service.</p>
       </div>
       <div class="benefit">
+        <div class="benefit-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        </div>
         <h3>No Stock or Delivery</h3>
         <p>You do not need to buy stock, rent a shop or deliver anything.</p>
       </div>
       <div class="benefit">
+        <div class="benefit-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
         <h3>Ready-to-Share Materials</h3>
         <p>Get approved flyers, videos and messages to help you promote each offer.</p>
       </div>
       <div class="benefit">
+        <div class="benefit-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
         <h3>Clear Tracking</h3>
         <p>See the clicks, sales and commission connected to your unique links.</p>
       </div>
       <div class="benefit">
+        <div class="benefit-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e88a93" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
         <h3>Simple Withdrawals</h3>
         <p>Request your money directly from your partner dashboard.</p>
       </div>
     </div>
-    <div style="text-align:center;margin-top:40px;">
+    <div class="why-cta">
       <a class="btn btn-primary btn-lg" href="/affiliates/register">Start Earning</a>
     </div>
   </div>
 </section>
 
-<!-- HOW YOU CAN PROMOTE -->
+<!-- PLATFORMS -->
 <section class="platforms" id="platforms">
   <div class="wrap">
     <div class="section-head">
@@ -416,51 +476,51 @@ footer{border-top:1px solid var(--line);padding:40px 0 30px;}
 </section>
 
 <!-- PAYOUTS -->
-<section id="payouts">
+<section class="payouts" id="payouts">
   <div class="wrap">
     <div class="section-head">
       <div class="eyebrow">Your Money</div>
       <h2>Earn, Track and Withdraw</h2>
       <p>When someone pays through your link, the sale appears in your dashboard.</p>
     </div>
-    <div class="payouts-steps">
+    <div class="payouts-timeline">
       <div class="payout-step">
-        <span class="payout-num">1</span>
+        <div class="payout-dot">1</div>
         <div>
           <h3>Sale Is Recorded</h3>
           <p>When someone pays through your link, the sale appears in your dashboard.</p>
         </div>
       </div>
       <div class="payout-step">
-        <span class="payout-num">2</span>
+        <div class="payout-dot">2</div>
         <div>
           <h3>Commission Becomes Available</h3>
           <p>After the sale is approved, your commission becomes available for withdrawal.</p>
         </div>
       </div>
       <div class="payout-step">
-        <span class="payout-num">3</span>
+        <div class="payout-dot">3</div>
         <div>
           <h3>Confirmation Email</h3>
           <p>You will receive a confirmation email when your payout request is received.</p>
         </div>
       </div>
       <div class="payout-step">
-        <span class="payout-num">4</span>
+        <div class="payout-dot">4</div>
         <div>
           <h3>Admin Review</h3>
           <p>The request will appear in the admin dashboard for review.</p>
         </div>
       </div>
       <div class="payout-step">
-        <span class="payout-num">5</span>
+        <div class="payout-dot">5</div>
         <div>
           <h3>Track Your Payout</h3>
           <p>You can follow the payout status from your account.</p>
         </div>
       </div>
       <div class="payout-step">
-        <span class="payout-num">6</span>
+        <div class="payout-dot">6</div>
         <div>
           <h3>Payment Completed</h3>
           <p>You will receive another email when your payment is completed.</p>
@@ -471,42 +531,42 @@ footer{border-top:1px solid var(--line);padding:40px 0 30px;}
 </section>
 
 <!-- FAQ -->
-<section class="how" id="faq">
+<section class="faq" id="faq">
   <div class="wrap">
     <div class="section-head">
       <div class="eyebrow">Frequently Asked Questions</div>
       <h2>Everything You Need to Know</h2>
     </div>
-    <div class="faq">
-      <details>
+    <div class="faq-list">
+      <details class="faq-item">
         <summary>Is it free to join?</summary>
         <p>Yes. You can create your partner account for free.</p>
       </details>
-      <details>
+      <details class="faq-item">
         <summary>What can I promote?</summary>
         <p>You can promote any active course, programme, event, product or service shown inside your dashboard.</p>
       </details>
-      <details>
+      <details class="faq-item">
         <summary>Can I promote more than one offer?</summary>
         <p>Yes. You can choose one offer or promote several offers from the same account.</p>
       </details>
-      <details>
+      <details class="faq-item">
         <summary>How much can I earn?</summary>
         <p>Every offer has its own commission. The amount you will earn from each sale will be clearly shown before you start promoting it.</p>
       </details>
-      <details>
+      <details class="faq-item">
         <summary>Do I need many followers?</summary>
         <p>No. You can start with your WhatsApp contacts, social media followers, communities or personal network.</p>
       </details>
-      <details>
+      <details class="faq-item">
         <summary>How will my sales be tracked?</summary>
         <p>Every offer will have a unique link connected to your account. When someone buys through your link, the sale and commission will be recorded for you.</p>
       </details>
-      <details>
+      <details class="faq-item">
         <summary>When can I withdraw my earnings?</summary>
         <p>You can request a withdrawal when your approved commission becomes available.</p>
       </details>
-      <details>
+      <details class="faq-item">
         <summary>Where can I see my earnings?</summary>
         <p>Your dashboard will show your clicks, successful sales, pending commission, available balance and previous withdrawals.</p>
       </details>
@@ -515,8 +575,8 @@ footer{border-top:1px solid var(--line);padding:40px 0 30px;}
 </section>
 
 <!-- FINAL CTA -->
-<section class="cta">
-  <div class="inner">
+<section class="cta-section">
+  <div class="wrap cta-inner">
     <div class="eyebrow">Start Earning</div>
     <h2>Stop Helping Other People Make Sales for Free</h2>
     <p>Join my partner programme, choose what you want to promote and earn whenever someone buys through your link.</p>
@@ -525,6 +585,7 @@ footer{border-top:1px solid var(--line);padding:40px 0 30px;}
   </div>
 </section>
 
+<!-- FOOTER -->
 <footer>
   <div class="wrap">
     <div class="footer-top">
@@ -549,28 +610,39 @@ footer{border-top:1px solid var(--line);padding:40px 0 30px;}
         </div>
       </div>
     </div>
-    <div class="footer-bottom">
-      <div>&copy; 2026 Tomide Williams. All rights reserved.</div>
-    </div>
+    <div class="footer-bottom">&copy; 2026 Tomide Williams. All rights reserved.</div>
   </div>
 </footer>
 
 <script>
 (function(){
-  var targets=document.querySelectorAll('.section-head,.step,.offer,.dash-card,.benefit,.plat-tag,.payout-step,.faq details');
+  // Nav scroll state
+  var nav=document.getElementById('nav');
+  window.addEventListener('scroll',function(){
+    nav.classList.toggle('scrolled',window.scrollY>40);
+  },{passive:true});
+
+  // Scroll reveal
+  var targets=document.querySelectorAll('.section-head,.step,.offer,.dash-card,.benefit,.plat-tag,.payout-step,.faq-item,.promote-grid');
   targets.forEach(function(el){el.classList.add('reveal');});
-  var delays={step:1,offer:1,dash_card:1,benefit:1,plat_tag:1,payout_step:1};
-  document.querySelectorAll('.step').forEach(function(el,i){el.classList.add('reveal-delay-'+(i+1));});
-  document.querySelectorAll('.offer').forEach(function(el,i){el.classList.add('reveal-delay-'+(i+1));});
-  document.querySelectorAll('.dash-card').forEach(function(el,i){el.classList.add('reveal-delay-'+(i+1));});
-  document.querySelectorAll('.benefit').forEach(function(el,i){el.classList.add('reveal-delay-'+(i%2===0?1:2));});
+  document.querySelectorAll('.step').forEach(function(el,i){el.classList.add('rd-'+(i+1));});
+  document.querySelectorAll('.offer').forEach(function(el,i){el.classList.add('rd-'+(i+1));});
+  document.querySelectorAll('.dash-card').forEach(function(el,i){el.classList.add('rd-'+(i+1));});
+  document.querySelectorAll('.benefit').forEach(function(el,i){el.classList.add('rd-'+(i%3+1));});
+  document.querySelectorAll('.faq-item').forEach(function(el,i){el.classList.add('rd-'+(i%4+1));});
 
   var obs=new IntersectionObserver(function(entries){
     entries.forEach(function(e){
       if(e.isIntersecting){e.target.classList.add('in-view');obs.unobserve(e.target);}
     });
-  },{threshold:0.15,rootMargin:'0px 0px -40px 0px'});
+  },{threshold:0.1,rootMargin:'0px 0px -30px 0px'});
   document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
+
+  // Hero load animation
+  document.querySelectorAll('.hero-tag,.hero h1,.hero .lead,.hero-btns').forEach(function(el,i){
+    el.style.opacity='0';el.style.transform='translateY(20px)';
+    setTimeout(function(){el.style.transition='opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1)';el.style.opacity='1';el.style.transform='translateY(0)';},150+i*120);
+  });
 })();
 </script>
 </body>
