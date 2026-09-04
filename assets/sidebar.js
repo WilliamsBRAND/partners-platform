@@ -126,8 +126,8 @@
     '<div class="brand">' +
       '<svg class="mark" width="34" height="34" viewBox="0 0 100 100" fill="none" aria-label="Tomide Williams">' +
         '<circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>' +
-        '<path d="M 25 35 L 75 35" stroke="#E50914" stroke-width="7" stroke-linecap="square"/>' +
-        '<path d="M 50 35 L 50 75" stroke="#E50914" stroke-width="7" stroke-linecap="square"/>' +
+        '<path d="M 25 35 L 75 35" stroke="#7A0A15" stroke-width="7" stroke-linecap="square"/>' +
+        '<path d="M 50 35 L 50 75" stroke="#7A0A15" stroke-width="7" stroke-linecap="square"/>' +
         '<path d="M 20 25 L 35 80 L 50 55 L 65 80 L 80 25" stroke="#050505" stroke-width="12" stroke-linejoin="bevel"/>' +
         '<path d="M 20 25 L 35 80 L 50 55 L 65 80 L 80 25" stroke="#ffffff" stroke-width="4" stroke-linejoin="bevel"/>' +
       '</svg>' +
