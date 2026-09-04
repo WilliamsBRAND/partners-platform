@@ -52,6 +52,8 @@
 .p-form input:focus,.p-form textarea:focus,.p-form select:focus{border-color:var(--crimson);}
 .p-form textarea{resize:vertical;}
 .form-actions{display:flex;gap:10px;margin-top:4px;flex-wrap:wrap;}
+.products-toolbar{display:flex;align-items:center;justify-content:flex-end;margin-bottom:18px;}
+.products-toolbar .btn{padding:11px 18px;}
 .mat-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;}
 .notif{background:var(--amber-bg);border:1px solid rgba(251,191,36,.15);border-left:3px solid var(--amber);border-radius:10px;padding:14px 16px;margin-bottom:12px;}
 .notif .t{font-weight:700;color:#fff;font-size:14px;margin-bottom:4px;}
@@ -145,7 +147,10 @@ td .grn{color:var(--green);font-size:12px;}
           <h1 class="page-title">Products</h1>
           <div class="page-sub">Add products partners can promote, or manage the catalogue.</div>
         </div>
-        <div class="p-form" id="productForm">
+        <div class="products-toolbar">
+          <button class="btn" id="addProductBtn" onclick="toggleProductForm(true)">+ Add Product</button>
+        </div>
+        <div class="p-form" id="productForm" style="display:none;">
           <input type="hidden" id="editId" value="" />
           <h3>Build a Product</h3>
           <div class="pgrid">
@@ -284,7 +289,21 @@ function showDash(){
   document.getElementById('loginWrap').style.display='none';
   document.getElementById('dashWrap').style.display='flex';
   buildNav();
-  loadOverview();loadProducts();loadAffiliations();loadCommissions();loadPayouts();loadNotifs();
+  // Load only the active panel (lazily). Overview is the default landing view.
+  loadPanel(window._panel||'panelOverview');
+}
+function loadPanel(id){
+  var loaded=window._panelsLoaded||{};
+  if(loaded[id])return;
+  loaded[id]=true;
+  window._panelsLoaded=loaded;
+  if(id==='panelOverview')loadOverview();
+  else if(id==='panelProducts'){loadProducts();}
+  else if(id==='panelAffiliates')loadAffiliations();
+  else if(id==='panelCommissions')loadCommissions();
+  else if(id==='panelPayouts')loadPayouts();
+  else if(id==='panelNotif')loadNotifs();
+  badge();
 }
 function buildNav(){
   var navEl=document.getElementById('adminNav');
@@ -307,8 +326,7 @@ function switchPanel(id){
   document.querySelectorAll('#adminNav a').forEach(function(a){a.classList.remove('active');});
   document.getElementById(id).classList.add('active');
   document.querySelector('#adminNav a[onclick*="'+id+'"]').classList.add('active');
-  if(id==='panelNotif')loadNotifs();
-  refreshBadge();
+  loadPanel(id);
 }
 function refreshBadge(){badge(true);}
 function badge(){
@@ -374,6 +392,19 @@ function loadProducts(){
     body.innerHTML=h;
   }).catch(function(){});
 }
+function toggleProductForm(open){
+  var form=document.getElementById('productForm');
+  var btn=document.getElementById('addProductBtn');
+  if(open===true){
+    form.style.display='';
+    resetProductForm();
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+  } else {
+    form.style.display='none';
+    resetProductForm();
+  }
+  btn.textContent = form.style.display==='none' ? '+ Add Product' : 'Cancel';
+}
 function resetProductForm(){
   ['pName','pUrl','pTag','pImg','pPrice','pPrefix','pDesc','pCommVal','pPaySecret'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('pCommType').value='percent';
@@ -381,11 +412,14 @@ function resetProductForm(){
   document.getElementById('editId').value='';
   document.getElementById('pCancelBtn').style.display='none';
   document.getElementById('pPaySecret').removeAttribute('data-secret');
+  var btn=document.getElementById('addProductBtn');
+  if(btn)btn.textContent='+ Add Product';
 }
 function editProduct(id){
   api('/api/admin?action=products').then(function(d){
     if(!d.ok)return;
     var p=(d.products||[]).find(function(x){return x.id===id;}); if(!p)return;
+    toggleProductForm(true);
     document.getElementById('pName').value=p.name||'';
     document.getElementById('pUrl').value=p.checkout_url||'';
     document.getElementById('pTag').value=p.tagline||'';

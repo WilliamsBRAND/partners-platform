@@ -18,12 +18,26 @@ function getToken(req) {
   return url.searchParams.get('token') || '';
 }
 
+// Cache which emails are valid admins. The admins table is tiny and rarely
+// changes, so a short-lived in-memory cache avoids a DB round-trip on every
+// API call — this was the main cause of the slow dashboard load.
+const adminEmailCache = new Map();
+const ADMIN_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+async function isAdminEmail(email) {
+  const norm = String(email).toLowerCase().trim();
+  const hit = adminEmailCache.get(norm);
+  if (hit && Date.now() - hit.t < ADMIN_CACHE_TTL) return hit.ok;
+  const { data } = await getDb().from('admins').select('id').eq('email', norm).maybeSingle();
+  const ok = !!data;
+  adminEmailCache.set(norm, { ok, t: Date.now() });
+  return ok;
+}
+
 async function isAuthed(req) {
   const payload = verifyToken(getToken(req), adminSecret());
   if (!payload || !payload.sub) return false;
   // Validate the token subject is a real admin account (defence in depth).
-  const { data } = await getDb().from('admins').select('id').eq('email', String(payload.sub).toLowerCase().trim()).maybeSingle();
-  return !!data;
+  return await isAdminEmail(payload.sub);
 }
 
 export default async function handler(req, res) {
