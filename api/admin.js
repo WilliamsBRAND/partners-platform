@@ -103,7 +103,20 @@ async function products(req, res, db) {
 async function product(req, res, db) {
   if (req.method === 'POST') return await productCreate(req, res, db);
   if (req.method === 'PATCH') return await productUpdate(req, res, db);
+  if (req.method === 'DELETE') return await productDelete(req, res, db);
   return json(res, 405, { error: 'Method not allowed.' });
+}
+
+async function productDelete(req, res, db) {
+  const { id } = req.body || {};
+  if (!id) return json(res, 400, { error: 'id required.' });
+  const { error: mmErr } = await db.from('marketing_materials').delete().eq('product_id', id);
+  if (mmErr) return json(res, 500, { error: 'Failed to remove materials: ' + (mmErr.message || '') });
+  const { error: apErr } = await db.from('affiliate_products').delete().eq('product_id', id);
+  if (apErr) return json(res, 500, { error: 'Failed to detach affiliates: ' + (apErr.message || '') });
+  const { error } = await db.from('products').delete().eq('id', id);
+  if (error) return json(res, 500, { error: 'Failed to delete product: ' + (error.message || '') });
+  return json(res, 200, { ok: true });
 }
 
 async function productCreate(req, res, db) {
@@ -111,6 +124,13 @@ async function productCreate(req, res, db) {
   if (!name || !checkout_url) return json(res, 400, { error: 'Product name and checkout URL are required.' });
   if (!/^https?:\/\//i.test(String(checkout_url).trim())) {
     return json(res, 400, { error: 'Checkout URL must be a full absolute URL (https://...).' });
+  }
+
+  const dupName = String(name || '').trim().toLowerCase();
+  const dupUrl = String(checkout_url || '').trim().toLowerCase();
+  const { data: all } = await db.from('products').select('name, checkout_url');
+  if (all && all.some((p) => (p.name || '').toLowerCase() === dupName || (p.checkout_url || '').toLowerCase() === dupUrl)) {
+    return json(res, 400, { error: 'A product with the same name or checkout URL already exists.' });
   }
 
   const slug = slugify(name) || 'product';

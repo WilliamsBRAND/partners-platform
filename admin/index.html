@@ -32,6 +32,8 @@
 /* ---- Admin content extras (reuse app.css for sidebar/tables/cards) ---- */
 .content-admin{flex:1;min-width:0;}
 .admin-main{padding:32px 36px 64px;}
+.panel{display:none;}
+.panel.active{display:block;}
 .page-head{margin-bottom:28px;}
 .page-eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--crimson);font-weight:700;margin-bottom:8px;}
 .page-title{font-weight:800;font-size:28px;letter-spacing:-.01em;color:#fff;line-height:1.2;}
@@ -366,7 +368,8 @@ function loadProducts(){
         '<td>'+(p.material_count||0)+' <button class="action-btn warn" data-id="'+p.id+'" onclick="openMats(this.dataset.id)">Mats</button></td>'+
         '<td>'+(p.affiliate_count||0)+'</td>'+
         '<td><button class="action-btn" data-id="'+p.id+'" onclick="editProduct(this.dataset.id)">Edit</button> '+
-        '<button class="action-btn '+(p.status==='active'?'reject':'approve')+'" data-id="'+p.id+'" data-st="'+(p.status==='active'?'inactive':'active')+'" onclick="toggleProduct(this.dataset.id,this.dataset.st)">'+(p.status==='active'?'Deactivate':'Activate')+'</button></td></tr>';
+        '<button class="action-btn '+(p.status==='active'?'reject':'approve')+'" data-id="'+p.id+'" data-st="'+(p.status==='active'?'inactive':'active')+'" onclick="toggleProduct(this.dataset.id,this.dataset.st)">'+(p.status==='active'?'Deactivate':'Activate')+'</button> '+
+        '<button class="action-btn reject" data-id="'+p.id+'" onclick="deleteProduct(this.dataset.id)">Delete</button></td></tr>';
     });
     body.innerHTML=h;
   }).catch(function(){});
@@ -428,6 +431,13 @@ function toggleProduct(id,status){
     if(!d.ok){if(d.error==='Unauthorized.'){onUnauthorized(d);return;}showSnack(d.error||'Failed.');}
     else{showSnack('Updated.');loadProducts();}
   });
+}
+function deleteProduct(id){
+  if(!confirm('Delete this product and detach its affiliates/materials? This cannot be undone.'))return;
+  api('/api/admin?action=product','DELETE',{id:id}).then(function(d){
+    if(!d.ok){if(d.error==='Unauthorized.'){onUnauthorized(d);return;}showSnack(d.error||'Failed.');}
+    else{showSnack('Deleted.');loadProducts();loadOverview();}
+  }).catch(function(){showSnack('Network error.');});
 }
 function openMats(id){
   var title=prompt('Material type (asset, image, video, file, link):','asset');
