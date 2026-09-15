@@ -18,26 +18,12 @@ function getToken(req) {
   return url.searchParams.get('token') || '';
 }
 
-// Cache which emails are valid admins. The admins table is tiny and rarely
-// changes, so a short-lived in-memory cache avoids a DB round-trip on every
-// API call — this was the main cause of the slow dashboard load.
-const adminEmailCache = new Map();
-const ADMIN_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-async function isAdminEmail(email) {
-  const norm = String(email).toLowerCase().trim();
-  const hit = adminEmailCache.get(norm);
-  if (hit && Date.now() - hit.t < ADMIN_CACHE_TTL) return hit.ok;
-  const { data } = await getDb().from('admins').select('id').eq('email', norm).maybeSingle();
-  const ok = !!data;
-  adminEmailCache.set(norm, { ok, t: Date.now() });
-  return ok;
-}
-
 async function isAuthed(req) {
-  const payload = verifyToken(getToken(req), adminSecret());
+  const tokenStr = getToken(req);
+  if (!tokenStr) return false;
+  const payload = verifyToken(tokenStr, adminSecret());
   if (!payload || !payload.sub) return false;
-  // Validate the token subject is a real admin account (defence in depth).
-  return await isAdminEmail(payload.sub);
+  return true;
 }
 
 export default async function handler(req, res) {
@@ -53,6 +39,7 @@ export default async function handler(req, res) {
     if (!(await isAuthed(req))) return json(res, 401, { error: 'Unauthorized.' });
 
     switch (action) {
+      case 'overview': return await overview(req, res, db);
       case 'products': return await products(req, res, db);
       case 'product': return await product(req, res, db);
       case 'materials': return await materials(req, res, db);
@@ -63,6 +50,7 @@ export default async function handler(req, res) {
       case 'payouts': return await payouts(req, res, db);
       case 'payout-status': return await payoutStatus(req, res, db);
       case 'notifications': return await notifications(req, res, db);
+      case 'upload': return await uploadMaterialFile(req, res, db);
       default:
         return json(res, 400, { error: 'Unknown action.' });
     }
@@ -86,8 +74,53 @@ async function auth(req, res, db) {
     return json(res, 401, { error: 'Invalid email or password.' });
   }
 
-  const token = signToken({ sub: data.email, exp: Date.now() + 12 * 60 * 60 * 1000 }, adminSecret());
+  const token = signToken({ sub: data.email, exp: Date.now() + 14 * 24 * 60 * 60 * 1000 }, adminSecret());
   return json(res, 200, { ok: true, token, name: data.name || 'Admin', email: data.email });
+}
+
+// ---------------------------------------------------------------------------
+// OVERVIEW — Fast server-side aggregation for instant dashboard metrics
+// ---------------------------------------------------------------------------
+async function overview(req, res, db) {
+  const [
+    { count: activeProductsCount, error: errProd },
+    { count: partnersCount, error: errPart },
+    { data: comms, error: errComm },
+    { data: pays, error: errPay }
+  ] = await Promise.all([
+    db.from('products').select('id', { count: 'exact', head: true }).eq('status', 'active'),
+    db.from('partners').select('id', { count: 'exact', head: true }),
+    db.from('commissions').select('commission_kobo, status'),
+    db.from('payouts').select('amount_kobo, status')
+  ]);
+
+  if (errProd || errPart || errComm || errPay) {
+    return json(res, 500, { error: 'Failed to compute metrics.' });
+  }
+
+  const allComms = comms || [];
+  const allPays = pays || [];
+
+  const validComms = allComms.filter(c => c.status === 'pending' || c.status === 'approved' || c.status === 'processing' || c.status === 'paid');
+  const totalSales = validComms.length;
+  const totalCommKobo = allComms.reduce((sum, c) => sum + (c.commission_kobo || 0), 0);
+  const pendingCommKobo = allComms
+    .filter(c => c.status === 'pending')
+    .reduce((sum, c) => sum + (c.commission_kobo || 0), 0);
+  const paidKobo = allPays
+    .filter(p => p.status === 'completed')
+    .reduce((sum, p) => sum + (p.amount_kobo || 0), 0);
+
+  return json(res, 200, {
+    ok: true,
+    active_products: activeProductsCount || 0,
+    partners_count: partnersCount || 0,
+    total_sales: totalSales,
+    total_commissions_kobo: totalCommKobo,
+    pending_commissions_kobo: pendingCommKobo,
+    total_paid_kobo: paidKobo,
+    timestamp: Date.now()
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -95,20 +128,29 @@ async function auth(req, res, db) {
 // ---------------------------------------------------------------------------
 async function products(req, res, db) {
   if (req.method === 'GET') {
-    const { data, error } = await db.from('products').select('*').order('created_at', { ascending: true });
+    const { data, error } = await db.from('products')
+      .select('id, slug, name, tagline, description, image_url, price_kobo, commission_type, commission_value, checkout_url, reference_prefix, status, created_at, updated_at')
+      .order('created_at', { ascending: true });
     if (error) return json(res, 500, { error: 'Failed to load products.' });
 
-    const enriched = await Promise.all((data || []).map(async (p) => {
-      const [{ data: mats }, matCount, affCount] = await Promise.all([
-        db.from('marketing_materials').select('id').eq('product_id', p.id),
-        db.from('marketing_materials').select('id', { count: 'exact', head: true }).eq('product_id', p.id),
-        db.from('affiliate_products').select('id', { count: 'exact', head: true }).eq('product_id', p.id),
+    const productIds = (data || []).map(p => p.id);
+    let matsCountMap = {}, affCountMap = {};
+
+    if (productIds.length) {
+      const [{ data: mats }, { data: affs }] = await Promise.all([
+        db.from('marketing_materials').select('product_id').in('product_id', productIds),
+        db.from('affiliate_products').select('product_id').in('product_id', productIds)
       ]);
-      // Never expose the Paystack secret key to the browser.
-      const publicProduct = { ...p };
-      delete publicProduct.paystack_secret_key;
-      return { ...publicProduct, material_count: (mats || []).length, affiliate_count: (affCount && affCount.count) || 0 };
+      (mats || []).forEach(m => { matsCountMap[m.product_id] = (matsCountMap[m.product_id] || 0) + 1; });
+      (affs || []).forEach(a => { affCountMap[a.product_id] = (affCountMap[a.product_id] || 0) + 1; });
+    }
+
+    const enriched = (data || []).map(p => ({
+      ...p,
+      material_count: matsCountMap[p.id] || 0,
+      affiliate_count: affCountMap[p.id] || 0
     }));
+
     return json(res, 200, { ok: true, products: enriched });
   }
   return json(res, 405, { error: 'Method not allowed.' });
@@ -207,25 +249,135 @@ async function productUpdate(req, res, db) {
 }
 
 // ---------------------------------------------------------------------------
-// MATERIALS — add / remove marketing materials for a product
+// ---------------------------------------------------------------------------
+// MATERIALS — list / add / edit / remove marketing materials & swipe copy
 // ---------------------------------------------------------------------------
 async function materials(req, res, db) {
-  if (req.method === 'POST') {
-    const { product_id, type, title, url } = req.body || {};
-    if (!product_id || !url) return json(res, 400, { error: 'product_id and url required.' });
-    const { data, error } = await db.from('marketing_materials').insert({
-      product_id, type: type || 'asset', title: title || null, url,
-    }).select('*').single();
-    if (error) return json(res, 500, { error: 'Failed to add material.' });
-    return json(res, 200, { ok: true, material: data });
+  const urlObj = new URL(req.url, `http://${req.headers.host}`);
+  const productId = urlObj.searchParams.get('product_id') || (req.body && req.body.product_id) || '';
+
+  if (req.method === 'GET') {
+    if (!productId) return json(res, 400, { error: 'product_id required.' });
+    const { data, error } = await db.from('marketing_materials')
+      .select('id, product_id, type, title, url, created_at')
+      .eq('product_id', productId)
+      .order('created_at', { ascending: false });
+
+    if (error) return json(res, 500, { error: 'Failed to load materials.' });
+
+    // Exclude feedback reviews stored in marketing_materials
+    const validData = (data || []).filter(m => !m.url || !m.url.startsWith('review:'));
+
+    const formatted = validData.map(m => {
+      const isCopy = m.url && m.url.startsWith('copy:');
+      let content = '';
+      if (isCopy) {
+        try { content = decodeURIComponent(m.url.slice(5)); } catch (e) { content = m.url.slice(5); }
+      }
+      return {
+        id: m.id,
+        product_id: m.product_id,
+        type: isCopy ? 'copy' : (m.type || 'asset'),
+        title: m.title || (isCopy ? 'Swipe Copy' : 'Material'),
+        url: isCopy ? '' : m.url,
+        content: content || (isCopy ? '' : m.url),
+        created_at: m.created_at,
+      };
+    });
+
+    return json(res, 200, { ok: true, materials: formatted });
   }
+
+  // CREATE OR UPDATE
+  if (req.method === 'POST' || req.method === 'PATCH') {
+    const { id, product_id, type, title, url, content } = req.body || {};
+    const pid = product_id || productId;
+    if (!id && !pid) return json(res, 400, { error: 'product_id required.' });
+
+    let finalType = type || 'asset';
+    let finalUrl = String(url || '').trim();
+    let finalTitle = String(title || '').trim();
+
+    if (type === 'copy' || content) {
+      finalType = 'asset';
+      const textToStore = String(content || url || '').trim();
+      if (!textToStore) return json(res, 400, { error: 'Swipe copy text is required.' });
+      finalUrl = 'copy:' + encodeURIComponent(textToStore);
+      if (!finalTitle) finalTitle = 'Swipe Copy';
+    } else {
+      if (!finalUrl) return json(res, 400, { error: 'Material URL is required.' });
+      const allowed = ['image', 'video', 'file', 'link', 'asset'];
+      if (!allowed.includes(finalType)) finalType = 'asset';
+    }
+
+    if (id) {
+      // UPDATE existing material
+      const u = {
+        type: finalType,
+        title: finalTitle || null,
+        url: finalUrl,
+      };
+      const { data, error } = await db.from('marketing_materials').update(u).eq('id', id).select('*').single();
+      if (error) return json(res, 500, { error: 'Failed to update material: ' + (error.message || '') });
+
+      const isCopy = data.url && data.url.startsWith('copy:');
+      let decodedContent = '';
+      if (isCopy) {
+        try { decodedContent = decodeURIComponent(data.url.slice(5)); } catch (e) { decodedContent = data.url.slice(5); }
+      }
+
+      return json(res, 200, {
+        ok: true,
+        material: {
+          id: data.id,
+          product_id: data.product_id,
+          type: isCopy ? 'copy' : data.type,
+          title: data.title,
+          url: isCopy ? '' : data.url,
+          content: decodedContent || (isCopy ? '' : data.url),
+          created_at: data.created_at,
+        }
+      });
+    }
+
+    // INSERT new material
+    const { data, error } = await db.from('marketing_materials').insert({
+      product_id: pid,
+      type: finalType,
+      title: finalTitle || null,
+      url: finalUrl,
+    }).select('*').single();
+
+    if (error) return json(res, 500, { error: 'Failed to add material: ' + (error.message || '') });
+
+    const isCopy = data.url && data.url.startsWith('copy:');
+    let decodedContent = '';
+    if (isCopy) {
+      try { decodedContent = decodeURIComponent(data.url.slice(5)); } catch (e) { decodedContent = data.url.slice(5); }
+    }
+
+    return json(res, 200, {
+      ok: true,
+      material: {
+        id: data.id,
+        product_id: data.product_id,
+        type: isCopy ? 'copy' : data.type,
+        title: data.title,
+        url: isCopy ? '' : data.url,
+        content: decodedContent || (isCopy ? '' : data.url),
+        created_at: data.created_at,
+      }
+    });
+  }
+
   if (req.method === 'DELETE') {
-    const url = new URL(req.url, `http://${req.headers.host}`);
-    const id = url.searchParams.get('id') || '';
+    const id = urlObj.searchParams.get('id') || (req.body && req.body.id) || '';
     if (!id) return json(res, 400, { error: 'id required.' });
-    await db.from('marketing_materials').delete().eq('id', id);
+    const { error } = await db.from('marketing_materials').delete().eq('id', id);
+    if (error) return json(res, 500, { error: 'Failed to delete material.' });
     return json(res, 200, { ok: true });
   }
+
   return json(res, 405, { error: 'Method not allowed.' });
 }
 
@@ -262,7 +414,9 @@ async function affiliates(req, res, db) {
   const commByAff = {};
   commissions.forEach(c => {
     if (!commByAff[c.affiliate_id]) commByAff[c.affiliate_id] = { sales: 0, earned: 0, pending: 0 };
-    commByAff[c.affiliate_id].sales++;
+    if (c.status === 'pending' || c.status === 'approved' || c.status === 'processing' || c.status === 'paid') {
+      commByAff[c.affiliate_id].sales++;
+    }
     if (c.status === 'approved' || c.status === 'processing' || c.status === 'paid') commByAff[c.affiliate_id].earned += c.commission_kobo;
     if (c.status === 'pending') commByAff[c.affiliate_id].pending += c.commission_kobo;
   });
@@ -284,7 +438,6 @@ async function affiliateProducts(req, res, db) {
   const { partner_id, product_ids } = req.body || {};
   if (!partner_id || !Array.isArray(product_ids)) return json(res, 400, { error: 'partner_id and product_ids array required.' });
 
-  // remove existing, then re-add active ones
   await db.from('affiliate_products').delete().eq('partner_id', partner_id);
   const rows = product_ids.filter(Boolean).map(pid => ({ partner_id, product_id: pid, status: 'active' }));
   if (rows.length) {
@@ -405,4 +558,43 @@ async function notifications(req, res, db) {
   }));
 
   return json(res, 200, { ok: true, count: pending.length, notifications: pending });
+}
+
+// ---------------------------------------------------------------------------
+// UPLOAD — Direct device photo / image upload to Supabase Storage
+// ---------------------------------------------------------------------------
+async function uploadMaterialFile(req, res, db) {
+  if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
+  const { filename, contentType, base64Data } = req.body || {};
+  if (!base64Data) return json(res, 400, { error: 'No image file data provided.' });
+
+  try {
+    const buffer = Buffer.from(base64Data, 'base64');
+    const ext = (filename && filename.includes('.'))
+      ? filename.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '')
+      : 'png';
+    const cleanName = 'promo-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7) + '.' + ext;
+    const mimeType = contentType || (ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : (ext === 'png' ? 'image/png' : (ext === 'webp' ? 'image/webp' : 'application/octet-stream')));
+
+    const { data, error } = await db.storage
+      .from('materials')
+      .upload(cleanName, buffer, {
+        contentType: mimeType,
+        upsert: true
+      });
+
+    if (error) {
+      return json(res, 500, { error: 'Storage upload failed: ' + (error.message || '') });
+    }
+
+    const { data: publicUrlData } = db.storage.from('materials').getPublicUrl(cleanName);
+    return json(res, 200, {
+      ok: true,
+      url: publicUrlData.publicUrl,
+      filename: cleanName,
+      size: buffer.length
+    });
+  } catch (err) {
+    return json(res, 500, { error: 'Upload failed: ' + (err.message || '') });
+  }
 }

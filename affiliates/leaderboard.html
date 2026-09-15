@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaderboard &middot; Partners</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/app.css">
+<style>
+  .lb-top-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px;}
+  .podium-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;}
+  .podium-card.rank-1{border-color:rgba(245,158,11,.4);background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(0,0,0,.4));}
+  .podium-card.rank-2{border-color:rgba(209,213,219,.3);background:linear-gradient(135deg,rgba(209,213,219,.08),rgba(0,0,0,.4));}
+  .podium-card.rank-3{border-color:rgba(217,119,6,.3);background:linear-gradient(135deg,rgba(217,119,6,.08),rgba(0,0,0,.4));}
+  .podium-badge{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;}
+  .rank-1 .podium-badge{background:#f59e0b;color:#000;}
+  .rank-2 .podium-badge{background:#d1d5db;color:#000;}
+  .rank-3 .podium-badge{background:#d97706;color:#fff;}
+  .podium-name{font-size:16px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .podium-sales{font-size:13px;color:var(--muted);}
+  .podium-earned{font-size:18px;font-weight:800;color:var(--green);}
+</style>
+</head>
+<body data-page="leaderboard">
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="mark" width="34" height="34" viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+        <path d="M 25 35 L 75 35" stroke="#7A0A15" stroke-width="7" stroke-linecap="square"/>
+        <path d="M 50 35 L 50 75" stroke="#7A0A15" stroke-width="7" stroke-linecap="square"/>
+        <path d="M 20 25 L 35 80 L 50 55 L 65 80 L 80 25" stroke="#050505" stroke-width="12" stroke-linejoin="bevel"/>
+        <path d="M 20 25 L 35 80 L 50 55 L 65 80 L 80 25" stroke="#ffffff" stroke-width="4" stroke-linejoin="bevel"/>
+      </svg>
+      <div class="bb"><div class="brand-name">Partners</div><div class="brand-sub">Tomide Williams</div></div>
+    </div>
+    <nav class="nav">
+      <a class="" href="/affiliates/dashboard" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg>Dashboard
+      </a>
+      <a class="" href="/affiliates/marketplace" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>Marketplace
+      </a>
+      <a class="" href="/affiliates/my-products" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/><path d="M19 15l1 1-3 3-1.5-1"/></svg>My Products
+      </a>
+      <a class="active" href="/affiliates/leaderboard" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-1 1H7.5a1.5 1.5 0 0 0-1.5 1.5V22"/><path d="M14 14.66V17c0 .55.45 1 1 1h1.5a1.5 1.5 0 0 1 1.5 1.5V22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>Leaderboard
+      </a>
+      <a class="" href="/affiliates/funds" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><circle cx="12" cy="12.5" r="3"/><path d="M5.5 9.5h.01M18.5 9.5h.01"/></svg>Earnings
+      </a>
+      <a class="" href="/affiliates/profile" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>Profile
+      </a>
+    </nav>
+    <div class="foot">
+      <div class="who"><div class="n" id="sbPartnerName">Partner</div><div class="e" id="sbPartnerEmail"></div></div>
+      <a href="javascript:void(0)" onclick="App.logout()">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 12H5M9 16l-4-4 4-4"/><path d="M19 4h-4v16h4z"/></svg>Logout
+      </a>
+    </div>
+  </aside>
+
+<div class="main" id="main">
+  <div class="page-head">
+    <div class="page-eyebrow">Rankings</div>
+    <h1 class="page-title">Leaderboard</h1>
+    <div class="page-sub">Track top performing partners and see who is leading the race across all products.</div>
+  </div>
+
+  <div id="productTabs" class="lb-tabs">
+    <button class="lb-tab active" data-pid="">All Products</button>
+  </div>
+
+  <div id="myRankBanner"></div>
+
+  <div class="section-head">
+    <h2>Standings</h2>
+    <span class="count" id="partnerCount">0 partners</span>
+  </div>
+
+  <div id="leaderboardList" class="lb-rows">
+    <div class="loading"><div class="bar"></div> Loading rankings...</div>
+  </div>
+</div>
+
+</div>
+<script src="/assets/sidebar.js"></script>
+<script>
+(function () {
+  if (!App.getToken()) { window.location.href = '/affiliates/login'; return; }
+
+  var currentPid = new URLSearchParams(window.location.search).get('product_id') || '';
+  var partner = (function () { try { return JSON.parse(localStorage.getItem('partners_partner')); } catch (e) { return {}; } })();
+
+  function loadLeaderboard(pid) {
+    currentPid = pid || '';
+    var list = document.getElementById('leaderboardList');
+    list.innerHTML = '<div class="loading"><div class="bar"></div> Loading rankings...</div>';
+
+    App.api('leaderboard', { params: { product_id: currentPid } }).then(function (d) {
+      if (!d || !d.ok) {
+        list.innerHTML = '<div class="empty">' + App.esc((d && d.error) || 'Failed to load rankings.') + '</div>';
+        return;
+      }
+      renderTabs(d.products || []);
+      renderRankings(d.top || []);
+    });
+  }
+
+  function renderTabs(products) {
+    var tabsEl = document.getElementById('productTabs');
+    if (!tabsEl) return;
+    var html = '<button class="lb-tab' + (!currentPid ? ' active' : '') + '" data-pid="">All Products</button>';
+    products.forEach(function (p) {
+      var active = currentPid === p.id ? ' active' : '';
+      html += '<button class="lb-tab' + active + '" data-pid="' + App.esc(p.id) + '">' + App.esc(p.name) + '</button>';
+    });
+    tabsEl.innerHTML = html;
+
+    tabsEl.querySelectorAll('.lb-tab').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var pid = btn.getAttribute('data-pid');
+        loadLeaderboard(pid);
+      });
+    });
+  }
+
+  function renderRankings(rows) {
+    var list = document.getElementById('leaderboardList');
+    var countEl = document.getElementById('partnerCount');
+    var myBanner = document.getElementById('myRankBanner');
+
+    if (countEl) countEl.textContent = rows.length + ' partner' + (rows.length !== 1 ? 's' : '');
+
+    var myRank = -1;
+    var myStats = null;
+    rows.forEach(function (r, idx) {
+      if (r.partner_id === partner.id || (partner.code && r.code === partner.code)) {
+        myRank = idx + 1;
+        myStats = r;
+      }
+    });
+
+    if (myBanner) {
+      if (myRank > 0) {
+        myBanner.innerHTML = '<div class="card" style="margin-bottom:20px;border-color:rgba(122,10,21,.5);background:linear-gradient(135deg,rgba(122,10,21,.2),rgba(0,0,0,.4));display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">' +
+          '<div style="display:flex;align-items:center;gap:14px;">' +
+            '<div style="width:44px;height:44px;border-radius:10px;background:var(--crimson);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;">#' + myRank + '</div>' +
+            '<div><div style="font-weight:800;font-size:16px;color:#fff;">Your Current Position</div><div style="font-size:13px;color:var(--muted);">' + (myStats.sales || 0) + ' sales &middot; ' + App.naira(myStats.earned_kobo) + ' earned</div></div>' +
+          '</div>' +
+          '<div style="font-weight:700;font-size:13px;color:#e88a93;">' + (myRank === 1 ? 'You are leading the race!' : 'Keep sharing to climb to the top spot!') + '</div>' +
+        '</div>';
+      } else {
+        myBanner.innerHTML = '<div class="card" style="margin-bottom:20px;border-color:rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">' +
+          '<div><div style="font-weight:700;font-size:14px;color:#fff;">You have not made a sale yet</div><div style="font-size:12.5px;color:var(--muted);">Share your referral link to make your first sale and appear on the leaderboard!</div></div>' +
+          '<a class="btn sm" href="/affiliates/my-products">Get My Link &rarr;</a>' +
+        '</div>';
+      }
+    }
+
+    if (!rows.length) {
+      list.innerHTML = '<div class="empty" style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:36px 20px;">' +
+        
+        '<div style="font-size:15px;font-weight:700;color:#fff;">Be the first to claim the #1 spot!</div>' +
+        '<div style="font-size:13px;color:var(--muted);margin-top:4px;">No partner sales recorded yet for this selection. Start promoting to take the lead!</div>' +
+      '</div>';
+      return;
+    }
+
+    var html = '';
+    rows.forEach(function (r, idx) {
+      var rank = idx + 1;
+      var isMe = (r.partner_id === partner.id || (partner.code && r.code === partner.code));
+      var medal = '';
+
+      html += '<div class="lb-row' + (isMe ? ' me' : '') + '">' +
+        '<div class="lb-rank">' + medal + rank + '</div>' +
+        '<div class="lb-who">' +
+          '<div class="n">' + App.esc(r.name) + (isMe ? '<span class="me-badge">You</span>' : '') + '</div>' +
+          '<div class="c">Code: ' + App.esc(r.code) + '</div>' +
+        '</div>' +
+        '<div class="lb-val">' +
+          '<div class="earned">' + App.naira(r.earned_kobo) + '</div>' +
+          '<div class="sales">' + (r.sales || 0) + ' sale' + (r.sales !== 1 ? 's' : '') + '</div>' +
+        '</div>' +
+      '</div>';
+    });
+
+    list.innerHTML = html;
+  }
+
+  loadLeaderboard(currentPid);
+})();
+</script>
+</body>
+</html>

@@ -10,6 +10,46 @@
 </head>
 <body data-page="funds">
 
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="mark" width="34" height="34" viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+        <path d="M 25 35 L 75 35" stroke="#7A0A15" stroke-width="7" stroke-linecap="square"/>
+        <path d="M 50 35 L 50 75" stroke="#7A0A15" stroke-width="7" stroke-linecap="square"/>
+        <path d="M 20 25 L 35 80 L 50 55 L 65 80 L 80 25" stroke="#050505" stroke-width="12" stroke-linejoin="bevel"/>
+        <path d="M 20 25 L 35 80 L 50 55 L 65 80 L 80 25" stroke="#ffffff" stroke-width="4" stroke-linejoin="bevel"/>
+      </svg>
+      <div class="bb"><div class="brand-name">Partners</div><div class="brand-sub">Tomide Williams</div></div>
+    </div>
+    <nav class="nav">
+      <a class="" href="/affiliates/dashboard" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg>Dashboard
+      </a>
+      <a class="" href="/affiliates/marketplace" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>Marketplace
+      </a>
+      <a class="" href="/affiliates/my-products" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/><path d="M19 15l1 1-3 3-1.5-1"/></svg>My Products
+      </a>
+      <a class="" href="/affiliates/leaderboard" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-1 1H7.5a1.5 1.5 0 0 0-1.5 1.5V22"/><path d="M14 14.66V17c0 .55.45 1 1 1h1.5a1.5 1.5 0 0 1 1.5 1.5V22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>Leaderboard
+      </a>
+      <a class="active" href="/affiliates/funds" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><circle cx="12" cy="12.5" r="3"/><path d="M5.5 9.5h.01M18.5 9.5h.01"/></svg>Earnings
+      </a>
+      <a class="" href="/affiliates/profile" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>Profile
+      </a>
+    </nav>
+    <div class="foot">
+      <div class="who"><div class="n" id="sbPartnerName">Partner</div><div class="e" id="sbPartnerEmail"></div></div>
+      <a href="javascript:void(0)" onclick="App.logout()">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 12H5M9 16l-4-4 4-4"/><path d="M19 4h-4v16h4z"/></svg>Logout
+      </a>
+    </div>
+  </aside>
+
 <div class="main" id="main">
   <div class="page-head">
     <div class="page-eyebrow">Earnings</div>
@@ -50,6 +90,7 @@
   </div>
 </div>
 
+</div>
 <script src="/assets/sidebar.js"></script>
 <script>
 (function () {

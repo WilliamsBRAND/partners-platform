@@ -1,4 +1,4 @@
-// Partners public leaderboard — ranks partners by approved commissions, optionally per offer.
+// Partners public leaderboard — ranks partners by commissions (pending, approved, processing, paid)
 import { getDb, json } from './_db.js';
 
 export default async function handler(req, res) {
@@ -10,25 +10,26 @@ export default async function handler(req, res) {
   if (!db) return json(res, 500, { error: 'Database not configured.' });
 
   const url = new URL(req.url, `http://${req.headers.host}`);
-  const offerId = url.searchParams.get('offer_id') || '';
+  const productId = url.searchParams.get('product_id') || url.searchParams.get('offer_id') || '';
 
   try {
-    // Active offers (for the per-product tabs / filter validation)
-    const { data: offers } = await db.from('offers')
-      .select('id, name').eq('status', 'active').order('created_at', { ascending: true });
+    const { data: products } = await db.from('products')
+      .select('id, name, slug').eq('status', 'active').order('created_at', { ascending: true });
 
-    let convQuery = db.from('conversions')
-      .select('partner_id, commission_kobo')
-      .in('status', ['approved', 'paid']);
-    if (offerId) convQuery = convQuery.eq('offer_id', offerId);
-    const { data: convs, error: convErr } = await convQuery;
-    if (convErr) return json(res, 500, { error: 'Failed to load leaderboard data.' });
+    let commQuery = db.from('commissions')
+      .select('affiliate_id, commission_kobo, status')
+      .in('status', ['pending', 'approved', 'processing', 'paid']);
+    if (productId) commQuery = commQuery.eq('product_id', productId);
+    const { data: comms, error: commErr } = await commQuery;
+    if (commErr) return json(res, 500, { error: 'Failed to load leaderboard data.' });
 
     const earnedByPartner = {};
     const countByPartner = {};
-    (convs || []).forEach(c => {
-      earnedByPartner[c.partner_id] = (earnedByPartner[c.partner_id] || 0) + c.commission_kobo;
-      countByPartner[c.partner_id] = (countByPartner[c.partner_id] || 0) + 1;
+    (comms || []).forEach(c => {
+      if (c.affiliate_id) {
+        earnedByPartner[c.affiliate_id] = (earnedByPartner[c.affiliate_id] || 0) + (c.commission_kobo || 0);
+        countByPartner[c.affiliate_id] = (countByPartner[c.affiliate_id] || 0) + 1;
+      }
     });
 
     const partnerIds = Object.keys(earnedByPartner);
@@ -43,12 +44,12 @@ export default async function handler(req, res) {
       partner_id: id,
       name: (nameMap[id] && nameMap[id].name) || 'Partner',
       code: (nameMap[id] && nameMap[id].code) || '-',
-      earned_kobo: earnedByPartner[id],
-      sales: countByPartner[id],
+      earned_kobo: earnedByPartner[id] || 0,
+      sales: countByPartner[id] || 0,
     }));
-    rows.sort((a, b) => b.earned_kobo - a.earned_kobo);
+    rows.sort((a, b) => b.sales !== a.sales ? b.sales - a.sales : b.earned_kobo - a.earned_kobo);
 
-    return json(res, 200, { ok: true, offers: offers || [], top: rows });
+    return json(res, 200, { ok: true, products: products || [], top: rows });
   } catch (e) {
     return json(res, 500, { error: 'Server error: ' + (e.message || '') });
   }

@@ -8,59 +8,126 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/app.css">
 <style>
-  .ptop{display:flex;gap:22px;align-items:center;flex-wrap:wrap;margin-bottom:28px;}
+  .ptop{display:flex;gap:22px;align-items:center;flex-wrap:wrap;margin-bottom:24px;}
   .pheroimg{width:96px;height:96px;border-radius:14px;background:linear-gradient(135deg,#1c1c1c,#0c0c0c);display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--line);flex:0 0 auto;}
   .pheroimg img{width:100%;height:100%;object-fit:cover;}
   .pheroimg .ph{font-size:44px;font-weight:800;color:#7A0A15;}
   .phero h1{font-size:24px;font-weight:800;color:#fff;margin:0;}
   .phero .sub{font-size:13px;color:var(--muted);margin-top:4px;}
+  
   .linkbox{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:24px;}
   .linkbox .lb{flex:1;min-width:200px;font-size:12.5px;color:#9B0D1A;word-break:break-all;font-weight:600;}
-  .wa{background:#25D366;border:1px solid #25D366;color:#fff;}
+  .wa{background:#25D366;border:1px solid #25D366;color:#fff;font-weight:700;}
   .wa:hover{background:#1eb857;box-shadow:0 10px 24px -12px rgba(37,211,102,.6);}
-  .mat{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
-  .mat a{display:flex;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;color:#fff;text-decoration:none;font-size:13px;font-weight:600;}
-  .mat a:hover{border-color:rgba(122,10,21,.5);}
+
+  /* Marketing Hub Styles */
+  .mats-section{margin-top:32px;}
+  .mats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+  
+  .swipe-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px;}
+  .swipe-header{display:flex;justify-content:space-between;align-items:center;}
+  .swipe-title{font-size:15px;font-weight:800;color:#fff;}
+  .swipe-badge{font-size:10px;font-weight:800;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3);}
+  .swipe-body{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:12px 14px;font-size:13px;color:#ddd;line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:220px;overflow-y:auto;font-family:'Archivo',sans-serif;}
+  .swipe-actions{display:flex;gap:8px;margin-top:auto;flex-wrap:wrap;}
+  
+  .creative-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+  .creative-img-wrap{height:180px;background:linear-gradient(135deg,#1c1c1c,#0c0c0c);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+  .creative-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .2s;}
+  .creative-card:hover .creative-img-wrap img{transform:scale(1.03);}
+  .creative-body{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1;}
+  .creative-title{font-size:14px;font-weight:700;color:#fff;}
+  .creative-actions{display:flex;gap:8px;margin-top:auto;padding-top:6px;}
+
+  .asset-link-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+  .asset-link-title{font-size:13.5px;font-weight:700;color:#fff;}
 </style>
 </head>
 <body data-page="myproducts">
 
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="mark" width="34" height="34" viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+        <path d="M 25 35 L 75 35" stroke="#7A0A15" stroke-width="7" stroke-linecap="square"/>
+        <path d="M 50 35 L 50 75" stroke="#7A0A15" stroke-width="7" stroke-linecap="square"/>
+        <path d="M 20 25 L 35 80 L 50 55 L 65 80 L 80 25" stroke="#050505" stroke-width="12" stroke-linejoin="bevel"/>
+        <path d="M 20 25 L 35 80 L 50 55 L 65 80 L 80 25" stroke="#ffffff" stroke-width="4" stroke-linejoin="bevel"/>
+      </svg>
+      <div class="bb"><div class="brand-name">Partners</div><div class="brand-sub">Tomide Williams</div></div>
+    </div>
+    <nav class="nav">
+      <a class="" href="/affiliates/dashboard" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg>Dashboard
+      </a>
+      <a class="" href="/affiliates/marketplace" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>Marketplace
+      </a>
+      <a class="active" href="/affiliates/my-products" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/><path d="M19 15l1 1-3 3-1.5-1"/></svg>My Products
+      </a>
+      <a class="" href="/affiliates/leaderboard" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-1 1H7.5a1.5 1.5 0 0 0-1.5 1.5V22"/><path d="M14 14.66V17c0 .55.45 1 1 1h1.5a1.5 1.5 0 0 1 1.5 1.5V22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>Leaderboard
+      </a>
+      <a class="" href="/affiliates/funds" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><circle cx="12" cy="12.5" r="3"/><path d="M5.5 9.5h.01M18.5 9.5h.01"/></svg>Earnings
+      </a>
+      <a class="" href="/affiliates/profile" data-spa="true">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>Profile
+      </a>
+    </nav>
+    <div class="foot">
+      <div class="who"><div class="n" id="sbPartnerName">Partner</div><div class="e" id="sbPartnerEmail"></div></div>
+      <a href="javascript:void(0)" onclick="App.logout()">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 12H5M9 16l-4-4 4-4"/><path d="M19 4h-4v16h4z"/></svg>Logout
+      </a>
+    </div>
+  </aside>
+
 <div class="main" id="main">
-  <div class="page-head">
+  <div class="page-head" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
     <a href="/affiliates/my-products" class="link" style="font-size:13px;">&larr; Back to My Products</a>
+    <a id="lbProductBtn" href="/affiliates/leaderboard" class="btn sm ghost">View Product Leaderboard</a>
   </div>
-  <div id="view"></div>
+  <div id="view"><div class="loading"><div class="bar"></div> Loading product details...</div></div>
 </div>
 
+</div>
 <script src="/assets/sidebar.js"></script>
 <script>
 (function () {
   if (!App.getToken()) { window.location.href = '/affiliates/login'; return; }
   var pid = new URLSearchParams(window.location.search).get('product_id') || '';
   if (!pid) { window.location.href = '/affiliates/my-products'; return; }
+  
+  var lbBtn = document.getElementById('lbProductBtn');
+  if (lbBtn) lbBtn.href = '/affiliates/leaderboard?product_id=' + encodeURIComponent(pid);
+
   var view = document.getElementById('view');
 
-  App.api('product', { params: { product_id: pid } }).then(function (d) {
-    if (!d.ok) { view.innerHTML = '<div class="empty">' + App.esc(d.error || 'Product unavailable.') + '</div>'; return; }
-    render(d);
-  });
-
   function render(d) {
+    if (!d || !d.ok) {
+      view.innerHTML = '<div class="empty">' + App.esc((d && d.error) || 'Product unavailable.') + '</div>';
+      return;
+    }
+
     var p = d.product;
+    var mats = d.materials || [];
     var html = '';
 
     html += '<div class="ptop">' +
       '<div class="pheroimg">' + (p.image_url ? '<img src="' + App.esc(p.image_url) + '">' : '<div class="ph">' + App.esc(p.name.slice(0, 1).toUpperCase()) + '</div>') + '</div>' +
       '<div class="phero"><h1>' + App.esc(p.name) + '</h1>' +
-      '<div class="sub">' + App.esc(p.tagline || p.description || '') + '</div></div>' +
+      '<div class="sub">' + App.esc(p.tagline || p.description || '') + ' &middot; <strong style="color:var(--green);">Commission: ' + App.esc(p.commission_label || '') + '</strong></div></div>' +
     '</div>';
 
-    // Link + share
+    // Link + share box
     if (p.link) {
       html += '<div class="linkbox">' +
         '<div class="lb">' + App.esc(p.link) + '</div>' +
-        '<button class="copy-btn" data-copy="' + App.esc(p.link) + '" onclick="App.copyLink(this, this.getAttribute(\'data-copy\'))">Copy link</button>' +
-        '<button class="btn wa" onclick="App.shareWhatsApp(App.getPartner && \'' + App.esc(p.link) + '\', \'Check out ' + App.esc(p.name) + ' — ' + App.esc(p.commission_label || '') + ' off for you via my link!\')">Share on WhatsApp</button>' +
+        '<button class="copy-btn" data-copy="' + App.esc(p.link) + '" onclick="App.copyLink(this, this.getAttribute(\'data-copy\'))">Copy Link</button>' +
+        '<button class="btn wa" data-link="' + App.esc(p.link) + '" data-name="' + App.esc(p.name) + '" onclick="App.shareWhatsApp(this.getAttribute(\'data-link\'), \'Hey! Check out \' + this.getAttribute(\'data-name\') + \':\')">Share on WhatsApp</button>' +
       '</div>';
     } else {
       html += '<div class="empty" style="color:#888;">Link not ready — check back soon.</div>';
@@ -74,18 +141,76 @@
       '<div class="card stat-card accent"><div class="lbl">Earned</div><div class="num" style="color:var(--green);">' + App.naira(p.earned_kobo) + '</div></div>' +
     '</div>';
 
-    // Marketing materials
-    if (d.materials && d.materials.length) {
-      html += '<div class="section-head"><h2>Marketing Materials</h2></div><div class="mat">';
-      d.materials.forEach(function (m) {
-        var label = m.title || ([ 'asset', 'image', 'file' ].indexOf(m.type) >= 0 ? 'Asset' : m.type);
-        html += '<a href="' + App.esc(m.url) + '" target="_blank" rel="noopener">&#128279; ' + App.esc(label) + '</a>';
-      });
-      html += '</div>';
+    // MARKETING ASSETS & SWIPE COPY
+    var copyMats = mats.filter(function(m){ return m.type === 'copy' || m.is_copy; });
+    var imageMats = mats.filter(function(m){ return m.type === 'image' && !m.is_copy; });
+    var otherMats = mats.filter(function(m){ return m.type !== 'copy' && m.type !== 'image' && !m.is_copy; });
+
+    html += '<div class="mats-section" id="marketing">';
+    html += '<div class="section-head"><h2>Marketing Assets & Promotional Copy</h2><span class="count">' + mats.length + ' assets ready</span></div>';
+
+    if (!mats.length) {
+      html += '<div class="empty" style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px;">The creator has not uploaded promotional materials for this product yet. You can still use your referral link above to share and earn!</div>';
+    } else {
+      // 1. SWIPE COPY SECTION
+      if (copyMats.length) {
+        html += '<h3 style="font-size:15px;font-weight:800;color:#fff;margin:20px 0 12px;display:flex;align-items:center;gap:8px;">Promotional Copy & Scripts <span style="font-size:12px;color:var(--muted);font-weight:600;">(Your link is already injected!)</span></h3>';
+        html += '<div class="mats-grid">';
+        copyMats.forEach(function(m, idx){
+          var copyId = 'swipe_text_' + idx;
+          html += '<div class="swipe-card">' +
+            '<div class="swipe-header">' +
+              '<div class="swipe-title">' + App.esc(m.title) + '</div>' +
+              '<span class="swipe-badge">Link Injected</span>' +
+            '</div>' +
+            '<div class="swipe-body" id="' + copyId + '">' + App.esc(m.content) + '</div>' +
+            '<div class="swipe-actions">' +
+              '<button class="copy-btn" data-id="' + copyId + '" onclick="copySwipeText(this, this.getAttribute(\'data-id\'))">Copy Swipe with My Link</button>' +
+              '<button class="btn wa" style="padding:7px 12px;font-size:12px;" data-id="' + copyId + '" onclick="shareSwipeWhatsApp(this.getAttribute(\'data-id\'))">WhatsApp</button>' +
+            '</div>' +
+          '</div>';
+        });
+        html += '</div>';
+      }
+
+      // 2. PROMOTIONAL IMAGES & CREATIVES
+      if (imageMats.length) {
+        html += '<h3 style="font-size:15px;font-weight:800;color:#fff;margin:24px 0 12px;">Promotional Creatives & Mockups</h3>';
+        html += '<div class="mats-grid">';
+        imageMats.forEach(function(m){
+          html += '<div class="creative-card">' +
+            '<div class="creative-img-wrap">' +
+              '<img src="' + App.esc(m.url) + '" alt="' + App.esc(m.title) + '" loading="lazy" />' +
+            '</div>' +
+            '<div class="creative-body">' +
+              '<div class="creative-title">' + App.esc(m.title) + '</div>' +
+              '<div class="creative-actions">' +
+                '<button class="btn" style="font-size:12px;padding:7px 14px;" data-url="' + App.esc(m.url) + '" data-name="' + App.esc(m.title) + '" onclick="downloadCreativeImage(this.getAttribute(\'data-url\'), this.getAttribute(\'data-name\') + \'.png\')">Download Image</button>' +
+                '<button class="copy-btn" style="font-size:12px;padding:7px 12px;" data-copy="' + App.esc(m.url) + '" onclick="App.copyLink(this, this.getAttribute(\'data-copy\'))">Copy URL</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        });
+        html += '</div>';
+      }
+
+      // 3. VIDEOS & RESOURCE LINKS
+      if (otherMats.length) {
+        html += '<h3 style="font-size:15px;font-weight:800;color:#fff;margin:24px 0 12px;">Resource Links & Guides</h3>';
+        html += '<div class="mats-grid">';
+        otherMats.forEach(function(m){
+          html += '<div class="asset-link-card">' +
+            '<div class="asset-link-title">' + App.esc(m.title) + '</div>' +
+            '<a class="btn" style="text-decoration:none;font-size:12px;padding:7px 14px;" href="' + App.esc(m.url) + '" target="_blank" rel="noopener">Open Resource &rarr;</a>' +
+          '</div>';
+        });
+        html += '</div>';
+      }
     }
+    html += '</div>';
 
     // Recent sales
-    html += '<div class="section-head"><h2>Recent Sales</h2><span class="count">' + (p.sales || 0) + ' total</span></div>';
+    html += '<div class="section-head" style="margin-top:34px;"><h2>Recent Sales</h2><span class="count">' + (p.sales || 0) + ' total</span></div>';
     if (d.sales && d.sales.length) {
       html += '<div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Customer</th><th class="num">Order</th><th class="num">Commission</th><th>Status</th></tr></thead><tbody>';
       d.sales.forEach(function (s) {
@@ -93,12 +218,53 @@
       });
       html += '</tbody></table></div>';
     } else {
-      html += '<div class="empty">No sales yet for this product. Share your link to start earning.</div>';
+      html += '<div class="empty">No sales yet for this product. Use the marketing copy and creatives above to start promoting!</div>';
     }
 
     view.innerHTML = html;
   }
+
+  var cached = App.getCached('product', { product_id: pid });
+  if (cached) render(cached);
+
+  App.api('product', { params: { product_id: pid } }).then(function (d) {
+    render(d);
+  });
 })();
+
+
+function downloadCreativeImage(url, filename){
+  App.snack('Starting image download...');
+  fetch(url).then(function(r){ return r.blob(); }).then(function(blob){
+    var blobUrl = window.URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename || 'promo-image.png';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(blobUrl);
+    App.snack('Download complete!');
+  }).catch(function(){
+    // Fallback: open in new tab
+    window.open(url, '_blank');
+  });
+}
+
+function copySwipeText(btn, elementId){
+  var el = document.getElementById(elementId);
+  if(!el) return;
+  var text = el.innerText || el.textContent;
+  App.copyLink(btn, text);
+}
+
+function shareSwipeWhatsApp(elementId){
+  var el = document.getElementById(elementId);
+  if(!el) return;
+  var text = el.innerText || el.textContent;
+  var url = 'https://wa.me/?text=' + encodeURIComponent(text);
+  window.open(url, '_blank');
+}
 </script>
 </body>
 </html>

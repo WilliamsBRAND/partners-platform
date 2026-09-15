@@ -88,19 +88,23 @@ input::placeholder{color:#555;}
     fetch('/api/partner?action=login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, password: password })
+      body: JSON.stringify({ email: email.toLowerCase().trim(), password: password })
     })
     .then(function(r){ return r.json(); })
     .then(function(d){
       if(d.ok){
-        localStorage.setItem('partners_token', d.token || '');
-        localStorage.setItem('partners_partner', JSON.stringify(d));
+        try {
+          localStorage.setItem('partners_token', d.token || '');
+          sessionStorage.setItem('partners_token', d.token || '');
+          localStorage.setItem('partners_partner', JSON.stringify(d));
+          sessionStorage.setItem('partners_partner', JSON.stringify(d));
+        } catch(e){}
         document.querySelector('.card').innerHTML =
           '<div style="text-align:center;padding:20px 0;">' +
-          '<div style="font-weight:800;font-size:22px;margin-bottom:8px;">Welcome back, ' + d.name + '</div>' +
+          '<div style="font-weight:800;font-size:22px;margin-bottom:8px;">Welcome back, ' + (d.name || 'Partner') + '</div>' +
           '<p style="font-size:14px;color:#999;">Redirecting to your dashboard...</p>' +
           '</div>';
-        setTimeout(function(){ window.location.href = '/affiliates/dashboard'; }, 800);
+        setTimeout(function(){ window.location.href = '/affiliates/dashboard'; }, 400);
       } else {
         errEl.textContent = d.error || 'No account found with that email.';
         btn.disabled = false;

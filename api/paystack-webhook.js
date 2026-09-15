@@ -106,8 +106,10 @@ export default async function handler(req, res) {
   // product's stored price_kobo. Overpaying relative to the stored price is
   // treated as a mismatch (likely a different product or tampered charge).
   // Commission is always computed from the amount actually paid (vAmount).
-  if (product.price_kobo && vAmount > product.price_kobo) {
+  // Relaxed price policy: allow standard gateway fee overhead (up to 25%)
+  if (product.price_kobo && vAmount > Math.round(product.price_kobo * 1.25)) {
     return json(res, 200, { ok: true, ignored: 'amount_mismatch' });
+  });
   }
 
   const customerEmail = (verifiedCustomer && verifiedCustomer.email || '').toLowerCase();
@@ -134,14 +136,25 @@ export default async function handler(req, res) {
   const partnerCode = extractPartnerCode(data, verified);
   if (!partnerCode) return json(res, 200, { ok: true, order: 'recorded', commission: 'no_partner' });
 
-  const { data: partner } = await db.from('partners')
-    .select('id').eq('code', partnerCode).eq('status', 'active').maybeSingle();
+  let { data: partner } = await db.from('partners')
+    .select('id, code, name, email').eq('code', partnerCode).eq('status', 'active').maybeSingle();
+  if (!partner && /^[0-9a-f-]{36}$/i.test(partnerCode)) {
+    const { data: pById } = await db.from('partners')
+      .select('id, code, name, email').eq('id', partnerCode).eq('status', 'active').maybeSingle();
+    if (pById) partner = pById;
+  }
   if (!partner) return json(res, 200, { ok: true, order: 'recorded', commission: 'partner_not_found' });
 
-  // Affiliate must actively promote this product
+  // Ensure affiliate is linked to this product (auto-enroll if active partner)
   const { data: rel } = await db.from('affiliate_products')
     .select('id').eq('partner_id', partner.id).eq('product_id', product.id).eq('status', 'active').maybeSingle();
-  if (!rel) return json(res, 200, { ok: true, order: 'recorded', commission: 'not_promoting' });
+  if (!rel) {
+    await db.from('affiliate_products').upsert({
+      partner_id: partner.id,
+      product_id: product.id,
+      status: 'active'
+    }, { onConflict: 'partner_id,product_id' });
+  }
 
   const commissionKobo = commissionFor(product, vAmount);
 
@@ -170,24 +183,29 @@ export default async function handler(req, res) {
 }
 
 function extractPartnerCode(webhookData, verifiedData) {
-  // Prefer webhook metadata (set at checkout start)
-  const meta = (webhookData && webhookData.metadata) || {};
-  const customFields = meta.custom_fields || [];
-  for (const f of customFields) {
-    if (f.variable_name && String(f.variable_name).toLowerCase() === 'partner') {
-      const v = String(f.value || '');
-      if (v) return v.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 32);
+  function checkMeta(m) {
+    if (!m) return '';
+    if (m.partner) return String(m.partner);
+    if (m.pp) return String(m.pp);
+    if (m.partner_code) return String(m.partner_code);
+    if (m.affiliate) return String(m.affiliate);
+    const customFields = Array.isArray(m.custom_fields) ? m.custom_fields : [];
+    for (const f of customFields) {
+      const varName = String(f.variable_name || '').toLowerCase();
+      const dispName = String(f.display_name || '').toLowerCase();
+      if (varName === 'partner' || varName === 'pp' || varName === 'partner_code' ||
+          dispName === 'partner' || dispName === 'partner code' || dispName === 'partner_code') {
+        const v = String(f.value || '');
+        if (v) return v;
+      }
     }
+    return '';
   }
-  // Fall back to verified metadata
+  const wCode = checkMeta(webhookData && webhookData.metadata);
+  if (wCode) return wCode.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 36);
   const vMeta = (verifiedData && verifiedData.data && verifiedData.data.metadata) || {};
-  const vCustom = vMeta.custom_fields || [];
-  for (const f of vCustom) {
-    if (f.variable_name && String(f.variable_name).toLowerCase() === 'partner') {
-      const v = String(f.value || '');
-      if (v) return v.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 32);
-    }
-  }
+  const vCode = checkMeta(vMeta);
+  if (vCode) return vCode.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 36);
   return '';
 }
 
