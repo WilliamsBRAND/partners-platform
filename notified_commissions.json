@@ -2,10 +2,18 @@
   "pending": [
     "ab38dcfd-522a-41a4-b7c4-00838891376f",
     "cd15a3fe-2c7a-4aac-a2dc-5558bdb09064",
-    "64836d82-47e6-438d-a9d7-f696fd6ac675"
+    "64836d82-47e6-438d-a9d7-f696fd6ac675",
+    "2bd263d1-10d9-4a23-b7c1-e29875820e5c"
   ],
   "approved": [
     "cd15a3fe-2c7a-4aac-a2dc-5558bdb09064",
     "64836d82-47e6-438d-a9d7-f696fd6ac675"
+  ],
+  "payout_initial": [
+    "d84088b1-90e0-46f9-bed0-44772168c916"
+  ],
+  "payout_reminder_24h": [],
+  "payout_completed": [
+    "d84088b1-90e0-46f9-bed0-44772168c916"
   ]
 }
