@@ -1,5 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/p/:code/:slug", "destination": "/api/p?code=:code&slug=:slug" },
+    { "source": "/p/:code", "destination": "/api/p?code=:code" },
+    { "source": "/r/:code/:slug", "destination": "/api/p?code=:code&slug=:slug" },
+    { "source": "/r/:code", "destination": "/api/p?code=:code" }
+  ]
 }
