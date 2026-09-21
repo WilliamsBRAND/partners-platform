@@ -178,9 +178,9 @@ var _selectedAffCat = 'all';
         '<button type="button" class="hub-pill-btn active" data-cat="all" onclick="filterAffMats(\'all\')">All Materials (' + counts.all + ')</button>' +
         (counts.dm ? '<button type="button" class="hub-pill-btn" data-cat="dm" onclick="filterAffMats(\'dm\')">Direct Messages (' + counts.dm + ')</button>' : '') +
         (counts.status ? '<button type="button" class="hub-pill-btn" data-cat="status" onclick="filterAffMats(\'status\')">WhatsApp Status (' + counts.status + ')</button>' : '') +
-        (counts.broadcast ? '<button type="button" class="hub-pill-btn" data-cat="broadcast" onclick="filterAffMats(\'broadcast\')">Broadcasts (' + counts.broadcast + ')</button>' : '') +
-        (counts.creative ? '<button type="button" class="hub-pill-btn" data-cat="creative" onclick="filterAffMats(\'creative\')">Promo Creatives (' + counts.creative + ')</button>' : '') +
-        (counts.drive_link ? '<button type="button" class="hub-pill-btn" data-cat="drive_link" onclick="filterAffMats(\'drive_link\')">Google Drive Hub (' + counts.drive_link + ')</button>' : '') +
+        (counts.broadcast ? '<button type="button" class="hub-pill-btn" data-cat="broadcast" onclick="filterAffMats(\'broadcast\')">Community Broadcasts (' + counts.broadcast + ')</button>' : '') +
+        (counts.creative ? '<button type="button" class="hub-pill-btn" data-cat="creative" onclick="filterAffMats(\'creative\')">Promo Creatives &amp; Mockups (' + counts.creative + ')</button>' : '') +
+        (counts.drive_link ? '<button type="button" class="hub-pill-btn" data-cat="drive_link" onclick="filterAffMats(\'drive_link\')">Google Drive Vault (' + counts.drive_link + ')</button>' : '') +
         (counts.email ? '<button type="button" class="hub-pill-btn" data-cat="email" onclick="filterAffMats(\'email\')">Email Outreach (' + counts.email + ')</button>' : '') +
       '</div>';
 
@@ -217,8 +217,8 @@ function getAffCategoryLabel(cat){
   if(cat === 'dm') return 'Direct Message (DM)';
   if(cat === 'status') return 'WhatsApp Status';
   if(cat === 'broadcast') return 'Community Broadcast';
-  if(cat === 'creative') return 'Promo Creative';
-  if(cat === 'drive_link') return 'Google Drive Asset';
+  if(cat === 'creative') return 'Promo Creative / Mockup';
+  if(cat === 'drive_link') return 'Google Drive Vault';
   if(cat === 'email') return 'Email Outreach';
   return 'Marketing Asset';
 }

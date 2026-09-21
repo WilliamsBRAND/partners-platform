@@ -191,29 +191,64 @@ td .grn{color:var(--green);font-size:12px;}
 .aff-sec{margin-top:10px;padding-top:12px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px;}
 .aff-sec h4{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#e88a93;margin-bottom:2px;}
 
-/* Marketing Hub & Material Modal styles */
-.hub-cat-pills{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
-.hub-pill{padding:8px 15px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:20px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;}
-.hub-pill:hover{background:rgba(255,255,255,.08);color:#fff;}
-.hub-pill.active{background:var(--crimson);border-color:var(--crimson);color:#fff;}
+/* Marketing Hub & Promotional Arsenal styles */
+.hub-stats-banner{background:linear-gradient(135deg,rgba(122,10,21,.18) 0%,rgba(15,15,18,.95) 100%);border:1px solid rgba(122,10,21,.35);border-radius:14px;padding:18px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;}
+.hub-stats-main{flex:1;min-width:240px;}
+.hub-stats-title{font-size:16px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.hub-stats-sub{font-size:12.5px;color:var(--muted);line-height:1.5;}
+.hub-stats-tags{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.hub-stat-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700;color:#fff;}
+.hub-stat-pill.accent{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.3);color:#4ade80;}
+
+.hub-cat-pills{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap;}
+.hub-pill{padding:9px 16px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:20px;font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:6px;}
+.hub-pill:hover{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.2);}
+.hub-pill.active{background:var(--crimson);border-color:var(--crimson);color:#fff;box-shadow:0 6px 16px -6px rgba(122,10,21,.6);}
+.hub-pill .pill-count{background:rgba(0,0,0,.35);padding:1px 6px;border-radius:10px;font-size:11px;}
+
+.hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:18px;}
+.hub-creatives-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
+
+.hub-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:14px;transition:transform .18s ease,border-color .18s ease;position:relative;}
+.hub-card:hover{border-color:rgba(255,255,255,.18);transform:translateY(-2px);}
+
+.hub-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.hub-card-title{font-size:15px;font-weight:800;color:#fff;line-height:1.35;margin:0;}
+.hub-card-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:4px;}
+
+.mat-badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;}
+.mat-badge.dm,.mat-badge.copy{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3);}
+.mat-badge.status{background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3);}
+.mat-badge.broadcast{background:rgba(168,85,247,.15);color:#c084fc;border:1px solid rgba(168,85,247,.3);}
+.mat-badge.creative,.mat-badge.image{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3);}
+.mat-badge.drive_link{background:rgba(234,179,8,.15);color:#facc15;border:1px solid rgba(234,179,8,.3);}
+.mat-badge.email{background:rgba(244,63,94,.15);color:#fb7185;border:1px solid rgba(244,63,94,.3);}
+.mat-badge.asset,.mat-badge.link,.mat-badge.file{background:rgba(168,85,247,.15);color:#c084fc;border:1px solid rgba(168,85,247,.3);}
+
+.hub-copy-box{background:#0a0a0c;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 16px;font-size:13px;color:#d1d5db;line-height:1.65;white-space:pre-wrap;word-break:break-word;max-height:260px;overflow-y:auto;font-family:'Archivo',sans-serif;}
+.hub-copy-box .link-tag{color:var(--crimson-bright);background:rgba(122,10,21,.25);border:1px solid rgba(122,10,21,.4);padding:1px 6px;border-radius:4px;font-weight:700;font-family:monospace;}
+
+.hub-status-series{display:flex;flex-direction:column;gap:10px;}
+.hub-status-slide{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:12px 14px;}
+.hub-status-slide-hd{font-size:11px;font-weight:800;color:#fbbf24;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+
+.hub-card-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:auto;padding-top:6px;}
+
+.hub-creative-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:transform .18s ease,border-color .18s ease;}
+.hub-creative-card:hover{border-color:rgba(255,255,255,.2);transform:translateY(-2px);}
+.hub-creative-img-wrap{height:200px;background:linear-gradient(135deg,#1c1c1c,#0a0a0c);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+.hub-creative-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .3s ease;}
+.hub-creative-card:hover .hub-creative-img-wrap img{transform:scale(1.04);}
+.hub-creative-body{padding:18px;display:flex;flex-direction:column;gap:12px;flex:1;}
+
+.hub-drive-banner{background:linear-gradient(135deg,rgba(234,179,8,.12) 0%,rgba(18,18,20,.95) 100%);border:1px solid rgba(234,179,8,.3);border-radius:14px;padding:22px;display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:20px;}
+.hub-drive-banner:hover{border-color:rgba(234,179,8,.5);}
+
 .mat-type-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
 .mat-tab{padding:8px 14px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:8px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;}
 .mat-tab.active{background:var(--crimson);border-color:var(--crimson);color:#fff;}
 .mat-add-box{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:24px;}
 .mat-add-box h4{font-size:13px;font-weight:800;color:#fff;margin:0 0 12px;text-transform:uppercase;letter-spacing:.05em;}
-.mat-list-item{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:12px;transition:all .15s;}
-.mat-badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-right:6px;}
-.mat-badge.dm,.mat-badge.copy{background:rgba(34,197,94,.18);color:#4ade80;border:1px solid rgba(34,197,94,.3);}
-.mat-badge.status{background:rgba(251,191,36,.18);color:#fbbf24;border:1px solid rgba(251,191,36,.3);}
-.mat-badge.broadcast{background:rgba(168,85,247,.18);color:#c084fc;border:1px solid rgba(168,85,247,.3);}
-.mat-badge.creative,.mat-badge.image{background:rgba(59,130,246,.18);color:#60a5fa;border:1px solid rgba(59,130,246,.3);}
-.mat-badge.drive_link{background:rgba(234,179,8,.18);color:#facc15;border:1px solid rgba(234,179,8,.3);}
-.mat-badge.email{background:rgba(244,63,94,.18);color:#fb7185;border:1px solid rgba(244,63,94,.3);}
-.mat-badge.asset,.mat-badge.link,.mat-badge.file{background:rgba(168,85,247,.18);color:#c084fc;border:1px solid rgba(168,85,247,.3);}
-.mat-item-info{flex:1;min-width:0;}
-.mat-item-title{font-weight:700;font-size:14px;color:#fff;margin-bottom:4px;}
-.mat-item-preview{font-size:12px;color:var(--muted);background:rgba(0,0,0,.3);padding:10px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.05);margin-top:8px;white-space:pre-wrap;word-break:break-word;max-height:140px;overflow-y:auto;font-family:inherit;line-height:1.6;}
-.mat-thumb{width:72px;height:72px;border-radius:8px;object-fit:cover;border:1px solid var(--line);margin-top:6px;}
 
 .notif{background:var(--amber-bg);border:1px solid rgba(251,191,36,.15);border-left:3px solid var(--amber);border-radius:10px;padding:14px 16px;margin-bottom:12px;}
 .notif .t{font-weight:700;color:#fff;font-size:14px;margin-bottom:4px;}
@@ -1586,6 +1621,13 @@ function populateProductSelects(products){
   }
 }
 
+var _affiliatePreviewActive = false;
+
+function toggleAffiliatePreview(){
+  _affiliatePreviewActive = !_affiliatePreviewActive;
+  renderHubMaterials();
+}
+
 function loadMarketingHub(){
   var listContainer = document.getElementById('hubMaterialsList');
   if(!listContainer) return;
@@ -1614,24 +1656,6 @@ function loadMarketingHub(){
     _hubAllMaterials = d.materials || [];
     window._cachedMaterials = _hubAllMaterials;
 
-    // Update Category Counts
-    var counts = { all: _hubAllMaterials.length, dm: 0, status: 0, broadcast: 0, creative: 0, drive_link: 0, email: 0 };
-    _hubAllMaterials.forEach(function(m){
-      var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
-      if(counts[cat] !== undefined) counts[cat]++;
-      else if(cat === 'image') counts.creative++;
-      else if(cat === 'copy') counts.dm++;
-    });
-
-    var setTxt = function(id, val){ var el = document.getElementById(id); if(el) el.textContent = val; };
-    setTxt('hubCountAll', counts.all);
-    setTxt('hubCountDm', counts.dm);
-    setTxt('hubCountStatus', counts.status);
-    setTxt('hubCountBroadcast', counts.broadcast);
-    setTxt('hubCountCreative', counts.creative);
-    setTxt('hubCountDrive', counts.drive_link);
-    setTxt('hubCountEmail', counts.email);
-
     renderHubMaterials();
   }).catch(function(){
     listContainer.innerHTML = '<div class="empty">Network error loading materials. <button class="action-btn" onclick="loadMarketingHub()" style="margin-left:8px;">Retry</button></div>';
@@ -1654,10 +1678,51 @@ function getCategoryBadgeLabel(cat){
   if(cat === 'dm') return 'Direct Message (DM)';
   if(cat === 'status') return 'WhatsApp Status';
   if(cat === 'broadcast') return 'Community Broadcast';
-  if(cat === 'creative') return 'Promo Creative';
-  if(cat === 'drive_link') return 'Google Drive Hub';
+  if(cat === 'creative') return 'Promo Creative / Mockup';
+  if(cat === 'drive_link') return 'Google Drive Vault';
   if(cat === 'email') return 'Email Outreach';
   return 'Marketing Asset';
+}
+
+function updateHubPillCounters(materialsForProduct){
+  var counts = { all: materialsForProduct.length, dm: 0, status: 0, broadcast: 0, creative: 0, drive_link: 0, email: 0 };
+  materialsForProduct.forEach(function(m){
+    var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
+    if(counts[cat] !== undefined) counts[cat]++;
+    else if(cat === 'image') counts.creative++;
+    else if(cat === 'copy') counts.dm++;
+  });
+
+  var setTxt = function(id, val){ var el = document.getElementById(id); if(el) el.textContent = val; };
+  setTxt('hubCountAll', counts.all);
+  setTxt('hubCountDm', counts.dm);
+  setTxt('hubCountStatus', counts.status);
+  setTxt('hubCountBroadcast', counts.broadcast);
+  setTxt('hubCountCreative', counts.creative);
+  setTxt('hubCountDrive', counts.drive_link);
+  setTxt('hubCountEmail', counts.email);
+}
+
+function copyHubText(btn, textToCopy){
+  if(!navigator.clipboard){
+    var ta = document.createElement('textarea');
+    ta.value = textToCopy;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  } else {
+    navigator.clipboard.writeText(textToCopy);
+  }
+  var oldTxt = btn.innerHTML;
+  btn.innerHTML = 'Copied!';
+  btn.style.borderColor = '#22c55e';
+  btn.style.color = '#22c55e';
+  setTimeout(function(){
+    btn.innerHTML = oldTxt;
+    btn.style.borderColor = '';
+    btn.style.color = '';
+  }, 1800);
 }
 
 function renderHubMaterials(){
@@ -1666,77 +1731,192 @@ function renderHubMaterials(){
 
   var filterProd = document.getElementById('hubProductFilter') ? document.getElementById('hubProductFilter').value : 'all';
   var prodsMap = {};
-  (window._cachedProducts || []).forEach(function(p){ prodsMap[p.id] = p.name; });
-
-  var filtered = _hubAllMaterials.filter(function(m){
-    var matchesProd = (filterProd === 'all' || m.product_id === filterProd);
-    var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
-    var matchesCat = (_hubSelectedCategory === 'all' || cat === _hubSelectedCategory);
-    return matchesProd && matchesCat;
+  var selectedProductObj = null;
+  (window._cachedProducts || []).forEach(function(p){
+    prodsMap[p.id] = p.name;
+    if(p.id === filterProd || p.slug === filterProd) selectedProductObj = p;
   });
 
+  // Filter materials for the selected product first to update counts accurately
+  var productMaterials = _hubAllMaterials.filter(function(m){
+    return (filterProd === 'all' || m.product_id === filterProd);
+  });
+
+  // Update pill counters with active product count
+  updateHubPillCounters(productMaterials);
+
+  var filtered = productMaterials.filter(function(m){
+    var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
+    return (_hubSelectedCategory === 'all' || cat === _hubSelectedCategory);
+  });
+
+  var prodNameDisplay = selectedProductObj ? selectedProductObj.name : (filterProd === 'all' ? 'All Products' : 'NEXORA');
+  var prodPriceDisplay = selectedProductObj ? ('₦' + Math.round((selectedProductObj.price_kobo||760000)/100).toLocaleString()) : '₦7,600';
+  var prodCommDisplay = selectedProductObj ? (selectedProductObj.commission_type === 'fixed' ? '₦' + selectedProductObj.commission_value : selectedProductObj.commission_value + '% (₦2,280)') : '30% (₦2,280)';
+
+  var sampleAffLink = 'https://partners.tomidewilliams.com/p/TW106101/' + (selectedProductObj ? selectedProductObj.slug : 'nexora');
+
+  var h = '';
+
+  // Summary Banner
+  h += '<div class="hub-stats-banner">' +
+    '<div class="hub-stats-main">' +
+      '<div class="hub-stats-title">' +
+        '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--crimson);"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>' +
+        '<span>' + esc(prodNameDisplay) + ' Promotional Toolkit</span>' +
+      '</div>' +
+      '<div class="hub-stats-sub">Affiliates access these promotional materials in their dashboard. The system automatically replaces <code>{LINK}</code> with their unique referral link.</div>' +
+    '</div>' +
+    '<div class="hub-stats-tags">' +
+      '<div class="hub-stat-pill">Retail: ' + prodPriceDisplay + '</div>' +
+      '<div class="hub-stat-pill accent">Commission: ' + prodCommDisplay + '</div>' +
+      '<button class="btn sm ' + (_affiliatePreviewActive ? '' : 'ghost') + '" onclick="toggleAffiliatePreview()" style="font-size:11.5px;padding:6px 12px;">' +
+        (_affiliatePreviewActive ? 'Previewing with Partner Link' : 'Preview as Partner') +
+      '</button>' +
+    '</div>' +
+  '</div>';
+
   if(!filtered.length){
-    listContainer.innerHTML = '<div class="empty" style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:36px 20px;text-align:center;">' +
-      '<div style="font-weight:700;color:#fff;font-size:15px;margin-bottom:6px;">No marketing materials found for this selection.</div>' +
-      '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;">Add scripts, promotional flyers, or Google Drive resource links for your partners.</div>' +
+    h += '<div class="empty" style="background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:44px 20px;text-align:center;">' +
+      '<div style="font-weight:800;color:#fff;font-size:16px;margin-bottom:6px;">No marketing materials in this category.</div>' +
+      '<div style="font-size:13.5px;color:var(--muted);margin-bottom:20px;max-width:440px;margin-left:auto;margin-right:auto;">Add ready-to-use scripts, promotional flyers, or Google Drive resource links for your partners.</div>' +
       '<button class="btn sm" onclick="openAddMaterialModal(\'' + (filterProd !== 'all' ? filterProd : '') + '\')">+ Add Marketing Material</button>' +
     '</div>';
+    listContainer.innerHTML = h;
     return;
   }
 
-  var h = '';
-  filtered.forEach(function(m){
-    var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
-    var badgeLabel = getCategoryBadgeLabel(cat);
-    var prodName = prodsMap[m.product_id] || 'Selected Offer';
-    
-    var previewHtml = '';
-    if(cat === 'creative' || m.type === 'image' || (m.url && m.url.match(/\.(png|jpe?g|webp|gif|svg)/i))){
-      var imgUrl = m.url || '';
-      previewHtml = '<div style="margin-top:12px;display:flex;gap:14px;align-items:center;background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 14px;">' +
-        '<img src="' + esc(imgUrl) + '" alt="preview" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--line);" />' +
-        '<div style="flex:1;min-width:0;">' +
-          '<div style="font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:8px;">' + esc(imgUrl) + '</div>' +
-          '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-            '<a href="' + esc(imgUrl) + '" target="_blank" rel="noopener" download style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;background:rgba(255,255,255,.08);color:#fff;font-weight:700;padding:6px 12px;border-radius:6px;text-decoration:none;">Download File</a>' +
-            '<a href="' + esc(imgUrl) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;font-size:11.5px;color:var(--crimson-bright);font-weight:700;padding:6px 12px;text-decoration:none;">View Full Size &rarr;</a>' +
-          '</div>' +
-        '</div>' +
-      '</div>';
-    } else if(cat === 'drive_link' || (m.drive_url || (m.url && m.url.includes('drive.google.com')))){
-      var driveLink = m.drive_url || m.url;
-      previewHtml = '<div style="margin-top:12px;background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.2);border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">' +
-        '<div style="min-width:0;flex:1;">' +
-          '<div style="font-weight:700;font-size:13px;color:#facc15;margin-bottom:3px;">Google Drive Asset Folder</div>' +
-          '<div style="font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(driveLink) + '</div>' +
-        '</div>' +
-        '<a href="' + esc(driveLink) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:rgba(234,179,8,.2);color:#facc15;border:1px solid rgba(234,179,8,.4);padding:7px 14px;border-radius:7px;font-size:12px;font-weight:700;text-decoration:none;">Open Drive Folder &rarr;</a>' +
-      '</div>';
-    } else if(m.content){
-      // Swipe copy highlighting {LINK}
-      var highlighted = esc(m.content).replace(/\{LINK\}/gi, '<span style="color:var(--crimson-bright);background:rgba(122,10,21,.3);padding:1px 5px;border-radius:4px;font-weight:700;">{LINK}</span>');
-      previewHtml = '<div class="mat-item-preview">' + highlighted + '</div>';
-    } else if(m.url){
-      previewHtml = '<div style="margin-top:10px;"><a href="' + esc(m.url) + '" target="_blank" rel="noopener" style="font-size:12.5px;color:var(--crimson-bright);font-weight:700;">' + esc(m.url) + ' &rarr;</a></div>';
-    }
+  // Check if we are viewing creatives only or mixed
+  var isCreativesOnly = (_hubSelectedCategory === 'creative');
 
-    h += '<div class="mat-list-item" style="background:#131315;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px 20px;margin-bottom:14px;">' +
-      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;">' +
-        '<div style="flex:1;min-width:0;">' +
-          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">' +
-            '<span class="mat-badge ' + cat + '">' + badgeLabel + '</span>' +
-            '<span style="font-size:11px;font-weight:700;color:var(--muted);background:rgba(255,255,255,.05);padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,.06);">' + esc(prodName) + '</span>' +
+  if(isCreativesOnly){
+    h += '<div class="hub-creatives-grid">';
+    filtered.forEach(function(m){
+      var prodName = prodsMap[m.product_id] || 'Selected Offer';
+      var imgUrl = m.url || '';
+      h += '<div class="hub-creative-card">' +
+        '<div class="hub-creative-img-wrap">' +
+          '<img src="' + esc(imgUrl) + '" alt="' + esc(m.title) + '" loading="lazy" />' +
+        '</div>' +
+        '<div class="hub-creative-body">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+            '<span class="mat-badge creative">Promo Mockup</span>' +
+            '<span style="font-size:11px;color:var(--muted);">' + esc(prodName) + '</span>' +
           '</div>' +
-          '<h3 style="font-weight:800;font-size:15px;color:#fff;margin:0;">' + esc(m.title) + '</h3>' +
+          '<div style="font-size:14.5px;font-weight:800;color:#fff;line-height:1.4;">' + esc(m.title) + '</div>' +
+          '<div class="hub-card-actions">' +
+            '<a href="' + esc(imgUrl) + '" target="_blank" rel="noopener" download style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);color:#fff;font-size:12px;font-weight:700;padding:7px 14px;border-radius:6px;text-decoration:none;">' +
+              '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
+              'Download' +
+            '</a>' +
+            '<button class="action-btn" onclick="copyHubText(this, \'' + esc(imgUrl) + '\')" style="background:rgba(255,255,255,.06);color:#fff;font-size:12px;padding:7px 12px;border-radius:6px;border:none;cursor:pointer;font-weight:700;">Copy URL</button>' +
+            '<div style="margin-left:auto;display:flex;gap:6px;">' +
+              '<button class="action-btn" onclick="editMaterial(\'' + m.id + '\')" title="Edit" style="background:rgba(255,255,255,.06);color:#fff;font-size:11.5px;padding:6px 10px;border-radius:6px;border:none;cursor:pointer;">Edit</button>' +
+              '<button class="action-btn reject" onclick="openDeleteConfirm(\'' + m.id + '\')" title="Delete" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#ef4444;font-size:11.5px;padding:6px 10px;border-radius:6px;cursor:pointer;">Delete</button>' +
+            '</div>' +
+          '</div>' +
         '</div>' +
-        '<div style="display:flex;gap:8px;flex-shrink:0;">' +
-          '<button class="action-btn" onclick="editMaterial(\'' + m.id + '\')" title="Edit" style="background:rgba(255,255,255,.08);color:#fff;font-size:12px;padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-weight:700;">Edit</button>' +
-          '<button class="action-btn reject" onclick="openDeleteConfirm(\'' + m.id + '\')" title="Delete" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#ef4444;font-size:12px;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:700;">Delete</button>' +
-        '</div>' +
-      '</div>' +
-      previewHtml +
-    '</div>';
-  });
+      '</div>';
+    });
+    h += '</div>';
+  } else {
+    h += '<div class="hub-grid">';
+    filtered.forEach(function(m, idx){
+      var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
+      var badgeLabel = getCategoryBadgeLabel(cat);
+      var prodName = prodsMap[m.product_id] || 'Selected Offer';
+      var cardId = 'hub_card_content_' + idx;
+
+      if(cat === 'creative' || (m.type === 'image' && !m.content)){
+        // Single Creative card in mixed grid
+        var imgUrl = m.url || '';
+        h += '<div class="hub-creative-card">' +
+          '<div class="hub-creative-img-wrap">' +
+            '<img src="' + esc(imgUrl) + '" alt="' + esc(m.title) + '" loading="lazy" />' +
+          '</div>' +
+          '<div class="hub-creative-body">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+              '<span class="mat-badge creative">' + badgeLabel + '</span>' +
+              '<span style="font-size:11px;color:var(--muted);">' + esc(prodName) + '</span>' +
+            '</div>' +
+            '<div style="font-size:14.5px;font-weight:800;color:#fff;line-height:1.4;">' + esc(m.title) + '</div>' +
+            '<div class="hub-card-actions">' +
+              '<a href="' + esc(imgUrl) + '" target="_blank" rel="noopener" download style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);color:#fff;font-size:12px;font-weight:700;padding:7px 14px;border-radius:6px;text-decoration:none;">' +
+                '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
+                'Download' +
+              '</a>' +
+              '<button class="action-btn" onclick="copyHubText(this, \'' + esc(imgUrl) + '\')" style="background:rgba(255,255,255,.06);color:#fff;font-size:12px;padding:7px 12px;border-radius:6px;border:none;cursor:pointer;font-weight:700;">Copy URL</button>' +
+              '<div style="margin-left:auto;display:flex;gap:6px;">' +
+                '<button class="action-btn" onclick="editMaterial(\'' + m.id + '\')" title="Edit" style="background:rgba(255,255,255,.06);color:#fff;font-size:11.5px;padding:6px 10px;border-radius:6px;border:none;cursor:pointer;">Edit</button>' +
+                '<button class="action-btn reject" onclick="openDeleteConfirm(\'' + m.id + '\')" title="Delete" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#ef4444;font-size:11.5px;padding:6px 10px;border-radius:6px;cursor:pointer;">Delete</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      } else if(cat === 'drive_link' || (m.drive_url || (m.url && m.url.includes('drive.google.com')))){
+        // Google Drive Vault Card
+        var driveLink = m.drive_url || m.url;
+        h += '<div class="hub-card" style="background:linear-gradient(135deg,rgba(234,179,8,.08) 0%,rgba(18,18,20,.95) 100%);border-color:rgba(234,179,8,.3);">' +
+          '<div class="hub-card-header">' +
+            '<div>' +
+              '<div class="hub-card-meta">' +
+                '<span class="mat-badge drive_link">' + badgeLabel + '</span>' +
+                '<span style="font-size:11px;color:var(--muted);">' + esc(prodName) + '</span>' +
+              '</div>' +
+              '<h3 class="hub-card-title" style="margin-top:6px;">' + esc(m.title) + '</h3>' +
+            '</div>' +
+            '<div style="display:flex;gap:6px;">' +
+              '<button class="action-btn" onclick="editMaterial(\'' + m.id + '\')" title="Edit" style="background:rgba(255,255,255,.06);color:#fff;font-size:11.5px;padding:6px 10px;border-radius:6px;border:none;cursor:pointer;">Edit</button>' +
+              '<button class="action-btn reject" onclick="openDeleteConfirm(\'' + m.id + '\')" title="Delete" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#ef4444;font-size:11.5px;padding:6px 10px;border-radius:6px;cursor:pointer;">Delete</button>' +
+            '</div>' +
+          '</div>' +
+          '<div style="font-size:13px;color:#d1d5db;line-height:1.5;">Contains raw editable Photoshop files, video B-roll recordings, high-res transparent PNG badge assets, and Canva presentation decks.</div>' +
+          '<div class="hub-card-actions">' +
+            '<a href="' + esc(driveLink) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:rgba(234,179,8,.2);color:#facc15;border:1px solid rgba(234,179,8,.4);padding:8px 16px;border-radius:8px;font-size:12.5px;font-weight:700;text-decoration:none;">' +
+              '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+              'Open Google Drive Folder &rarr;' +
+            '</a>' +
+            '<button class="action-btn" onclick="copyHubText(this, \'' + esc(driveLink) + '\')" style="background:rgba(255,255,255,.08);color:#fff;font-size:12px;padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:700;">Copy Drive Link</button>' +
+          '</div>' +
+        '</div>';
+      } else {
+        // Swipe Copy Card (DM, Status, Broadcast, Email)
+        var rawContent = m.content || '';
+        var displayContent = rawContent;
+        if(_affiliatePreviewActive){
+          displayContent = displayContent.replace(/\{LINK\}/gi, sampleAffLink);
+        }
+        var formattedHtml = esc(displayContent).replace(/\{LINK\}/gi, '<span class="link-tag">{LINK}</span>');
+
+        var wordCount = rawContent.trim() ? rawContent.trim().split(/\s+/).length : 0;
+
+        h += '<div class="hub-card">' +
+          '<div class="hub-card-header">' +
+            '<div>' +
+              '<div class="hub-card-meta">' +
+                '<span class="mat-badge ' + cat + '">' + badgeLabel + '</span>' +
+                '<span style="font-size:11px;color:var(--muted);">' + esc(prodName) + '</span>' +
+                '<span style="font-size:11px;color:var(--muted);margin-left:4px;">' + wordCount + ' words</span>' +
+              '</div>' +
+              '<h3 class="hub-card-title" style="margin-top:6px;">' + esc(m.title) + '</h3>' +
+            '</div>' +
+            '<div style="display:flex;gap:6px;">' +
+              '<button class="action-btn" onclick="editMaterial(\'' + m.id + '\')" title="Edit" style="background:rgba(255,255,255,.06);color:#fff;font-size:11.5px;padding:6px 10px;border-radius:6px;border:none;cursor:pointer;">Edit</button>' +
+              '<button class="action-btn reject" onclick="openDeleteConfirm(\'' + m.id + '\')" title="Delete" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#ef4444;font-size:11.5px;padding:6px 10px;border-radius:6px;cursor:pointer;">Delete</button>' +
+            '</div>' +
+          '</div>' +
+          '<div class="hub-copy-box" id="' + cardId + '">' + formattedHtml + '</div>' +
+          '<div class="hub-card-actions">' +
+            '<button class="btn sm" onclick="copyHubText(this, document.getElementById(\'' + cardId + '\').innerText)" style="font-size:12px;padding:7px 14px;font-weight:700;">' +
+              'Copy Script' +
+            '</button>' +
+            (_affiliatePreviewActive ? '<span style="font-size:11.5px;color:var(--green);font-weight:700;">Sample link active</span>' : '<span style="font-size:11.5px;color:var(--muted);">{LINK} auto-injected for partners</span>') +
+          '</div>' +
+        '</div>';
+      }
+    });
+    h += '</div>';
+  }
 
   listContainer.innerHTML = h;
 }
