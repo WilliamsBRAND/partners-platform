@@ -141,6 +141,21 @@ var _selectedAffCat = 'all';
       '<div class="sub">' + App.esc(p.tagline || p.description || '') + ' &middot; <strong style="color:var(--green);">Commission: ' + App.esc(p.commission_label || '') + '</strong></div></div>' +
     '</div>';
 
+    var regPrice = p.price_kobo ? App.naira(p.price_kobo) : '₦7,600';
+    var discPrice = p.buyer_price_kobo ? App.naira(p.buyer_price_kobo) : '₦6,080';
+    var commAmount = p.partner_earning_kobo ? App.naira(p.partner_earning_kobo) : '₦2,280';
+
+    html += '<div style="background:linear-gradient(135deg,rgba(122,10,21,.18),rgba(34,197,94,.08));border:1px solid rgba(122,10,21,.35);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;">' +
+      '<div style="flex:1;min-width:240px;">' +
+        '<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#e88a93;">Exclusive Partner Advantage</div>' +
+        '<div style="font-size:15px;font-weight:800;color:#fff;margin-top:2px;">Your Link Gives Buyers 20% OFF — You Still Earn Full 30%</div>' +
+        '<div style="font-size:12.5px;color:var(--muted);margin-top:4px;">Buyers pay <strong style="color:#fff;">' + discPrice + '</strong> (instead of <s>' + regPrice + '</s>), while you earn your full <strong style="color:var(--green);">' + commAmount + ' (30%)</strong> on every sale.</div>' +
+      '</div>' +
+      '<div style="text-align:right;">' +
+        '<span style="display:inline-block;padding:6px 14px;background:rgba(34,197,94,.18);border:1px solid rgba(34,197,94,.35);color:#4ade80;font-size:12px;font-weight:800;border-radius:20px;">20% Discount Auto-Applied</span>' +
+      '</div>' +
+    '</div>';
+
     // Link + share box
     if (p.link) {
       html += '<div class="linkbox">' +

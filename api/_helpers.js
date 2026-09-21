@@ -13,6 +13,8 @@ export function buildReferralLink(product, partnerCode) {
 }
 
 // Compute the commission earned (kobo) for an order given the product config.
+// The affiliate always receives commission on the full retail price (e.g. 30% of ₦7,600 = ₦2,280),
+// even though the buyer received a 20% discount through the partner link (paying ₦6,080).
 export function commissionFor(product, orderAmountKobo) {
   if (!product) return 0;
   if (product.commission_type === 'fixed') {
@@ -20,7 +22,10 @@ export function commissionFor(product, orderAmountKobo) {
     return Math.round(parseFloat(product.commission_value || 0) * 100);
   }
   const percent = parseFloat(product.commission_value || 0) / 100;
-  return Math.round(orderAmountKobo * percent);
+  const basePriceKobo = (product.price_kobo && product.price_kobo > 0)
+    ? product.price_kobo
+    : (orderAmountKobo || 0);
+  return Math.round(basePriceKobo * percent);
 }
 
 // Derive the product by parsing the Paystack reference prefix, e.g. "NEXORA-..."

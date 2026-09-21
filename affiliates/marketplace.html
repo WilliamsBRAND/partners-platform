@@ -100,14 +100,31 @@
     var grid = document.getElementById('grid');
     var html = '';
     products.forEach(function (p) {
+      var regularPrice = p.price_kobo ? App.naira(p.price_kobo) : '—';
+      var buyerPrice = p.buyer_price_kobo ? App.naira(p.buyer_price_kobo) : regularPrice;
+      var partnerEarning = p.partner_earning_kobo ? App.naira(p.partner_earning_kobo) : '';
+
       html += '<div class="pcard" data-id="' + p.id + '">' +
         '<div class="pimg">' + (p.image_url ? '<img src="' + App.esc(p.image_url) + '" alt="' + App.esc(p.name) + '">' : '<div class="ph">' + App.esc(p.name.slice(0, 1).toUpperCase()) + '</div>') + '</div>' +
         '<div class="pbody">' +
-          '<h3>' + App.esc(p.name) + '</h3>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+            '<h3 style="margin:0;">' + App.esc(p.name) + '</h3>' +
+            '<span style="font-size:10.5px;font-weight:800;background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3);padding:2px 8px;border-radius:20px;">20% Link Discount</span>' +
+          '</div>' +
           (p.tagline ? '<div class="ptag">' + App.esc(p.tagline) + '</div>' : '') +
-          '<div class="pmeta">' +
-            '<span class="pprice">' + (p.price_kobo ? App.naira(p.price_kobo) : '—') + '</span>' +
-            '<span class="pcomm">Earn ' + App.esc(p.commission_label || '') + '</span>' +
+          '<div class="pmeta" style="flex-direction:column;gap:8px;align-items:stretch;margin-top:auto;padding-top:10px;">' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;font-size:12.5px;">' +
+              '<span style="color:var(--muted);">Regular Price:</span>' +
+              '<span style="text-decoration:line-through;color:var(--muted);">' + regularPrice + '</span>' +
+            '</div>' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;">' +
+              '<span style="color:#fff;font-weight:700;">Buyers Pay with Your Link:</span>' +
+              '<span style="color:#fff;font-weight:800;background:rgba(255,255,255,.06);padding:2px 8px;border-radius:6px;">' + buyerPrice + ' <span style="color:var(--green);font-size:11px;">(20% OFF)</span></span>' +
+            '</div>' +
+            '<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:8px 10px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:8px;">' +
+              '<span style="color:var(--green);font-weight:700;">Your 30% Commission:</span>' +
+              '<span style="color:var(--green);font-weight:800;">' + (partnerEarning || App.esc(p.commission_label || '30%')) + '</span>' +
+            '</div>' +
           '</div>' +
           '<div class="foot-btn">' +
             (p.selected
