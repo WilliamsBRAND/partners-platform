@@ -109,7 +109,6 @@ export default async function handler(req, res) {
   // Relaxed price policy: allow standard gateway fee overhead (up to 25%)
   if (product.price_kobo && vAmount > Math.round(product.price_kobo * 1.25)) {
     return json(res, 200, { ok: true, ignored: 'amount_mismatch' });
-  });
   }
 
   const customerEmail = (verifiedCustomer && verifiedCustomer.email || '').toLowerCase();
