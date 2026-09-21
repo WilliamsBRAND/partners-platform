@@ -603,12 +603,10 @@ td .grn{color:var(--green);font-size:12px;}
         <!-- Category Filter Pills -->
         <div class="hub-cat-pills" style="display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap;">
           <button type="button" class="hub-pill active" data-cat="all" onclick="setHubCategory('all')">All Materials (<span id="hubCountAll">0</span>)</button>
-          <button type="button" class="hub-pill" data-cat="dm" onclick="setHubCategory('dm')">Direct Messages / DMs (<span id="hubCountDm">0</span>)</button>
-          <button type="button" class="hub-pill" data-cat="status" onclick="setHubCategory('status')">WhatsApp Status (<span id="hubCountStatus">0</span>)</button>
-          <button type="button" class="hub-pill" data-cat="broadcast" onclick="setHubCategory('broadcast')">Community Broadcasts (<span id="hubCountBroadcast">0</span>)</button>
-          <button type="button" class="hub-pill" data-cat="creative" onclick="setHubCategory('creative')">Promo Creatives (<span id="hubCountCreative">0</span>)</button>
-          <button type="button" class="hub-pill" data-cat="drive_link" onclick="setHubCategory('drive_link')">Google Drive Hub (<span id="hubCountDrive">0</span>)</button>
-          <button type="button" class="hub-pill" data-cat="email" onclick="setHubCategory('email')">Email Outreach (<span id="hubCountEmail">0</span>)</button>
+          <button type="button" class="hub-pill" data-cat="dm" onclick="setHubCategory('dm')">DM Copy (<span id="hubCountDm">0</span>)</button>
+          <button type="button" class="hub-pill" data-cat="status" onclick="setHubCategory('status')">Status Sequence (<span id="hubCountStatus">0</span>)</button>
+          <button type="button" class="hub-pill" data-cat="broadcast" onclick="setHubCategory('broadcast')">Broadcast / WhatsApp Group (<span id="hubCountBroadcast">0</span>)</button>
+          <button type="button" class="hub-pill" data-cat="creative" onclick="setHubCategory('creative')">Creatives &amp; Drive Assets (<span id="hubCountCreative">0</span>)</button>
         </div>
 
         <!-- Materials List Container -->
@@ -742,32 +740,30 @@ td .grn{color:var(--green);font-size:12px;}
 
         <!-- CATEGORY TABS -->
         <div class="mat-type-tabs" style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
-          <button type="button" class="mat-tab active" data-type="dm" onclick="setMatTab('dm')">Direct Message (DM)</button>
-          <button type="button" class="mat-tab" data-type="status" onclick="setMatTab('status')">WhatsApp Status</button>
-          <button type="button" class="mat-tab" data-type="broadcast" onclick="setMatTab('broadcast')">Community Broadcast</button>
-          <button type="button" class="mat-tab" data-type="creative" onclick="setMatTab('creative')">Promo Creative</button>
-          <button type="button" class="mat-tab" data-type="drive_link" onclick="setMatTab('drive_link')">Google Drive Link</button>
-          <button type="button" class="mat-tab" data-type="email" onclick="setMatTab('email')">Email Outreach</button>
+          <button type="button" class="mat-tab active" data-type="dm" onclick="setMatTab('dm')">DM Copy</button>
+          <button type="button" class="mat-tab" data-type="status" onclick="setMatTab('status')">Status Sequence</button>
+          <button type="button" class="mat-tab" data-type="broadcast" onclick="setMatTab('broadcast')">Broadcast / WhatsApp Group</button>
+          <button type="button" class="mat-tab" data-type="creative" onclick="setMatTab('creative')">Creatives &amp; Drive Assets</button>
         </div>
 
         <!-- TITLE / HEADLINE FIELD -->
         <div style="margin-bottom:16px;">
           <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.6px;margin-bottom:6px;">Headline / Asset Title</div>
-          <input id="matTitle" style="width:100%;padding:12px 14px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:14px;font-family:'Archivo',sans-serif;outline:none;box-sizing:border-box;" placeholder="e.g. High Converting DM Script for Business Owners" />
+          <input id="matTitle" style="width:100%;padding:12px 14px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:14px;font-family:'Archivo',sans-serif;outline:none;box-sizing:border-box;" placeholder="e.g. Curiosity Hook for WhatsApp DMs" />
         </div>
 
-        <!-- 1. SWIPE COPY BOX (DMs, Status, Broadcasts, Emails) -->
+        <!-- 1. SWIPE COPY BOX (DMs, Status, Broadcasts) -->
         <div id="matCopyBox" style="margin-bottom:16px;">
           <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.6px;margin-bottom:6px;" id="matCopyLabel">Promotional Copy Script</div>
           <div style="font-size:12px;color:var(--muted);margin-bottom:8px;background:rgba(122,10,21,.1);border:1px solid rgba(122,10,21,.25);padding:8px 12px;border-radius:6px;">
             Type <code style="color:var(--crimson-bright);font-weight:700;">{LINK}</code> anywhere in the copy. The partner's unique referral link will be auto-injected.
           </div>
-          <textarea id="matContent" rows="6" style="width:100%;padding:12px 14px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:13.5px;font-family:'Archivo',sans-serif;resize:vertical;line-height:1.55;outline:none;box-sizing:border-box;" placeholder="Hey friend! Check this out... Grab your spot here: {LINK}"></textarea>
+          <textarea id="matContent" rows="7" style="width:100%;padding:12px 14px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:13.5px;font-family:'Archivo',sans-serif;resize:vertical;line-height:1.55;outline:none;box-sizing:border-box;" placeholder="Paste or type copy here... Include {LINK} where the referral link belongs."></textarea>
         </div>
 
-        <!-- 2. DIRECT FILE UPLOAD / URL FOR PROMO CREATIVES -->
+        <!-- 2. CREATIVES & DRIVE ASSETS (File Upload, Image URL, or Drive Folder) -->
         <div id="matImageBox" style="display:none;margin-bottom:16px;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.6px;margin-bottom:6px;">Upload Picture from Device</div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.6px;margin-bottom:6px;">Upload Flyer / Mockup File</div>
           
           <!-- Dropzone Box -->
           <div id="matDropzone" onclick="document.getElementById('matFileInput').click()" style="border:2px dashed rgba(255,255,255,.18);border-radius:10px;padding:24px 16px;text-align:center;background:rgba(255,255,255,.02);cursor:pointer;transition:all .2s;">
@@ -789,28 +785,17 @@ td .grn{color:var(--green);font-size:12px;}
             <button type="button" onclick="clearSelectedMatFile()" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#ef4444;font-size:11px;font-weight:700;padding:6px 12px;border-radius:6px;cursor:pointer;">Change</button>
           </div>
 
-          <!-- URL fallback -->
-          <div style="margin-top:10px;">
-            <a href="javascript:void(0)" onclick="toggleUrlFallback()" id="toggleUrlBtn" style="font-size:11.5px;color:var(--muted);text-decoration:underline;">Or paste image URL instead</a>
+          <!-- Image URL fallback -->
+          <div style="margin-top:14px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.6px;margin-bottom:6px;">Or Paste Image URL</div>
+            <input id="matUrl" style="width:100%;padding:11px 13px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:13px;font-family:'Archivo',sans-serif;outline:none;box-sizing:border-box;" placeholder="https://example.com/mockup.png" oninput="previewMatImage(this.value)" />
           </div>
-          <div id="matUrlFallbackWrap" style="display:none;margin-top:10px;">
-            <input id="matUrl" style="width:100%;padding:11px 13px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:13px;font-family:'Archivo',sans-serif;outline:none;box-sizing:border-box;" placeholder="https://..." oninput="previewMatImage(this.value)" />
-          </div>
-        </div>
 
-        <!-- 3. GOOGLE DRIVE FOLDER LINK BOX -->
-        <div id="matDriveBox" style="display:none;margin-bottom:16px;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.6px;margin-bottom:6px;">Google Drive Asset Folder URL</div>
-          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.25);padding:8px 12px;border-radius:6px;">
-            Paste a link to your Google Drive shared folder (Raw Video B-roll, Brand Kits, Logos, Slide Decks). Affiliates will be able to access the raw materials directly.
+          <!-- Google Drive link field -->
+          <div style="margin-top:14px;">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#facc15;letter-spacing:.6px;margin-bottom:6px;">Or Google Drive Asset / Folder URL</div>
+            <input id="matDriveUrl" style="width:100%;padding:11px 13px;background:#0a0a0a;border:1px solid rgba(234,179,8,.25);border-radius:8px;color:#fff;font-size:13px;font-family:'Archivo',sans-serif;outline:none;box-sizing:border-box;" placeholder="https://drive.google.com/drive/folders/..." />
           </div>
-          <input id="matDriveUrl" style="width:100%;padding:12px 14px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:13.5px;font-family:'Archivo',sans-serif;outline:none;box-sizing:border-box;" placeholder="https://drive.google.com/drive/folders/..." />
-        </div>
-
-        <!-- 4. GENERIC URL BOX (For Videos & External Resource Links) -->
-        <div id="matGenericUrlBox" style="display:none;margin-bottom:16px;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.6px;margin-bottom:6px;" id="matGenericUrlLabel">Resource / Video URL</div>
-          <input id="matGenericUrl" style="width:100%;padding:12px 14px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:13.5px;font-family:'Archivo',sans-serif;outline:none;box-sizing:border-box;" placeholder="https://youtube.com/..." />
         </div>
 
         <div style="text-align:right;margin-top:16px;">
@@ -1675,22 +1660,25 @@ function filterHubMaterials(){
 }
 
 function getCategoryBadgeLabel(cat){
-  if(cat === 'dm') return 'Direct Message (DM)';
-  if(cat === 'status') return 'WhatsApp Status';
-  if(cat === 'broadcast') return 'Community Broadcast';
-  if(cat === 'creative') return 'Promo Creative / Mockup';
+  if(cat === 'dm') return 'DM Copy';
+  if(cat === 'status') return 'Status Sequence';
+  if(cat === 'broadcast') return 'WhatsApp Group / Broadcast';
   if(cat === 'drive_link') return 'Google Drive Vault';
-  if(cat === 'email') return 'Email Outreach';
+  if(cat === 'creative' || cat === 'image') return 'Promo Creative';
   return 'Marketing Asset';
 }
 
 function updateHubPillCounters(materialsForProduct){
-  var counts = { all: materialsForProduct.length, dm: 0, status: 0, broadcast: 0, creative: 0, drive_link: 0, email: 0 };
+  var counts = { all: materialsForProduct.length, dm: 0, status: 0, broadcast: 0, creative: 0 };
   materialsForProduct.forEach(function(m){
-    var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
-    if(counts[cat] !== undefined) counts[cat]++;
-    else if(cat === 'image') counts.creative++;
-    else if(cat === 'copy') counts.dm++;
+    var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'creative' : 'dm')));
+    if(cat === 'drive_link' || cat === 'image' || cat === 'creative'){
+      counts.creative++;
+    } else if(counts[cat] !== undefined){
+      counts[cat]++;
+    } else {
+      counts.dm++;
+    }
   });
 
   var setTxt = function(id, val){ var el = document.getElementById(id); if(el) el.textContent = val; };
@@ -1699,8 +1687,6 @@ function updateHubPillCounters(materialsForProduct){
   setTxt('hubCountStatus', counts.status);
   setTxt('hubCountBroadcast', counts.broadcast);
   setTxt('hubCountCreative', counts.creative);
-  setTxt('hubCountDrive', counts.drive_link);
-  setTxt('hubCountEmail', counts.email);
 }
 
 function copyHubText(btn, textToCopy){
@@ -1934,33 +1920,17 @@ function setMatTab(type){
   var genericBox = document.getElementById('matGenericUrlBox');
   var copyLabel = document.getElementById('matCopyLabel');
 
-  if(type === 'dm' || type === 'status' || type === 'broadcast' || type === 'email' || type === 'copy'){
+  if(type === 'dm' || type === 'status' || type === 'broadcast'){
     if(copyBox) copyBox.style.display = 'block';
     if(imageBox) imageBox.style.display = 'none';
-    if(driveBox) driveBox.style.display = 'none';
-    if(genericBox) genericBox.style.display = 'none';
     if(copyLabel){
-      if(type === 'dm') copyLabel.textContent = 'Direct Message (DM) Copy Script';
-      else if(type === 'status') copyLabel.textContent = 'WhatsApp Status / Short Hook Script';
-      else if(type === 'broadcast') copyLabel.textContent = 'Community Broadcast / Group Announcement Script';
-      else if(type === 'email') copyLabel.textContent = 'Email Outreach Template';
-      else copyLabel.textContent = 'Promotional Copy Script';
+      if(type === 'dm') copyLabel.textContent = 'DM Copy Script';
+      else if(type === 'status') copyLabel.textContent = 'WhatsApp Status Sequence';
+      else if(type === 'broadcast') copyLabel.textContent = 'Broadcast / WhatsApp Group Copy';
     }
-  } else if(type === 'creative' || type === 'image'){
+  } else if(type === 'creative' || type === 'drive_link'){
     if(imageBox) imageBox.style.display = 'block';
     if(copyBox) copyBox.style.display = 'none';
-    if(driveBox) driveBox.style.display = 'none';
-    if(genericBox) genericBox.style.display = 'none';
-  } else if(type === 'drive_link'){
-    if(driveBox) driveBox.style.display = 'block';
-    if(copyBox) copyBox.style.display = 'none';
-    if(imageBox) imageBox.style.display = 'none';
-    if(genericBox) genericBox.style.display = 'none';
-  } else {
-    if(genericBox) genericBox.style.display = 'block';
-    if(copyBox) copyBox.style.display = 'none';
-    if(imageBox) imageBox.style.display = 'none';
-    if(driveBox) driveBox.style.display = 'none';
   }
 }
 
@@ -2195,17 +2165,24 @@ async function saveMaterial(){
     return;
   }
 
-  if(_currentMatType === 'dm' || _currentMatType === 'status' || _currentMatType === 'broadcast' || _currentMatType === 'email'){
+  if(_currentMatType === 'dm' || _currentMatType === 'status' || _currentMatType === 'broadcast'){
     finalContent = document.getElementById('matContent').value.trim();
     if(!finalContent){ showSnack('Please enter the promotional copy text.'); return; }
     if(!title){
-      if(_currentMatType === 'dm') title = 'DM Outreach Script';
-      else if(_currentMatType === 'status') title = 'WhatsApp Status Script';
-      else if(_currentMatType === 'broadcast') title = 'Community Broadcast Script';
-      else if(_currentMatType === 'email') title = 'Email Outreach Template';
+      if(_currentMatType === 'dm') title = 'DM Copy Script';
+      else if(_currentMatType === 'status') title = 'WhatsApp Status Sequence';
+      else if(_currentMatType === 'broadcast') title = 'Broadcast / WhatsApp Group Copy';
     }
   } else if(_currentMatType === 'creative'){
-    if(_selectedMatBase64){
+    var driveVal = (document.getElementById('matDriveUrl') ? document.getElementById('matDriveUrl').value.trim() : '');
+    var urlVal = (document.getElementById('matUrl') ? document.getElementById('matUrl').value.trim() : '');
+    
+    if(driveVal){
+      finalDriveUrl = driveVal;
+      finalCategory = 'drive_link';
+      finalType = 'link';
+      if(!title) title = 'Google Drive Marketing Assets';
+    } else if(_selectedMatBase64){
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span> Uploading photo...';
       try {
@@ -2221,40 +2198,37 @@ async function saveMaterial(){
           return;
         }
         finalUrl = upRes.url;
+        finalCategory = 'creative';
+        finalType = 'image';
       } catch(err){
         btn.disabled = false;
         btn.textContent = editId ? 'Save Changes' : '+ Add Material';
         showSnack('Upload error. Please try again.');
         return;
       }
+      if(!title) title = _selectedMatFile ? _selectedMatFile.name.replace(/\.[^/.]+$/, '') : 'Promo Creative';
+    } else if(urlVal){
+      finalUrl = urlVal;
+      finalCategory = 'creative';
+      finalType = 'image';
+      if(!title) title = 'Promo Creative';
     } else {
-      var urlInput = document.getElementById('matUrl');
-      finalUrl = urlInput ? urlInput.value.trim() : '';
-      if(!finalUrl){
-        showSnack('Please choose a picture to upload or enter image URL.');
-        return;
-      }
+      showSnack('Please choose a picture to upload, enter an image URL, or provide a Google Drive folder link.');
+      return;
     }
-    if(!title) title = _selectedMatFile ? _selectedMatFile.name.replace(/\.[^/.]+$/, '') : 'Promo Creative';
-  } else if(_currentMatType === 'drive_link'){
-    finalDriveUrl = document.getElementById('matDriveUrl').value.trim();
-    if(!finalDriveUrl){ showSnack('Please enter the Google Drive folder URL.'); return; }
-    if(!title) title = 'Google Drive Marketing Assets';
-  } else {
-    var gUrlEl = document.getElementById('matGenericUrl');
-    finalUrl = gUrlEl ? gUrlEl.value.trim() : '';
-    if(!finalUrl){ showSnack('Please enter the resource or video URL.'); return; }
-    if(!title) title = 'Resource Link';
   }
 
   btn.disabled = true;
   btn.textContent = editId ? 'Saving changes...' : 'Adding...';
 
+  var finalCategory = (_currentMatType === 'creative') ? (finalDriveUrl ? 'drive_link' : 'creative') : _currentMatType;
+  var finalType = (finalCategory === 'creative') ? 'image' : (finalCategory === 'drive_link' ? 'link' : 'copy');
+
   var payload = {
     id: editId || undefined,
     product_id: productId,
-    category: _currentMatType,
-    type: (_currentMatType === 'creative') ? 'image' : ((_currentMatType === 'drive_link') ? 'link' : 'copy'),
+    category: finalCategory,
+    type: finalType,
     title: title,
     url: finalUrl,
     content: finalContent,

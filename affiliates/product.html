@@ -168,20 +168,24 @@ var _selectedAffCat = 'all';
       html += '<div class="empty" style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px;">The creator has not uploaded promotional materials for this product yet. You can still use your referral link above to share and earn!</div>';
     } else {
       // Category Filter Pills
-      var counts = { all: mats.length, dm: 0, status: 0, broadcast: 0, creative: 0, drive_link: 0, email: 0 };
+      var counts = { all: mats.length, dm: 0, status: 0, broadcast: 0, creative: 0 };
       mats.forEach(function(m){
-        var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
-        if(counts[cat] !== undefined) counts[cat]++;
+        var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'creative' : 'dm')));
+        if(cat === 'drive_link' || cat === 'image' || cat === 'creative'){
+          counts.creative++;
+        } else if(counts[cat] !== undefined){
+          counts[cat]++;
+        } else {
+          counts.dm++;
+        }
       });
 
       html += '<div class="hub-pills-bar">' +
         '<button type="button" class="hub-pill-btn active" data-cat="all" onclick="filterAffMats(\'all\')">All Materials (' + counts.all + ')</button>' +
-        (counts.dm ? '<button type="button" class="hub-pill-btn" data-cat="dm" onclick="filterAffMats(\'dm\')">Direct Messages (' + counts.dm + ')</button>' : '') +
-        (counts.status ? '<button type="button" class="hub-pill-btn" data-cat="status" onclick="filterAffMats(\'status\')">WhatsApp Status (' + counts.status + ')</button>' : '') +
-        (counts.broadcast ? '<button type="button" class="hub-pill-btn" data-cat="broadcast" onclick="filterAffMats(\'broadcast\')">Community Broadcasts (' + counts.broadcast + ')</button>' : '') +
-        (counts.creative ? '<button type="button" class="hub-pill-btn" data-cat="creative" onclick="filterAffMats(\'creative\')">Promo Creatives &amp; Mockups (' + counts.creative + ')</button>' : '') +
-        (counts.drive_link ? '<button type="button" class="hub-pill-btn" data-cat="drive_link" onclick="filterAffMats(\'drive_link\')">Google Drive Vault (' + counts.drive_link + ')</button>' : '') +
-        (counts.email ? '<button type="button" class="hub-pill-btn" data-cat="email" onclick="filterAffMats(\'email\')">Email Outreach (' + counts.email + ')</button>' : '') +
+        (counts.dm ? '<button type="button" class="hub-pill-btn" data-cat="dm" onclick="filterAffMats(\'dm\')">DM Copy (' + counts.dm + ')</button>' : '') +
+        (counts.status ? '<button type="button" class="hub-pill-btn" data-cat="status" onclick="filterAffMats(\'status\')">Status Sequence (' + counts.status + ')</button>' : '') +
+        (counts.broadcast ? '<button type="button" class="hub-pill-btn" data-cat="broadcast" onclick="filterAffMats(\'broadcast\')">Broadcast / WhatsApp Group (' + counts.broadcast + ')</button>' : '') +
+        (counts.creative ? '<button type="button" class="hub-pill-btn" data-cat="creative" onclick="filterAffMats(\'creative\')">Creatives &amp; Drive Assets (' + counts.creative + ')</button>' : '') +
       '</div>';
 
       html += '<div id="affMatsGridContainer">';
@@ -214,19 +218,20 @@ var _selectedAffCat = 'all';
 })();
 
 function getAffCategoryLabel(cat){
-  if(cat === 'dm') return 'Direct Message (DM)';
-  if(cat === 'status') return 'WhatsApp Status';
-  if(cat === 'broadcast') return 'Community Broadcast';
-  if(cat === 'creative') return 'Promo Creative / Mockup';
+  if(cat === 'dm') return 'DM Copy';
+  if(cat === 'status') return 'Status Sequence';
+  if(cat === 'broadcast') return 'WhatsApp Group / Broadcast';
   if(cat === 'drive_link') return 'Google Drive Vault';
-  if(cat === 'email') return 'Email Outreach';
+  if(cat === 'creative' || cat === 'image') return 'Promo Creative';
   return 'Marketing Asset';
 }
 
 function renderAffMatsGrid(mats, catFilter){
   var filtered = mats.filter(function(m){
-    var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
-    return (catFilter === 'all' || cat === catFilter);
+    var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'creative' : 'dm')));
+    if(catFilter === 'all') return true;
+    if(catFilter === 'creative') return (cat === 'creative' || cat === 'drive_link' || cat === 'image');
+    return cat === catFilter;
   });
 
   if(!filtered.length){
