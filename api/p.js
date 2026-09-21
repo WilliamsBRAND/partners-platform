@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   const slug = (url.searchParams.get('slug') || url.searchParams.get('product') || '').trim().toLowerCase();
 
   // Default fallback if no partner code
-  const fallbackUrl = 'https://nexora.tomidewilliams.store/checkout';
+  const fallbackUrl = 'https://nexora.tomidewilliams.com/checkout';
 
   if (!code || !db) {
     return res.writeHead(302, { Location: fallbackUrl }).end();
