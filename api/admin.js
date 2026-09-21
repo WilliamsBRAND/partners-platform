@@ -79,19 +79,27 @@ async function auth(req, res, db) {
 }
 
 // ---------------------------------------------------------------------------
-// OVERVIEW — Fast server-side aggregation for instant dashboard metrics
+// OVERVIEW — Fast server-side aggregation for instant dashboard metrics & queues
 // ---------------------------------------------------------------------------
 async function overview(req, res, db) {
   const [
     { count: activeProductsCount, error: errProd },
     { count: partnersCount, error: errPart },
     { data: comms, error: errComm },
-    { data: pays, error: errPay }
+    { data: pays, error: errPay },
+    { data: pendingPayoutRows },
+    { data: pendingCommRows },
+    { data: recentCommRows },
+    { data: recentPartners }
   ] = await Promise.all([
     db.from('products').select('id', { count: 'exact', head: true }).eq('status', 'active'),
     db.from('partners').select('id', { count: 'exact', head: true }),
-    db.from('commissions').select('commission_kobo, status'),
-    db.from('payouts').select('amount_kobo, status')
+    db.from('commissions').select('affiliate_id, commission_kobo, status'),
+    db.from('payouts').select('amount_kobo, status'),
+    db.from('payouts').select('id, partner_id, amount_kobo, status, created_at').eq('status', 'pending').order('created_at', { ascending: true }),
+    db.from('commissions').select('id, affiliate_id, product_id, customer_email, amount_kobo, commission_kobo, status, created_at').eq('status', 'pending').order('created_at', { ascending: false }).limit(20),
+    db.from('commissions').select('id, affiliate_id, product_id, customer_email, amount_kobo, commission_kobo, status, created_at').order('created_at', { ascending: false }).limit(10),
+    db.from('partners').select('id, name, code, email, phone, created_at').order('created_at', { ascending: false }).limit(6)
   ]);
 
   if (errProd || errPart || errComm || errPay) {
@@ -110,15 +118,109 @@ async function overview(req, res, db) {
   const paidKobo = allPays
     .filter(p => p.status === 'completed')
     .reduce((sum, p) => sum + (p.amount_kobo || 0), 0);
+  const pendingPayoutsKobo = allPays
+    .filter(p => p.status === 'pending')
+    .reduce((sum, p) => sum + (p.amount_kobo || 0), 0);
+
+  // Collect IDs for partner & product name joins
+  const needPartnerIds = new Set();
+  const needProductIds = new Set();
+
+  (pendingPayoutRows || []).forEach(p => { if (p.partner_id) needPartnerIds.add(p.partner_id); });
+  (pendingCommRows || []).forEach(c => {
+    if (c.affiliate_id) needPartnerIds.add(c.affiliate_id);
+    if (c.product_id) needProductIds.add(c.product_id);
+  });
+  (recentCommRows || []).forEach(c => {
+    if (c.affiliate_id) needPartnerIds.add(c.affiliate_id);
+    if (c.product_id) needProductIds.add(c.product_id);
+  });
+
+  // Calculate top affiliates from allComms
+  const affStats = {};
+  allComms.forEach(c => {
+    if (c.affiliate_id) {
+      if (!affStats[c.affiliate_id]) affStats[c.affiliate_id] = { sales: 0, earned: 0 };
+      if (c.status === 'pending' || c.status === 'approved' || c.status === 'processing' || c.status === 'paid') {
+        affStats[c.affiliate_id].sales++;
+      }
+      if (c.status === 'approved' || c.status === 'processing' || c.status === 'paid') {
+        affStats[c.affiliate_id].earned += c.commission_kobo || 0;
+      }
+    }
+  });
+
+  const sortedAffIds = Object.keys(affStats)
+    .sort((a, b) => affStats[b].sales !== affStats[a].sales ? affStats[b].sales - affStats[a].sales : affStats[b].earned - affStats[a].earned)
+    .slice(0, 6);
+
+  sortedAffIds.forEach(id => needPartnerIds.add(id));
+
+  // Fetch partners & products map in single query
+  let partnerMap = {};
+  let productMap = {};
+
+  const partnerIdArr = Array.from(needPartnerIds);
+  const productIdArr = Array.from(needProductIds);
+
+  const [partnersRes, productsRes] = await Promise.all([
+    partnerIdArr.length ? db.from('partners').select('id, name, code, email, phone, bank_name, account_number, account_name').in('id', partnerIdArr) : { data: [] },
+    productIdArr.length ? db.from('products').select('id, name').in('id', productIdArr) : { data: [] }
+  ]);
+
+  (partnersRes.data || []).forEach(p => { partnerMap[p.id] = p; });
+  (productsRes.data || []).forEach(p => { productMap[p.id] = p.name; });
+
+  const pendingPayouts = (pendingPayoutRows || []).map(p => ({
+    ...p,
+    partner: partnerMap[p.partner_id] || { name: 'Partner', code: '-', email: '-' }
+  }));
+
+  const pendingCommissions = (pendingCommRows || []).map(c => ({
+    ...c,
+    partner: partnerMap[c.affiliate_id] || { name: 'Partner', code: '-' },
+    product_name: productMap[c.product_id] || '-'
+  }));
+
+  const recentSales = (recentCommRows || []).map(c => ({
+    ...c,
+    partner: partnerMap[c.affiliate_id] || { name: 'Partner', code: '-' },
+    product_name: productMap[c.product_id] || '-'
+  }));
+
+  const topPartners = sortedAffIds.map(id => ({
+    id,
+    ...(partnerMap[id] || { name: 'Partner', code: '-', email: '-' }),
+    sales: affStats[id].sales,
+    earned_kobo: affStats[id].earned
+  }));
 
   return json(res, 200, {
     ok: true,
+    metrics: {
+      active_products: activeProductsCount || 0,
+      partners_count: partnersCount || 0,
+      total_sales: totalSales,
+      total_commissions_kobo: totalCommKobo,
+      pending_commissions_kobo: pendingCommKobo,
+      total_paid_kobo: paidKobo,
+      pending_payouts_count: (pendingPayoutRows || []).length,
+      pending_payouts_kobo: pendingPayoutsKobo,
+      pending_commissions_count: (pendingCommRows || []).length
+    },
+    // Backwards compatibility keys
     active_products: activeProductsCount || 0,
     partners_count: partnersCount || 0,
     total_sales: totalSales,
     total_commissions_kobo: totalCommKobo,
     pending_commissions_kobo: pendingCommKobo,
     total_paid_kobo: paidKobo,
+    // Rich Data Sets for Command Center Overview
+    pending_payouts: pendingPayouts,
+    pending_commissions: pendingCommissions,
+    recent_sales: recentSales,
+    top_partners: topPartners,
+    recent_partners: recentPartners || [],
     timestamp: Date.now()
   });
 }
