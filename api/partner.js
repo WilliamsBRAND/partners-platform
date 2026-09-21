@@ -140,19 +140,15 @@ async function marketplace(req, res, db) {
 
   const list = (products || []).map(p => {
     const priceKobo = p.price_kobo || 0;
-    const discountPercent = 20;
-    const buyerPriceKobo = Math.round(priceKobo * (1 - discountPercent / 100)); // 20% off for buyers with link (e.g. ₦6,080)
     const commissionPercent = p.commission_type === 'percent' ? parseFloat(p.commission_value || 0) : null;
     const partnerEarningKobo = p.commission_type === 'fixed'
       ? Math.round(parseFloat(p.commission_value || 0) * 100)
-      : Math.round(priceKobo * ((commissionPercent || 0) / 100)); // 30% of full ₦7,600 = ₦2,280
+      : Math.round(priceKobo * ((commissionPercent || 0) / 100));
 
     return {
       id: p.id, slug: p.slug, name: p.name, tagline: p.tagline, description: p.description,
       image_url: p.image_url,
       price_kobo: priceKobo,
-      discount_percent: discountPercent,
-      buyer_price_kobo: buyerPriceKobo,
       commission_type: p.commission_type,
       commission_value: p.commission_value,
       partner_earning_kobo: partnerEarningKobo,
@@ -393,20 +389,16 @@ async function productDetail(req, res, db, partnerId, url) {
   });
 
   const prodPriceKobo = product.price_kobo || 0;
-  const prodDiscountPercent = 20;
-  const prodBuyerPriceKobo = Math.round(prodPriceKobo * (1 - prodDiscountPercent / 100)); // ₦6,080
   const prodCommissionPercent = product.commission_type === 'percent' ? parseFloat(product.commission_value || 0) : null;
   const prodPartnerEarningKobo = product.commission_type === 'fixed'
     ? Math.round(parseFloat(product.commission_value || 0) * 100)
-    : Math.round(prodPriceKobo * ((prodCommissionPercent || 0) / 100)); // ₦2,280
+    : Math.round(prodPriceKobo * ((prodCommissionPercent || 0) / 100));
 
   return json(res, 200, {
     ok: true,
     product: {
       ...product,
       price_kobo: prodPriceKobo,
-      discount_percent: prodDiscountPercent,
-      buyer_price_kobo: prodBuyerPriceKobo,
       partner_earning_kobo: prodPartnerEarningKobo,
       commission_label: product.commission_type === 'fixed'
         ? '₦' + (+product.commission_value).toLocaleString()
