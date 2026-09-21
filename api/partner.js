@@ -311,28 +311,67 @@ async function productDetail(req, res, db, partnerId, url) {
   // Parse materials and auto-inject affiliate referral link
   const validMats = (mats || []).filter(m => !m.url || !m.url.startsWith('review:'));
   const formattedMats = validMats.map(m => {
-    const isCopy = m.url && m.url.startsWith('copy:');
+    let category = 'general';
     let content = '';
-    if (isCopy) {
-      try { content = decodeURIComponent(m.url.slice(5)); } catch (e) { content = m.url.slice(5); }
-      // Replace placeholders with affiliate referral link
-      if (referralLink) {
-        content = content
-          .replace(/\{\{\s*AFFILIATE_LINK\s*\}\}/gi, referralLink)
-          .replace(/\{\{\s*LINK\s*\}\}/gi, referralLink)
-          .replace(/\{\{\s*REF_LINK\s*\}\}/gi, referralLink)
-          .replace(/\[AFFILIATE_LINK\]/gi, referralLink)
-          .replace(/\[LINK\]/gi, referralLink);
+    let url = m.url || '';
+    let drive_url = '';
+    let type = m.type || 'asset';
+
+    if (url.startsWith('meta:')) {
+      try {
+        const parsed = JSON.parse(decodeURIComponent(url.slice(5)));
+        category = parsed.category || 'general';
+        content = parsed.content || '';
+        url = parsed.url || '';
+        drive_url = parsed.drive_url || '';
+      } catch (e) {
+        content = url.slice(5);
       }
+    } else if (url.startsWith('copy:')) {
+      category = 'dm';
+      try { content = decodeURIComponent(url.slice(5)); } catch (e) { content = url.slice(5); }
+      url = '';
+    } else if (type === 'image' || url.match(/\.(png|jpe?g|webp|gif|svg)(\?.*)?$/i)) {
+      category = 'creative';
+      type = 'image';
+    } else if (url.includes('drive.google.com')) {
+      category = 'drive_link';
+      type = 'link';
+      drive_url = url;
+    }
+
+    if (!type || type === 'asset') {
+      if (content) type = 'copy';
+      else if (category === 'creative') type = 'image';
+      else if (category === 'drive_link') type = 'link';
+      else type = 'link';
+    }
+
+    const isCopy = type === 'copy' || !!content;
+    let injectedContent = content;
+
+    // Replace placeholders with affiliate referral link
+    if (referralLink && isCopy) {
+      injectedContent = injectedContent
+        .replace(/\{\{\s*AFFILIATE_LINK\s*\}\}/gi, referralLink)
+        .replace(/\{\{\s*LINK\s*\}\}/gi, referralLink)
+        .replace(/\{\{\s*REF_LINK\s*\}\}/gi, referralLink)
+        .replace(/\{\s*LINK\s*\}/gi, referralLink)
+        .replace(/\[AFFILIATE_LINK\]/gi, referralLink)
+        .replace(/\[LINK\]/gi, referralLink)
+        .replace(/\[YOUR LINK\]/gi, referralLink);
     }
 
     return {
       id: m.id,
       product_id: m.product_id,
-      type: isCopy ? 'copy' : (m.type || 'asset'),
+      category,
+      type,
       title: m.title || (isCopy ? 'Swipe Copy' : 'Promo Asset'),
-      url: isCopy ? '' : m.url,
-      content: isCopy ? content : (m.url || ''),
+      url: isCopy ? '' : url,
+      drive_url,
+      content: injectedContent || (isCopy ? '' : url),
+      raw_content: content,
       is_copy: isCopy,
       created_at: m.created_at,
     };
@@ -526,27 +565,68 @@ async function materials(req, res, db, partnerId, url) {
 
   if (error) return json(res, 500, { error: 'Failed to load materials.' });
 
-  const formatted = (mats || []).map(m => {
-    const isCopy = m.url && m.url.startsWith('copy:');
+  const validMats = (mats || []).filter(m => !m.url || !m.url.startsWith('review:'));
+  const formatted = validMats.map(m => {
+    let category = 'general';
     let content = '';
-    if (isCopy) {
-      try { content = decodeURIComponent(m.url.slice(5)); } catch (e) { content = m.url.slice(5); }
-      if (referralLink) {
-        content = content
-          .replace(/\{\{\s*AFFILIATE_LINK\s*\}\}/gi, referralLink)
-          .replace(/\{\{\s*LINK\s*\}\}/gi, referralLink)
-          .replace(/\{\{\s*REF_LINK\s*\}\}/gi, referralLink)
-          .replace(/\[AFFILIATE_LINK\]/gi, referralLink)
-          .replace(/\[LINK\]/gi, referralLink);
+    let itemUrl = m.url || '';
+    let drive_url = '';
+    let type = m.type || 'asset';
+
+    if (itemUrl.startsWith('meta:')) {
+      try {
+        const parsed = JSON.parse(decodeURIComponent(itemUrl.slice(5)));
+        category = parsed.category || 'general';
+        content = parsed.content || '';
+        itemUrl = parsed.url || '';
+        drive_url = parsed.drive_url || '';
+      } catch (e) {
+        content = itemUrl.slice(5);
       }
+    } else if (itemUrl.startsWith('copy:')) {
+      category = 'dm';
+      try { content = decodeURIComponent(itemUrl.slice(5)); } catch (e) { content = itemUrl.slice(5); }
+      itemUrl = '';
+    } else if (type === 'image' || itemUrl.match(/\.(png|jpe?g|webp|gif|svg)(\?.*)?$/i)) {
+      category = 'creative';
+      type = 'image';
+    } else if (itemUrl.includes('drive.google.com')) {
+      category = 'drive_link';
+      type = 'link';
+      drive_url = itemUrl;
     }
+
+    if (!type || type === 'asset') {
+      if (content) type = 'copy';
+      else if (category === 'creative') type = 'image';
+      else if (category === 'drive_link') type = 'link';
+      else type = 'link';
+    }
+
+    const isCopy = type === 'copy' || !!content;
+    let injectedContent = content;
+
+    if (referralLink && isCopy) {
+      injectedContent = injectedContent
+        .replace(/\{\{\s*AFFILIATE_LINK\s*\}\}/gi, referralLink)
+        .replace(/\{\{\s*LINK\s*\}\}/gi, referralLink)
+        .replace(/\{\{\s*REF_LINK\s*\}\}/gi, referralLink)
+        .replace(/\{\s*LINK\s*\}/gi, referralLink)
+        .replace(/\[AFFILIATE_LINK\]/gi, referralLink)
+        .replace(/\[LINK\]/gi, referralLink)
+        .replace(/\[YOUR LINK\]/gi, referralLink);
+    }
+
     return {
       id: m.id,
       product_id: m.product_id,
-      type: isCopy ? 'copy' : (m.type || 'asset'),
-      title: m.title || (isCopy ? 'Swipe Copy' : 'Promo Material'),
-      url: isCopy ? '' : m.url,
-      content: isCopy ? content : (m.url || ''),
+      category,
+      type,
+      title: m.title || (isCopy ? 'Swipe Copy' : 'Promo Asset'),
+      url: isCopy ? '' : itemUrl,
+      drive_url,
+      content: injectedContent || (isCopy ? '' : itemUrl),
+      raw_content: content,
       is_copy: isCopy,
       created_at: m.created_at,
     };

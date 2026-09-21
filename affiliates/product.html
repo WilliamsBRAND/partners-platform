@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Product &middot; Partners</title>
 <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -22,24 +22,39 @@
 
   /* Marketing Hub Styles */
   .mats-section{margin-top:32px;}
-  .mats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+  .hub-pills-bar{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .hub-pill-btn{padding:8px 14px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:20px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;font-family:'Archivo',sans-serif;}
+  .hub-pill-btn:hover{background:rgba(255,255,255,.08);color:#fff;}
+  .hub-pill-btn.active{background:var(--crimson);border-color:var(--crimson);color:#fff;}
+
+  .mats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
   
   .swipe-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px;}
-  .swipe-header{display:flex;justify-content:space-between;align-items:center;}
+  .swipe-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
   .swipe-title{font-size:15px;font-weight:800;color:#fff;}
-  .swipe-badge{font-size:10px;font-weight:800;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3);}
-  .swipe-body{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:12px 14px;font-size:13px;color:#ddd;line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:220px;overflow-y:auto;font-family:'Archivo',sans-serif;}
+  .mat-badge-tag{font-size:10px;font-weight:800;text-transform:uppercase;padding:3px 8px;border-radius:6px;letter-spacing:.04em;white-space:nowrap;}
+  .mat-badge-tag.dm{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3);}
+  .mat-badge-tag.status{background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3);}
+  .mat-badge-tag.broadcast{background:rgba(168,85,247,.15);color:#c084fc;border:1px solid rgba(168,85,247,.3);}
+  .mat-badge-tag.creative{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.3);}
+  .mat-badge-tag.drive_link{background:rgba(234,179,8,.15);color:#facc15;border:1px solid rgba(234,179,8,.3);}
+  .mat-badge-tag.email{background:rgba(244,63,94,.15);color:#fb7185;border:1px solid rgba(244,63,94,.3);}
+
+  .swipe-body{background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:12px 14px;font-size:13px;color:#ddd;line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:220px;overflow-y:auto;font-family:'Archivo',sans-serif;}
   .swipe-actions{display:flex;gap:8px;margin-top:auto;flex-wrap:wrap;}
   
   .creative-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
-  .creative-img-wrap{height:180px;background:linear-gradient(135deg,#1c1c1c,#0c0c0c);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
-  .creative-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .2s;}
+  .creative-img-wrap{height:190px;background:linear-gradient(135deg,#1c1c1c,#0c0c0c);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+  .creative-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .25s ease;}
   .creative-card:hover .creative-img-wrap img{transform:scale(1.03);}
-  .creative-body{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1;}
-  .creative-title{font-size:14px;font-weight:700;color:#fff;}
-  .creative-actions{display:flex;gap:8px;margin-top:auto;padding-top:6px;}
+  .creative-body{padding:16px;display:flex;flex-direction:column;gap:10px;flex:1;}
+  .creative-title{font-size:14.5px;font-weight:700;color:#fff;}
+  .creative-actions{display:flex;gap:8px;margin-top:auto;padding-top:6px;flex-wrap:wrap;}
 
-  .asset-link-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+  .drive-card{background:rgba(234,179,8,.05);border:1px solid rgba(234,179,8,.22);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px;}
+  .drive-card:hover{border-color:rgba(234,179,8,.4);background:rgba(234,179,8,.08);}
+
+  .asset-link-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
   .asset-link-title{font-size:13.5px;font-weight:700;color:#fff;}
 </style>
 </head>
@@ -96,6 +111,9 @@
 </div>
 <script src="/assets/sidebar.js"></script>
 <script>
+var _activeProductMats = [];
+var _selectedAffCat = 'all';
+
 (function () {
   if (!App.getToken()) { window.location.href = '/affiliates/login'; return; }
   var pid = new URLSearchParams(window.location.search).get('product_id') || '';
@@ -114,6 +132,7 @@
 
     var p = d.product;
     var mats = d.materials || [];
+    _activeProductMats = mats;
     var html = '';
 
     html += '<div class="ptop">' +
@@ -141,76 +160,38 @@
       '<div class="card stat-card accent"><div class="lbl">Earned</div><div class="num" style="color:var(--green);">' + App.naira(p.earned_kobo) + '</div></div>' +
     '</div>';
 
-    // MARKETING ASSETS & SWIPE COPY
-    var copyMats = mats.filter(function(m){ return m.type === 'copy' || m.is_copy; });
-    var imageMats = mats.filter(function(m){ return m.type === 'image' && !m.is_copy; });
-    var otherMats = mats.filter(function(m){ return m.type !== 'copy' && m.type !== 'image' && !m.is_copy; });
-
+    // MARKETING ASSETS & PROMOTIONAL COPY HUB
     html += '<div class="mats-section" id="marketing">';
-    html += '<div class="section-head"><h2>Marketing Assets & Promotional Copy</h2><span class="count">' + mats.length + ' assets ready</span></div>';
+    html += '<div class="section-head"><h2>Promotional Materials & Swipe Copy</h2><span class="count">' + mats.length + ' assets ready</span></div>';
 
     if (!mats.length) {
       html += '<div class="empty" style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px;">The creator has not uploaded promotional materials for this product yet. You can still use your referral link above to share and earn!</div>';
     } else {
-      // 1. SWIPE COPY SECTION
-      if (copyMats.length) {
-        html += '<h3 style="font-size:15px;font-weight:800;color:#fff;margin:20px 0 12px;display:flex;align-items:center;gap:8px;">Promotional Copy & Scripts <span style="font-size:12px;color:var(--muted);font-weight:600;">(Your link is already injected!)</span></h3>';
-        html += '<div class="mats-grid">';
-        copyMats.forEach(function(m, idx){
-          var copyId = 'swipe_text_' + idx;
-          html += '<div class="swipe-card">' +
-            '<div class="swipe-header">' +
-              '<div class="swipe-title">' + App.esc(m.title) + '</div>' +
-              '<span class="swipe-badge">Link Injected</span>' +
-            '</div>' +
-            '<div class="swipe-body" id="' + copyId + '">' + App.esc(m.content) + '</div>' +
-            '<div class="swipe-actions">' +
-              '<button class="copy-btn" data-id="' + copyId + '" onclick="copySwipeText(this, this.getAttribute(\'data-id\'))">Copy Swipe with My Link</button>' +
-              '<button class="btn wa" style="padding:7px 12px;font-size:12px;" data-id="' + copyId + '" onclick="shareSwipeWhatsApp(this.getAttribute(\'data-id\'))">WhatsApp</button>' +
-            '</div>' +
-          '</div>';
-        });
-        html += '</div>';
-      }
+      // Category Filter Pills
+      var counts = { all: mats.length, dm: 0, status: 0, broadcast: 0, creative: 0, drive_link: 0, email: 0 };
+      mats.forEach(function(m){
+        var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
+        if(counts[cat] !== undefined) counts[cat]++;
+      });
 
-      // 2. PROMOTIONAL IMAGES & CREATIVES
-      if (imageMats.length) {
-        html += '<h3 style="font-size:15px;font-weight:800;color:#fff;margin:24px 0 12px;">Promotional Creatives & Mockups</h3>';
-        html += '<div class="mats-grid">';
-        imageMats.forEach(function(m){
-          html += '<div class="creative-card">' +
-            '<div class="creative-img-wrap">' +
-              '<img src="' + App.esc(m.url) + '" alt="' + App.esc(m.title) + '" loading="lazy" />' +
-            '</div>' +
-            '<div class="creative-body">' +
-              '<div class="creative-title">' + App.esc(m.title) + '</div>' +
-              '<div class="creative-actions">' +
-                '<button class="btn" style="font-size:12px;padding:7px 14px;" data-url="' + App.esc(m.url) + '" data-name="' + App.esc(m.title) + '" onclick="downloadCreativeImage(this.getAttribute(\'data-url\'), this.getAttribute(\'data-name\') + \'.png\')">Download Image</button>' +
-                '<button class="copy-btn" style="font-size:12px;padding:7px 12px;" data-copy="' + App.esc(m.url) + '" onclick="App.copyLink(this, this.getAttribute(\'data-copy\'))">Copy URL</button>' +
-              '</div>' +
-            '</div>' +
-          '</div>';
-        });
-        html += '</div>';
-      }
+      html += '<div class="hub-pills-bar">' +
+        '<button type="button" class="hub-pill-btn active" data-cat="all" onclick="filterAffMats(\'all\')">All Materials (' + counts.all + ')</button>' +
+        (counts.dm ? '<button type="button" class="hub-pill-btn" data-cat="dm" onclick="filterAffMats(\'dm\')">Direct Messages (' + counts.dm + ')</button>' : '') +
+        (counts.status ? '<button type="button" class="hub-pill-btn" data-cat="status" onclick="filterAffMats(\'status\')">WhatsApp Status (' + counts.status + ')</button>' : '') +
+        (counts.broadcast ? '<button type="button" class="hub-pill-btn" data-cat="broadcast" onclick="filterAffMats(\'broadcast\')">Broadcasts (' + counts.broadcast + ')</button>' : '') +
+        (counts.creative ? '<button type="button" class="hub-pill-btn" data-cat="creative" onclick="filterAffMats(\'creative\')">Promo Creatives (' + counts.creative + ')</button>' : '') +
+        (counts.drive_link ? '<button type="button" class="hub-pill-btn" data-cat="drive_link" onclick="filterAffMats(\'drive_link\')">Google Drive Hub (' + counts.drive_link + ')</button>' : '') +
+        (counts.email ? '<button type="button" class="hub-pill-btn" data-cat="email" onclick="filterAffMats(\'email\')">Email Outreach (' + counts.email + ')</button>' : '') +
+      '</div>';
 
-      // 3. VIDEOS & RESOURCE LINKS
-      if (otherMats.length) {
-        html += '<h3 style="font-size:15px;font-weight:800;color:#fff;margin:24px 0 12px;">Resource Links & Guides</h3>';
-        html += '<div class="mats-grid">';
-        otherMats.forEach(function(m){
-          html += '<div class="asset-link-card">' +
-            '<div class="asset-link-title">' + App.esc(m.title) + '</div>' +
-            '<a class="btn" style="text-decoration:none;font-size:12px;padding:7px 14px;" href="' + App.esc(m.url) + '" target="_blank" rel="noopener">Open Resource &rarr;</a>' +
-          '</div>';
-        });
-        html += '</div>';
-      }
+      html += '<div id="affMatsGridContainer">';
+      html += renderAffMatsGrid(mats, 'all');
+      html += '</div>';
     }
     html += '</div>';
 
     // Recent sales
-    html += '<div class="section-head" style="margin-top:34px;"><h2>Recent Sales</h2><span class="count">' + (p.sales || 0) + ' total</span></div>';
+    html += '<div class="section-head" style="margin-top:36px;"><h2>Recent Sales</h2><span class="count">' + (p.sales || 0) + ' total</span></div>';
     if (d.sales && d.sales.length) {
       html += '<div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Customer</th><th class="num">Order</th><th class="num">Commission</th><th>Status</th></tr></thead><tbody>';
       d.sales.forEach(function (s) {
@@ -232,6 +213,107 @@
   });
 })();
 
+function getAffCategoryLabel(cat){
+  if(cat === 'dm') return 'Direct Message (DM)';
+  if(cat === 'status') return 'WhatsApp Status';
+  if(cat === 'broadcast') return 'Community Broadcast';
+  if(cat === 'creative') return 'Promo Creative';
+  if(cat === 'drive_link') return 'Google Drive Asset';
+  if(cat === 'email') return 'Email Outreach';
+  return 'Marketing Asset';
+}
+
+function renderAffMatsGrid(mats, catFilter){
+  var filtered = mats.filter(function(m){
+    var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
+    return (catFilter === 'all' || cat === catFilter);
+  });
+
+  if(!filtered.length){
+    return '<div class="empty" style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px;">No materials available in this category.</div>';
+  }
+
+  var h = '<div class="mats-grid">';
+  filtered.forEach(function(m, idx){
+    var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
+    var catLabel = getAffCategoryLabel(cat);
+    var isCopy = (cat === 'dm' || cat === 'status' || cat === 'broadcast' || cat === 'email' || m.type === 'copy' || !!m.content);
+
+    if(cat === 'creative' || (m.type === 'image' && !m.content)){
+      // Creative Flyer Card
+      h += '<div class="creative-card">' +
+        '<div class="creative-img-wrap">' +
+          '<img src="' + App.esc(m.url) + '" alt="' + App.esc(m.title) + '" loading="lazy" />' +
+        '</div>' +
+        '<div class="creative-body">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+            '<span class="mat-badge-tag creative">' + catLabel + '</span>' +
+          '</div>' +
+          '<div class="creative-title">' + App.esc(m.title) + '</div>' +
+          '<div class="creative-actions">' +
+            '<button class="btn" style="font-size:12px;padding:8px 14px;font-weight:700;" data-url="' + App.esc(m.url) + '" data-name="' + App.esc(m.title) + '" onclick="downloadCreativeImage(this.getAttribute(\'data-url\'), this.getAttribute(\'data-name\') + \'.png\')">' +
+              '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>' +
+              'Download Image' +
+            '</button>' +
+            '<button class="copy-btn" style="font-size:12px;padding:8px 12px;" data-copy="' + App.esc(m.url) + '" onclick="App.copyLink(this, this.getAttribute(\'data-copy\'))">Copy URL</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    } else if(cat === 'drive_link' || m.drive_url || (m.url && m.url.includes('drive.google.com'))){
+      // Google Drive Folder Card
+      var driveLink = m.drive_url || m.url;
+      h += '<div class="drive-card">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+          '<span class="mat-badge-tag drive_link">' + catLabel + '</span>' +
+        '</div>' +
+        '<div style="font-size:15px;font-weight:800;color:#fff;">' + App.esc(m.title) + '</div>' +
+        '<div style="font-size:12.5px;color:var(--muted);line-height:1.5;">Access raw high-resolution videos, Photoshop files, and brand templates in the shared Google Drive folder.</div>' +
+        '<div style="margin-top:auto;padding-top:4px;">' +
+          '<a class="btn" style="text-decoration:none;font-size:12px;padding:8px 16px;background:rgba(234,179,8,.2);color:#facc15;border:1px solid rgba(234,179,8,.4);font-weight:700;display:inline-flex;align-items:center;gap:6px;" href="' + App.esc(driveLink) + '" target="_blank" rel="noopener">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+            'Open Drive Folder' +
+          '</a>' +
+        '</div>' +
+      '</div>';
+    } else if(isCopy){
+      // Swipe Copy Script Card
+      var copyId = 'aff_swipe_text_' + idx;
+      h += '<div class="swipe-card">' +
+        '<div class="swipe-header">' +
+          '<div class="swipe-title">' + App.esc(m.title) + '</div>' +
+          '<span class="mat-badge-tag ' + cat + '">' + catLabel + '</span>' +
+        '</div>' +
+        '<div class="swipe-body" id="' + copyId + '">' + App.esc(m.content) + '</div>' +
+        '<div class="swipe-actions">' +
+          '<button class="copy-btn" data-id="' + copyId + '" onclick="copySwipeText(this, this.getAttribute(\'data-id\'))">Copy Script with My Link</button>' +
+          '<button class="btn wa" style="padding:8px 14px;font-size:12px;display:inline-flex;align-items:center;gap:5px;" data-id="' + copyId + '" onclick="shareSwipeWhatsApp(this.getAttribute(\'data-id\'))">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>' +
+            'WhatsApp' +
+          '</button>' +
+        '</div>' +
+      '</div>';
+    } else {
+      // General Resource Link Card
+      h += '<div class="asset-link-card">' +
+        '<div class="asset-link-title">' + App.esc(m.title) + '</div>' +
+        '<a class="btn sm" style="text-decoration:none;font-size:12px;padding:8px 14px;" href="' + App.esc(m.url) + '" target="_blank" rel="noopener">Open Resource &rarr;</a>' +
+      '</div>';
+    }
+  });
+  h += '</div>';
+  return h;
+}
+
+function filterAffMats(cat){
+  _selectedAffCat = cat;
+  document.querySelectorAll('.hub-pill-btn').forEach(function(pill){
+    pill.classList.toggle('active', pill.getAttribute('data-cat') === cat);
+  });
+  var container = document.getElementById('affMatsGridContainer');
+  if(container){
+    container.innerHTML = renderAffMatsGrid(_activeProductMats, cat);
+  }
+}
 
 function downloadCreativeImage(url, filename){
   App.snack('Starting image download...');
@@ -239,14 +321,13 @@ function downloadCreativeImage(url, filename){
     var blobUrl = window.URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = blobUrl;
-    a.download = filename || 'promo-image.png';
+    a.download = filename || 'promo-creative.png';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(blobUrl);
-    App.snack('Download complete!');
+    App.snack('Download complete.');
   }).catch(function(){
-    // Fallback: open in new tab
     window.open(url, '_blank');
   });
 }

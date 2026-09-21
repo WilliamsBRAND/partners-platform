@@ -250,124 +250,150 @@ async function productUpdate(req, res, db) {
 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
-// MATERIALS — list / add / edit / remove marketing materials & swipe copy
+// MATERIALS — list / add / edit / remove marketing materials, swipe copy & drive links
 // ---------------------------------------------------------------------------
+function packMaterialRecord(body) {
+  const category = body.category || (body.type === 'copy' || body.content ? 'dm' : (body.type === 'image' ? 'creative' : 'general'));
+  let type = body.type || (category === 'creative' ? 'image' : (category === 'drive_link' ? 'link' : (body.content ? 'copy' : 'asset')));
+  const title = String(body.title || '').trim() || (type === 'copy' ? 'Swipe Copy' : 'Marketing Asset');
+  const content = String(body.content || '').trim();
+  const url = String(body.url || '').trim();
+  const drive_url = String(body.drive_url || '').trim();
+
+  // Pack into structured metadata
+  const meta = {
+    category,
+    content,
+    url: url || drive_url,
+    drive_url: drive_url || (url.includes('drive.google.com') ? url : '')
+  };
+
+  const packedUrl = 'meta:' + encodeURIComponent(JSON.stringify(meta));
+  return {
+    product_id: body.product_id,
+    type: type === 'copy' ? 'asset' : type,
+    title,
+    url: packedUrl
+  };
+}
+
+function unpackMaterialRecord(row) {
+  if (!row) return null;
+  let category = 'general';
+  let content = '';
+  let url = row.url || '';
+  let drive_url = '';
+  let type = row.type || 'asset';
+
+  if (url.startsWith('meta:')) {
+    try {
+      const parsed = JSON.parse(decodeURIComponent(url.slice(5)));
+      category = parsed.category || 'general';
+      content = parsed.content || '';
+      url = parsed.url || '';
+      drive_url = parsed.drive_url || '';
+    } catch (e) {
+      content = url.slice(5);
+    }
+  } else if (url.startsWith('copy:')) {
+    category = 'dm';
+    try { content = decodeURIComponent(url.slice(5)); } catch (e) { content = url.slice(5); }
+    url = '';
+  } else if (url.startsWith('review:')) {
+    category = 'review';
+  } else if (type === 'image' || url.match(/\.(png|jpe?g|webp|gif|svg)(\?.*)?$/i)) {
+    category = 'creative';
+    type = 'image';
+  } else if (url.includes('drive.google.com')) {
+    category = 'drive_link';
+    type = 'link';
+    drive_url = url;
+  }
+
+  if (!type || type === 'asset') {
+    if (content) type = 'copy';
+    else if (category === 'creative') type = 'image';
+    else if (category === 'drive_link') type = 'link';
+    else type = 'link';
+  }
+
+  return {
+    id: row.id,
+    product_id: row.product_id,
+    category,
+    type,
+    title: row.title || 'Marketing Asset',
+    content: content || (type === 'copy' ? url : ''),
+    url: type === 'copy' ? '' : url,
+    drive_url,
+    created_at: row.created_at
+  };
+}
+
 async function materials(req, res, db) {
   const urlObj = new URL(req.url, `http://${req.headers.host}`);
   const productId = urlObj.searchParams.get('product_id') || (req.body && req.body.product_id) || '';
+  const categoryFilter = urlObj.searchParams.get('category') || '';
 
   if (req.method === 'GET') {
-    if (!productId) return json(res, 400, { error: 'product_id required.' });
-    const { data, error } = await db.from('marketing_materials')
-      .select('id, product_id, type, title, url, created_at')
-      .eq('product_id', productId)
-      .order('created_at', { ascending: false });
+    let query = db.from('marketing_materials').select('id, product_id, type, title, url, created_at');
+    if (productId && productId !== 'all') {
+      query = query.eq('product_id', productId);
+    }
+    const { data, error } = await query.order('created_at', { ascending: false });
 
     if (error) return json(res, 500, { error: 'Failed to load materials.' });
 
-    // Exclude feedback reviews stored in marketing_materials
+    // Exclude internal feedback reviews stored in marketing_materials
     const validData = (data || []).filter(m => !m.url || !m.url.startsWith('review:'));
+    let formatted = validData.map(unpackMaterialRecord);
 
-    const formatted = validData.map(m => {
-      const isCopy = m.url && m.url.startsWith('copy:');
-      let content = '';
-      if (isCopy) {
-        try { content = decodeURIComponent(m.url.slice(5)); } catch (e) { content = m.url.slice(5); }
-      }
-      return {
-        id: m.id,
-        product_id: m.product_id,
-        type: isCopy ? 'copy' : (m.type || 'asset'),
-        title: m.title || (isCopy ? 'Swipe Copy' : 'Material'),
-        url: isCopy ? '' : m.url,
-        content: content || (isCopy ? '' : m.url),
-        created_at: m.created_at,
-      };
-    });
+    if (categoryFilter && categoryFilter !== 'all') {
+      formatted = formatted.filter(m => m.category === categoryFilter);
+    }
 
     return json(res, 200, { ok: true, materials: formatted });
   }
 
-  // CREATE OR UPDATE
+  // CREATE OR UPDATE (POST or PATCH)
   if (req.method === 'POST' || req.method === 'PATCH') {
-    const { id, product_id, type, title, url, content } = req.body || {};
-    const pid = product_id || productId;
-    if (!id && !pid) return json(res, 400, { error: 'product_id required.' });
+    const body = req.body || {};
+    const { id, items } = body;
 
-    let finalType = type || 'asset';
-    let finalUrl = String(url || '').trim();
-    let finalTitle = String(title || '').trim();
-
-    if (type === 'copy' || content) {
-      finalType = 'asset';
-      const textToStore = String(content || url || '').trim();
-      if (!textToStore) return json(res, 400, { error: 'Swipe copy text is required.' });
-      finalUrl = 'copy:' + encodeURIComponent(textToStore);
-      if (!finalTitle) finalTitle = 'Swipe Copy';
-    } else {
-      if (!finalUrl) return json(res, 400, { error: 'Material URL is required.' });
-      const allowed = ['image', 'video', 'file', 'link', 'asset'];
-      if (!allowed.includes(finalType)) finalType = 'asset';
+    // Batch create support
+    if (Array.isArray(items) && items.length > 0) {
+      const recordsToInsert = items.map(packMaterialRecord);
+      const { data, error } = await db.from('marketing_materials').insert(recordsToInsert).select('*');
+      if (error) return json(res, 500, { error: 'Failed to add materials: ' + (error.message || '') });
+      return json(res, 200, { ok: true, materials: data.map(unpackMaterialRecord) });
     }
+
+    const pid = body.product_id || productId;
+    if (!id && !pid) return json(res, 400, { error: 'product_id is required.' });
+
+    const packed = packMaterialRecord({ ...body, product_id: pid });
 
     if (id) {
-      // UPDATE existing material
-      const u = {
-        type: finalType,
-        title: finalTitle || null,
-        url: finalUrl,
-      };
-      const { data, error } = await db.from('marketing_materials').update(u).eq('id', id).select('*').single();
+      // UPDATE existing
+      const { data, error } = await db.from('marketing_materials')
+        .update({
+          type: packed.type,
+          title: packed.title,
+          url: packed.url
+        })
+        .eq('id', id)
+        .select('*')
+        .single();
+
       if (error) return json(res, 500, { error: 'Failed to update material: ' + (error.message || '') });
-
-      const isCopy = data.url && data.url.startsWith('copy:');
-      let decodedContent = '';
-      if (isCopy) {
-        try { decodedContent = decodeURIComponent(data.url.slice(5)); } catch (e) { decodedContent = data.url.slice(5); }
-      }
-
-      return json(res, 200, {
-        ok: true,
-        material: {
-          id: data.id,
-          product_id: data.product_id,
-          type: isCopy ? 'copy' : data.type,
-          title: data.title,
-          url: isCopy ? '' : data.url,
-          content: decodedContent || (isCopy ? '' : data.url),
-          created_at: data.created_at,
-        }
-      });
+      return json(res, 200, { ok: true, material: unpackMaterialRecord(data) });
     }
 
-    // INSERT new material
-    const { data, error } = await db.from('marketing_materials').insert({
-      product_id: pid,
-      type: finalType,
-      title: finalTitle || null,
-      url: finalUrl,
-    }).select('*').single();
-
+    // INSERT new single
+    const { data, error } = await db.from('marketing_materials').insert(packed).select('*').single();
     if (error) return json(res, 500, { error: 'Failed to add material: ' + (error.message || '') });
 
-    const isCopy = data.url && data.url.startsWith('copy:');
-    let decodedContent = '';
-    if (isCopy) {
-      try { decodedContent = decodeURIComponent(data.url.slice(5)); } catch (e) { decodedContent = data.url.slice(5); }
-    }
-
-    return json(res, 200, {
-      ok: true,
-      material: {
-        id: data.id,
-        product_id: data.product_id,
-        type: isCopy ? 'copy' : data.type,
-        title: data.title,
-        url: isCopy ? '' : data.url,
-        content: decodedContent || (isCopy ? '' : data.url),
-        created_at: data.created_at,
-      }
-    });
+    return json(res, 200, { ok: true, material: unpackMaterialRecord(data) });
   }
 
   if (req.method === 'DELETE') {

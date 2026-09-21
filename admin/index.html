@@ -177,7 +177,7 @@ td .grn{color:var(--green);font-size:12px;}
 
 /* Modal System & Affiliate Popup */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px;}
-.modal-overlay.show{display:flex !important;animation:spaFadeIn 0.15s ease-out;}
+.modal-overlay.show, .modal-overlay.open{display:flex !important;animation:spaFadeIn 0.15s ease-out;}
 .modal-box{background:#121214;border:1px solid rgba(255,255,255,.12);border-radius:16px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.7),0 0 40px rgba(122,10,21,.15);}
 .modal-hd{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#121214;z-index:10;}
 .modal-hd h3{margin:0;font-size:17px;font-weight:800;color:#fff;letter-spacing:-.01em;}
@@ -191,22 +191,29 @@ td .grn{color:var(--green);font-size:12px;}
 .aff-sec{margin-top:10px;padding-top:12px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px;}
 .aff-sec h4{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#e88a93;margin-bottom:2px;}
 
-/* Material Modal specific */
+/* Marketing Hub & Material Modal styles */
+.hub-cat-pills{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.hub-pill{padding:8px 15px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:20px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;}
+.hub-pill:hover{background:rgba(255,255,255,.08);color:#fff;}
+.hub-pill.active{background:var(--crimson);border-color:var(--crimson);color:#fff;}
 .mat-type-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
 .mat-tab{padding:8px 14px;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:8px;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;}
-.mat-tab.active{background:var(--crimson-dark);border-color:var(--crimson);color:#fff;}
+.mat-tab.active{background:var(--crimson);border-color:var(--crimson);color:#fff;}
 .mat-add-box{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:24px;}
 .mat-add-box h4{font-size:13px;font-weight:800;color:#fff;margin:0 0 12px;text-transform:uppercase;letter-spacing:.05em;}
-.mat-list-item{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start;justify-content:space-between;}
+.mat-list-item{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:12px;transition:all .15s;}
 .mat-badge{display:inline-block;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-right:6px;}
-.mat-badge.image{background:rgba(59,130,246,.2);color:#60a5fa;border:1px solid rgba(59,130,246,.3);}
-.mat-badge.copy{background:rgba(34,197,94,.2);color:#4ade80;border:1px solid rgba(34,197,94,.3);}
-.mat-badge.video{background:rgba(239,68,68,.2);color:#f87171;border:1px solid rgba(239,68,68,.3);}
-.mat-badge.asset,.mat-badge.link,.mat-badge.file{background:rgba(168,85,247,.2);color:#c084fc;border:1px solid rgba(168,85,247,.3);}
+.mat-badge.dm,.mat-badge.copy{background:rgba(34,197,94,.18);color:#4ade80;border:1px solid rgba(34,197,94,.3);}
+.mat-badge.status{background:rgba(251,191,36,.18);color:#fbbf24;border:1px solid rgba(251,191,36,.3);}
+.mat-badge.broadcast{background:rgba(168,85,247,.18);color:#c084fc;border:1px solid rgba(168,85,247,.3);}
+.mat-badge.creative,.mat-badge.image{background:rgba(59,130,246,.18);color:#60a5fa;border:1px solid rgba(59,130,246,.3);}
+.mat-badge.drive_link{background:rgba(234,179,8,.18);color:#facc15;border:1px solid rgba(234,179,8,.3);}
+.mat-badge.email{background:rgba(244,63,94,.18);color:#fb7185;border:1px solid rgba(244,63,94,.3);}
+.mat-badge.asset,.mat-badge.link,.mat-badge.file{background:rgba(168,85,247,.18);color:#c084fc;border:1px solid rgba(168,85,247,.3);}
 .mat-item-info{flex:1;min-width:0;}
 .mat-item-title{font-weight:700;font-size:14px;color:#fff;margin-bottom:4px;}
-.mat-item-preview{font-size:12px;color:var(--muted);background:rgba(0,0,0,.3);padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,.05);margin-top:6px;white-space:pre-wrap;word-break:break-word;max-height:120px;overflow-y:auto;font-family:monospace;}
-.mat-thumb{width:64px;height:64px;border-radius:8px;object-fit:cover;border:1px solid var(--line);margin-top:6px;}
+.mat-item-preview{font-size:12px;color:var(--muted);background:rgba(0,0,0,.3);padding:10px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.05);margin-top:8px;white-space:pre-wrap;word-break:break-word;max-height:140px;overflow-y:auto;font-family:inherit;line-height:1.6;}
+.mat-thumb{width:72px;height:72px;border-radius:8px;object-fit:cover;border:1px solid var(--line);margin-top:6px;}
 
 .notif{background:var(--amber-bg);border:1px solid rgba(251,191,36,.15);border-left:3px solid var(--amber);border-radius:10px;padding:14px 16px;margin-bottom:12px;}
 .notif .t{font-weight:700;color:#fff;font-size:14px;margin-bottom:4px;}
@@ -447,6 +454,42 @@ td .grn{color:var(--green);font-size:12px;}
         </div>
       </section>
 
+      <!-- MARKETING MATERIALS & SWIPE COPY HUB -->
+      <section class="panel" id="panelMaterials">
+        <div class="page-head">
+          <div class="page-eyebrow">Promotions & Creatives</div>
+          <h1 class="page-title">Marketing Hub</h1>
+          <div class="page-sub">Upload high-res creatives, categorized swipe copy, and shared Google Drive folders for your affiliates.</div>
+        </div>
+
+        <!-- Toolbar: Product Filter & Add Material Button -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:14px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <label style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;">Product:</label>
+            <select id="hubProductFilter" onchange="filterHubMaterials()" style="padding:10px 14px;background:#111;border:1px solid var(--line);border-radius:8px;color:#fff;font-size:13.5px;font-weight:600;min-width:180px;outline:none;">
+              <option value="all">All Products</option>
+            </select>
+          </div>
+          <button class="btn" onclick="openAddMaterialModal()" style="padding:11px 20px;font-weight:700;">+ Add Marketing Material</button>
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div class="hub-cat-pills" style="display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap;">
+          <button type="button" class="hub-pill active" data-cat="all" onclick="setHubCategory('all')">All Materials (<span id="hubCountAll">0</span>)</button>
+          <button type="button" class="hub-pill" data-cat="dm" onclick="setHubCategory('dm')">Direct Messages / DMs (<span id="hubCountDm">0</span>)</button>
+          <button type="button" class="hub-pill" data-cat="status" onclick="setHubCategory('status')">WhatsApp Status (<span id="hubCountStatus">0</span>)</button>
+          <button type="button" class="hub-pill" data-cat="broadcast" onclick="setHubCategory('broadcast')">Community Broadcasts (<span id="hubCountBroadcast">0</span>)</button>
+          <button type="button" class="hub-pill" data-cat="creative" onclick="setHubCategory('creative')">Promo Creatives (<span id="hubCountCreative">0</span>)</button>
+          <button type="button" class="hub-pill" data-cat="drive_link" onclick="setHubCategory('drive_link')">Google Drive Hub (<span id="hubCountDrive">0</span>)</button>
+          <button type="button" class="hub-pill" data-cat="email" onclick="setHubCategory('email')">Email Outreach (<span id="hubCountEmail">0</span>)</button>
+        </div>
+
+        <!-- Materials List Container -->
+        <div id="hubMaterialsList">
+          <div class="loading"><div class="bar"></div> Loading marketing assets...</div>
+        </div>
+      </section>
+
       <!-- AFFILIATES / PARTNERS -->
       <section class="panel" id="panelAffiliates">
         <div class="page-head">
@@ -560,38 +603,55 @@ td .grn{color:var(--green);font-size:12px;}
       <!-- ADD / EDIT FORM CONTAINER -->
       <div id="matFormBox" style="background:#151515;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;margin-bottom:24px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-          <h4 id="matFormHeading" style="font-size:12px;font-weight:800;color:var(--crimson-bright);margin:0;text-transform:uppercase;letter-spacing:.1em;">+ Add New Material</h4>
+          <h4 id="matFormHeading" style="font-size:12px;font-weight:800;color:var(--crimson-bright);margin:0;text-transform:uppercase;letter-spacing:.1em;">+ Add New Marketing Material</h4>
           <button type="button" id="matCancelEditBtn" onclick="resetMatForm()" style="display:none;background:rgba(255,255,255,.08);border:1px solid var(--line);color:#ccc;font-size:11px;font-weight:700;padding:5px 12px;border-radius:6px;cursor:pointer;">Cancel Edit</button>
         </div>
 
-        <!-- TYPE PILLS -->
+        <!-- PRODUCT SELECTOR -->
+        <div id="matProductSelectWrap" style="margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.6px;margin-bottom:6px;">Target Product</div>
+          <select id="matProductSelect" style="width:100%;padding:12px 14px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:14px;font-family:'Archivo',sans-serif;outline:none;box-sizing:border-box;"></select>
+        </div>
+
+        <!-- CATEGORY TABS -->
         <div class="mat-type-tabs" style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
-          <button type="button" class="mat-tab active" data-type="image" onclick="setMatTab('image')">Promo Image</button>
-          <button type="button" class="mat-tab" data-type="copy" onclick="setMatTab('copy')">Swipe Copy (with Link)</button>
-          <button type="button" class="mat-tab" data-type="video" onclick="setMatTab('video')">Video / Ad</button>
-          <button type="button" class="mat-tab" data-type="link" onclick="setMatTab('link')">Resource Link</button>
+          <button type="button" class="mat-tab active" data-type="dm" onclick="setMatTab('dm')">Direct Message (DM)</button>
+          <button type="button" class="mat-tab" data-type="status" onclick="setMatTab('status')">WhatsApp Status</button>
+          <button type="button" class="mat-tab" data-type="broadcast" onclick="setMatTab('broadcast')">Community Broadcast</button>
+          <button type="button" class="mat-tab" data-type="creative" onclick="setMatTab('creative')">Promo Creative</button>
+          <button type="button" class="mat-tab" data-type="drive_link" onclick="setMatTab('drive_link')">Google Drive Link</button>
+          <button type="button" class="mat-tab" data-type="email" onclick="setMatTab('email')">Email Outreach</button>
         </div>
 
         <!-- TITLE / HEADLINE FIELD -->
         <div style="margin-bottom:16px;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.6px;margin-bottom:6px;">Title / Description</div>
-          <input id="matTitle" style="width:100%;padding:12px 14px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:14px;font-family:'Archivo',sans-serif;outline:none;box-sizing:border-box;" placeholder="e.g. Official Course Stack Mockup (1200x630)" />
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.6px;margin-bottom:6px;">Headline / Asset Title</div>
+          <input id="matTitle" style="width:100%;padding:12px 14px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:14px;font-family:'Archivo',sans-serif;outline:none;box-sizing:border-box;" placeholder="e.g. High Converting DM Script for Business Owners" />
         </div>
 
-        <!-- 1. DIRECT FILE UPLOAD FOR PROMO IMAGES -->
-        <div id="matImageBox" style="margin-bottom:16px;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.6px;margin-bottom:6px;">Upload Picture from Phone / Computer</div>
+        <!-- 1. SWIPE COPY BOX (DMs, Status, Broadcasts, Emails) -->
+        <div id="matCopyBox" style="margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.6px;margin-bottom:6px;" id="matCopyLabel">Promotional Copy Script</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;background:rgba(122,10,21,.1);border:1px solid rgba(122,10,21,.25);padding:8px 12px;border-radius:6px;">
+            Type <code style="color:var(--crimson-bright);font-weight:700;">{LINK}</code> anywhere in the copy. The partner's unique referral link will be auto-injected.
+          </div>
+          <textarea id="matContent" rows="6" style="width:100%;padding:12px 14px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:13.5px;font-family:'Archivo',sans-serif;resize:vertical;line-height:1.55;outline:none;box-sizing:border-box;" placeholder="Hey friend! Check this out... Grab your spot here: {LINK}"></textarea>
+        </div>
+
+        <!-- 2. DIRECT FILE UPLOAD / URL FOR PROMO CREATIVES -->
+        <div id="matImageBox" style="display:none;margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.6px;margin-bottom:6px;">Upload Picture from Device</div>
           
           <!-- Dropzone Box -->
           <div id="matDropzone" onclick="document.getElementById('matFileInput').click()" style="border:2px dashed rgba(255,255,255,.18);border-radius:10px;padding:24px 16px;text-align:center;background:rgba(255,255,255,.02);cursor:pointer;transition:all .2s;">
             <input type="file" id="matFileInput" accept="image/*" style="display:none;" onchange="handleMatFileSelect(event)" />
-            <div style="font-size:26px;margin-bottom:6px;">📁</div>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color:var(--crimson-bright);margin-bottom:6px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             <div style="font-weight:700;font-size:14px;color:#fff;margin-bottom:4px;">Tap to Choose Picture from Device</div>
             <div style="font-size:12px;color:var(--muted);">PNG, JPG, WEBP or JPEG &middot; High Resolution</div>
           </div>
 
           <!-- Preview & Uploaded Status -->
-          <div id="matFilePreviewBox" style="display:none;margin-top:12px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;display:none;align-items:center;justify-content:space-between;gap:14px;">
+          <div id="matFilePreviewBox" style="display:none;margin-top:12px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;align-items:center;justify-content:space-between;gap:14px;">
             <div style="display:flex;align-items:center;gap:12px;min-width:0;flex:1;">
               <img id="matFilePreviewImg" src="" alt="preview" style="width:54px;height:54px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,.1);" />
               <div style="min-width:0;flex:1;">
@@ -602,7 +662,7 @@ td .grn{color:var(--green);font-size:12px;}
             <button type="button" onclick="clearSelectedMatFile()" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#ef4444;font-size:11px;font-weight:700;padding:6px 12px;border-radius:6px;cursor:pointer;">Change</button>
           </div>
 
-          <!-- Optional URL fallback toggle -->
+          <!-- URL fallback -->
           <div style="margin-top:10px;">
             <a href="javascript:void(0)" onclick="toggleUrlFallback()" id="toggleUrlBtn" style="font-size:11.5px;color:var(--muted);text-decoration:underline;">Or paste image URL instead</a>
           </div>
@@ -611,19 +671,19 @@ td .grn{color:var(--green);font-size:12px;}
           </div>
         </div>
 
-        <!-- 2. SWIPE COPY BOX -->
-        <div id="matCopyBox" style="display:none;margin-bottom:16px;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.6px;margin-bottom:6px;">Swipe Copy Message</div>
-          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;background:rgba(122,10,21,.1);border:1px solid rgba(122,10,21,.25);padding:8px 12px;border-radius:6px;">
-            Type <code style="color:var(--crimson-bright);font-weight:700;">{{AFFILIATE_LINK}}</code> or <code style="color:var(--crimson-bright);font-weight:700;">{{link}}</code> anywhere in the copy. The partner's tracked link will be auto-injected.
+        <!-- 3. GOOGLE DRIVE FOLDER LINK BOX -->
+        <div id="matDriveBox" style="display:none;margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.6px;margin-bottom:6px;">Google Drive Asset Folder URL</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.25);padding:8px 12px;border-radius:6px;">
+            Paste a link to your Google Drive shared folder (Raw Video B-roll, Brand Kits, Logos, Slide Decks). Affiliates will be able to access the raw materials directly.
           </div>
-          <textarea id="matContent" rows="6" style="width:100%;padding:12px 14px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:13.5px;font-family:'Archivo',sans-serif;resize:vertical;line-height:1.55;outline:none;box-sizing:border-box;" placeholder="Hey friend! Tomide just released this masterclass... Grab it here: {{AFFILIATE_LINK}}"></textarea>
+          <input id="matDriveUrl" style="width:100%;padding:12px 14px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:13.5px;font-family:'Archivo',sans-serif;outline:none;box-sizing:border-box;" placeholder="https://drive.google.com/drive/folders/..." />
         </div>
 
-        <!-- 3. GENERIC URL BOX (For Videos & External Resource Links) -->
+        <!-- 4. GENERIC URL BOX (For Videos & External Resource Links) -->
         <div id="matGenericUrlBox" style="display:none;margin-bottom:16px;">
           <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#aaa;letter-spacing:.6px;margin-bottom:6px;" id="matGenericUrlLabel">Resource / Video URL</div>
-          <input id="matGenericUrl" style="width:100%;padding:12px 14px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:13.5px;font-family:'Archivo',sans-serif;outline:none;box-sizing:border-box;" placeholder="https://youtube.com/... or https://drive.google.com/..." />
+          <input id="matGenericUrl" style="width:100%;padding:12px 14px;background:#0a0a0a;border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:13.5px;font-family:'Archivo',sans-serif;outline:none;box-sizing:border-box;" placeholder="https://youtube.com/..." />
         </div>
 
         <div style="text-align:right;margin-top:16px;">
@@ -746,6 +806,7 @@ function logout(){
 var NAV = [
   {key:'panelOverview',label:'Overview',shortLabel:'Overview',ico:'<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/>'},
   {key:'panelProducts',label:'Products',shortLabel:'Products',ico:'<path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/>'},
+  {key:'panelMaterials',label:'Marketing Hub',shortLabel:'Marketing',ico:'<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/>'},
   {key:'panelAffiliates',label:'Partners',shortLabel:'Partners',ico:'<circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.3 3-5 7-5s7 1.7 7 5"/><circle cx="17" cy="9" r="2.5"/><path d="M14 15.5c2.7.4 6 2 6 4.5"/>'},
   {key:'panelCommissions',label:'Commissions',shortLabel:'Sales',ico:'<rect x="2.5" y="6" width="19" height="13" rx="2.5"/><circle cx="12" cy="12.5" r="3"/><path d="M5.5 9.5h.01M18.5 9.5h.01"/>'},
   {key:'panelPayouts',label:'Payouts',shortLabel:'Payouts',ico:'<path d="M21 12H9M15 8l4 4-4 4"/><path d="M5 6v12"/>'},
@@ -817,6 +878,7 @@ function switchPanel(id){
 function loadPanel(id){
   if(id === 'panelOverview') loadOverview();
   else if(id === 'panelProducts') loadProducts();
+  else if(id === 'panelMaterials') loadMarketingHub();
   else if(id === 'panelAffiliates') loadAffiliations();
   else if(id === 'panelCommissions') loadCommissions();
   else if(id === 'panelPayouts') loadPayouts();
@@ -890,6 +952,7 @@ function loadProducts(){
     }
     var prods = d.products || [];
     window._cachedProducts = prods;
+    populateProductSelects(prods);
     if(!prods.length){
       if(empty) empty.style.display = '';
       if(body) body.innerHTML = '';
@@ -1031,12 +1094,196 @@ function deleteProduct(id){
   }).catch(function(){ showSnack('Network error.'); });
 }
 
-// ---- MARKETING MATERIALS MODAL ----
-var _currentMatType = 'image';
+// ---- MARKETING HUB & PROMOTIONAL MATERIALS ----
+var _hubSelectedCategory = 'all';
+var _hubAllMaterials = [];
+var _currentMatType = 'dm';
 var _selectedMatFile = null;
 var _selectedMatBase64 = null;
 var _confirmCallback = null;
 
+function populateProductSelects(products){
+  var filterSelect = document.getElementById('hubProductFilter');
+  var modalSelect = document.getElementById('matProductSelect');
+  if(!products || !products.length) return;
+
+  if(filterSelect){
+    var curVal = filterSelect.value || 'all';
+    var fh = '<option value="all">All Products</option>';
+    products.forEach(function(p){
+      fh += '<option value="' + esc(p.id) + '">' + esc(p.name) + '</option>';
+    });
+    filterSelect.innerHTML = fh;
+    if(curVal) filterSelect.value = curVal;
+  }
+
+  if(modalSelect){
+    var curModalVal = modalSelect.value || '';
+    var mh = '';
+    products.forEach(function(p){
+      mh += '<option value="' + esc(p.id) + '">' + esc(p.name) + '</option>';
+    });
+    modalSelect.innerHTML = mh;
+    if(curModalVal) modalSelect.value = curModalVal;
+  }
+}
+
+function loadMarketingHub(){
+  var listContainer = document.getElementById('hubMaterialsList');
+  if(!listContainer) return;
+
+  // Load products to ensure dropdowns are populated
+  if(!window._cachedProducts || !window._cachedProducts.length){
+    api('/api/admin?action=products').then(function(d){
+      if(d && d.ok && d.products){
+        window._cachedProducts = d.products;
+        populateProductSelects(d.products);
+      }
+    }).catch(function(){});
+  } else {
+    populateProductSelects(window._cachedProducts);
+  }
+
+  listContainer.innerHTML = '<div class="loading"><div class="bar"></div> Loading marketing assets...</div>';
+
+  api('/api/admin?action=materials').then(function(d){
+    if(!d || !d.ok){
+      if(d && d.error === 'Unauthorized.') { onUnauthorized(d); return; }
+      listContainer.innerHTML = '<div class="empty">Failed to load marketing materials. <button class="action-btn" onclick="loadMarketingHub()" style="margin-left:8px;">Retry</button></div>';
+      return;
+    }
+
+    _hubAllMaterials = d.materials || [];
+    window._cachedMaterials = _hubAllMaterials;
+
+    // Update Category Counts
+    var counts = { all: _hubAllMaterials.length, dm: 0, status: 0, broadcast: 0, creative: 0, drive_link: 0, email: 0 };
+    _hubAllMaterials.forEach(function(m){
+      var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
+      if(counts[cat] !== undefined) counts[cat]++;
+      else if(cat === 'image') counts.creative++;
+      else if(cat === 'copy') counts.dm++;
+    });
+
+    var setTxt = function(id, val){ var el = document.getElementById(id); if(el) el.textContent = val; };
+    setTxt('hubCountAll', counts.all);
+    setTxt('hubCountDm', counts.dm);
+    setTxt('hubCountStatus', counts.status);
+    setTxt('hubCountBroadcast', counts.broadcast);
+    setTxt('hubCountCreative', counts.creative);
+    setTxt('hubCountDrive', counts.drive_link);
+    setTxt('hubCountEmail', counts.email);
+
+    renderHubMaterials();
+  }).catch(function(){
+    listContainer.innerHTML = '<div class="empty">Network error loading materials. <button class="action-btn" onclick="loadMarketingHub()" style="margin-left:8px;">Retry</button></div>';
+  });
+}
+
+function setHubCategory(cat){
+  _hubSelectedCategory = cat;
+  document.querySelectorAll('.hub-pill').forEach(function(pill){
+    pill.classList.toggle('active', pill.getAttribute('data-cat') === cat);
+  });
+  renderHubMaterials();
+}
+
+function filterHubMaterials(){
+  renderHubMaterials();
+}
+
+function getCategoryBadgeLabel(cat){
+  if(cat === 'dm') return 'Direct Message (DM)';
+  if(cat === 'status') return 'WhatsApp Status';
+  if(cat === 'broadcast') return 'Community Broadcast';
+  if(cat === 'creative') return 'Promo Creative';
+  if(cat === 'drive_link') return 'Google Drive Hub';
+  if(cat === 'email') return 'Email Outreach';
+  return 'Marketing Asset';
+}
+
+function renderHubMaterials(){
+  var listContainer = document.getElementById('hubMaterialsList');
+  if(!listContainer) return;
+
+  var filterProd = document.getElementById('hubProductFilter') ? document.getElementById('hubProductFilter').value : 'all';
+  var prodsMap = {};
+  (window._cachedProducts || []).forEach(function(p){ prodsMap[p.id] = p.name; });
+
+  var filtered = _hubAllMaterials.filter(function(m){
+    var matchesProd = (filterProd === 'all' || m.product_id === filterProd);
+    var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
+    var matchesCat = (_hubSelectedCategory === 'all' || cat === _hubSelectedCategory);
+    return matchesProd && matchesCat;
+  });
+
+  if(!filtered.length){
+    listContainer.innerHTML = '<div class="empty" style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:36px 20px;text-align:center;">' +
+      '<div style="font-weight:700;color:#fff;font-size:15px;margin-bottom:6px;">No marketing materials found for this selection.</div>' +
+      '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;">Add scripts, promotional flyers, or Google Drive resource links for your partners.</div>' +
+      '<button class="btn sm" onclick="openAddMaterialModal(\'' + (filterProd !== 'all' ? filterProd : '') + '\')">+ Add Marketing Material</button>' +
+    '</div>';
+    return;
+  }
+
+  var h = '';
+  filtered.forEach(function(m){
+    var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
+    var badgeLabel = getCategoryBadgeLabel(cat);
+    var prodName = prodsMap[m.product_id] || 'Selected Offer';
+    
+    var previewHtml = '';
+    if(cat === 'creative' || m.type === 'image' || (m.url && m.url.match(/\.(png|jpe?g|webp|gif|svg)/i))){
+      var imgUrl = m.url || '';
+      previewHtml = '<div style="margin-top:12px;display:flex;gap:14px;align-items:center;background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:12px 14px;">' +
+        '<img src="' + esc(imgUrl) + '" alt="preview" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--line);" />' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:8px;">' + esc(imgUrl) + '</div>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+            '<a href="' + esc(imgUrl) + '" target="_blank" rel="noopener" download style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;background:rgba(255,255,255,.08);color:#fff;font-weight:700;padding:6px 12px;border-radius:6px;text-decoration:none;">Download File</a>' +
+            '<a href="' + esc(imgUrl) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;font-size:11.5px;color:var(--crimson-bright);font-weight:700;padding:6px 12px;text-decoration:none;">View Full Size &rarr;</a>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    } else if(cat === 'drive_link' || (m.drive_url || (m.url && m.url.includes('drive.google.com')))){
+      var driveLink = m.drive_url || m.url;
+      previewHtml = '<div style="margin-top:12px;background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.2);border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">' +
+        '<div style="min-width:0;flex:1;">' +
+          '<div style="font-weight:700;font-size:13px;color:#facc15;margin-bottom:3px;">Google Drive Asset Folder</div>' +
+          '<div style="font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + esc(driveLink) + '</div>' +
+        '</div>' +
+        '<a href="' + esc(driveLink) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;background:rgba(234,179,8,.2);color:#facc15;border:1px solid rgba(234,179,8,.4);padding:7px 14px;border-radius:7px;font-size:12px;font-weight:700;text-decoration:none;">Open Drive Folder &rarr;</a>' +
+      '</div>';
+    } else if(m.content){
+      // Swipe copy highlighting {LINK}
+      var highlighted = esc(m.content).replace(/\{LINK\}/gi, '<span style="color:var(--crimson-bright);background:rgba(122,10,21,.3);padding:1px 5px;border-radius:4px;font-weight:700;">{LINK}</span>');
+      previewHtml = '<div class="mat-item-preview">' + highlighted + '</div>';
+    } else if(m.url){
+      previewHtml = '<div style="margin-top:10px;"><a href="' + esc(m.url) + '" target="_blank" rel="noopener" style="font-size:12.5px;color:var(--crimson-bright);font-weight:700;">' + esc(m.url) + ' &rarr;</a></div>';
+    }
+
+    h += '<div class="mat-list-item" style="background:#131315;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:18px 20px;margin-bottom:14px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;">' +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">' +
+            '<span class="mat-badge ' + cat + '">' + badgeLabel + '</span>' +
+            '<span style="font-size:11px;font-weight:700;color:var(--muted);background:rgba(255,255,255,.05);padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,.06);">' + esc(prodName) + '</span>' +
+          '</div>' +
+          '<h3 style="font-weight:800;font-size:15px;color:#fff;margin:0;">' + esc(m.title) + '</h3>' +
+        '</div>' +
+        '<div style="display:flex;gap:8px;flex-shrink:0;">' +
+          '<button class="action-btn" onclick="editMaterial(\'' + m.id + '\')" title="Edit" style="background:rgba(255,255,255,.08);color:#fff;font-size:12px;padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-weight:700;">Edit</button>' +
+          '<button class="action-btn reject" onclick="openDeleteConfirm(\'' + m.id + '\')" title="Delete" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#ef4444;font-size:12px;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:700;">Delete</button>' +
+        '</div>' +
+      '</div>' +
+      previewHtml +
+    '</div>';
+  });
+
+  listContainer.innerHTML = h;
+}
+
+// ---- MATERIALS MODAL MANAGEMENT ----
 function setMatTab(type){
   _currentMatType = type;
   document.querySelectorAll('.mat-tab').forEach(function(b){
@@ -1045,14 +1292,37 @@ function setMatTab(type){
 
   var imageBox = document.getElementById('matImageBox');
   var copyBox = document.getElementById('matCopyBox');
+  var driveBox = document.getElementById('matDriveBox');
   var genericBox = document.getElementById('matGenericUrlBox');
+  var copyLabel = document.getElementById('matCopyLabel');
 
-  if(imageBox) imageBox.style.display = (type === 'image') ? 'block' : 'none';
-  if(copyBox) copyBox.style.display = (type === 'copy') ? 'block' : 'none';
-  if(genericBox) {
-    genericBox.style.display = (type === 'video' || type === 'link') ? 'block' : 'none';
-    var lbl = document.getElementById('matGenericUrlLabel');
-    if(lbl) lbl.textContent = (type === 'video') ? 'Video / Walkthrough URL (Loom, YouTube, Drive)' : 'Resource URL (PDF, Canva, Drive Folder)';
+  if(type === 'dm' || type === 'status' || type === 'broadcast' || type === 'email' || type === 'copy'){
+    if(copyBox) copyBox.style.display = 'block';
+    if(imageBox) imageBox.style.display = 'none';
+    if(driveBox) driveBox.style.display = 'none';
+    if(genericBox) genericBox.style.display = 'none';
+    if(copyLabel){
+      if(type === 'dm') copyLabel.textContent = 'Direct Message (DM) Copy Script';
+      else if(type === 'status') copyLabel.textContent = 'WhatsApp Status / Short Hook Script';
+      else if(type === 'broadcast') copyLabel.textContent = 'Community Broadcast / Group Announcement Script';
+      else if(type === 'email') copyLabel.textContent = 'Email Outreach Template';
+      else copyLabel.textContent = 'Promotional Copy Script';
+    }
+  } else if(type === 'creative' || type === 'image'){
+    if(imageBox) imageBox.style.display = 'block';
+    if(copyBox) copyBox.style.display = 'none';
+    if(driveBox) driveBox.style.display = 'none';
+    if(genericBox) genericBox.style.display = 'none';
+  } else if(type === 'drive_link'){
+    if(driveBox) driveBox.style.display = 'block';
+    if(copyBox) copyBox.style.display = 'none';
+    if(imageBox) imageBox.style.display = 'none';
+    if(genericBox) genericBox.style.display = 'none';
+  } else {
+    if(genericBox) genericBox.style.display = 'block';
+    if(copyBox) copyBox.style.display = 'none';
+    if(imageBox) imageBox.style.display = 'none';
+    if(driveBox) driveBox.style.display = 'none';
   }
 }
 
@@ -1113,37 +1383,40 @@ function previewMatImage(url){
 }
 
 function openMats(productOrId){
-  openMaterialsModal(productOrId);
+  openAddMaterialModal(productOrId);
 }
 
-function openMaterialsModal(product){
-  var pid = (typeof product === 'string') ? product : (product && (product.id || product.slug));
-  var p = (window._cachedProducts || []).find(function(x){ return x.id === pid || x.slug === pid; });
-  var pname = (p && p.name) ? p.name : ((typeof product === 'object' && product && product.name) ? product.name : 'NEXORA');
+function openMaterialsModal(productOrId){
+  openAddMaterialModal(productOrId);
+}
+
+function openAddMaterialModal(productId){
+  populateProductSelects(window._cachedProducts || []);
+  var selectEl = document.getElementById('matProductSelect');
+  var pid = (typeof productId === 'string') ? productId : (productId && (productId.id || productId.slug));
   
-  var prodEl = document.getElementById('matProductId');
-  if(prodEl) prodEl.value = pid;
-  var titleEl = document.getElementById('matModalTitle');
-  if(titleEl) titleEl.textContent = 'Marketing Assets & Swipe Copy — ' + pname;
+  if(pid && selectEl){
+    selectEl.value = pid;
+  }
+  
+  var targetPid = (selectEl && selectEl.value) || pid || '';
+  document.getElementById('matProductId').value = targetPid;
   resetMatForm();
+  
   var overlay = document.getElementById('matOverlay');
-  if(overlay) overlay.classList.add('open');
-  loadMaterialsList(pid);
-}
-
-function _unused_oldOpen(product){
-  var pid = (typeof product === 'string') ? product : (product && (product.id || product.slug));
-  var pname = (typeof product === 'object' && product) ? product.name : 'NEXORA';
-  
-  document.getElementById('matProductId').value = pid;
-  document.getElementById('matModalTitle').textContent = 'Marketing Assets & Swipe Copy — ' + pname;
-  resetMatForm();
-  document.getElementById('matOverlay').classList.add('open');
-  loadMaterialsList(pid);
+  if(overlay) {
+    overlay.classList.add('show');
+    overlay.classList.add('open');
+  }
+  loadMaterialsList(targetPid);
 }
 
 function closeMatsModal(){
-  document.getElementById('matOverlay').classList.remove('open');
+  var overlay = document.getElementById('matOverlay');
+  if(overlay) {
+    overlay.classList.remove('show');
+    overlay.classList.remove('open');
+  }
 }
 
 function resetMatForm(){
@@ -1153,51 +1426,60 @@ function resetMatForm(){
   if(urlEl) urlEl.value = '';
   var gUrlEl = document.getElementById('matGenericUrl');
   if(gUrlEl) gUrlEl.value = '';
+  var driveEl = document.getElementById('matDriveUrl');
+  if(driveEl) driveEl.value = '';
   document.getElementById('matContent').value = '';
   document.getElementById('matFormHeading').textContent = '+ Add New Material';
   document.getElementById('matCancelEditBtn').style.display = 'none';
   var saveBtn = document.getElementById('matSaveBtn');
   if(saveBtn){ saveBtn.textContent = '+ Add Material'; saveBtn.disabled = false; }
   clearSelectedMatFile();
-  setMatTab('image');
+  setMatTab('dm');
 }
 
 function loadMaterialsList(productId){
   var listEl = document.getElementById('matList');
+  if(!listEl) return;
   listEl.innerHTML = '<div class="loading"><div class="bar"></div> Loading materials...</div>';
   
-  api('/api/admin?action=materials&product_id=' + encodeURIComponent(productId)).then(function(d){
+  var q = productId ? ('&product_id=' + encodeURIComponent(productId)) : '';
+  api('/api/admin?action=materials' + q).then(function(d){
     if(!d || !d.ok){
       listEl.innerHTML = '<div class="err" style="padding:12px 0;">' + esc(d && d.error || 'Failed to load materials') + '</div>';
       return;
     }
     var mats = d.materials || [];
     window._cachedMaterials = mats;
-    document.getElementById('matListCount').textContent = mats.length;
+    var countEl = document.getElementById('matListCount');
+    if(countEl) countEl.textContent = mats.length;
     if(!mats.length){
-      listEl.innerHTML = '<div class="empty" style="padding:24px 0;background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:10px;text-align:center;">No materials added for this product yet. Upload your first image or swipe copy above!</div>';
+      listEl.innerHTML = '<div class="empty" style="padding:24px 0;background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:10px;text-align:center;">No materials added yet. Create your first swipe copy, flyer, or Drive link above.</div>';
       return;
     }
 
     var h = '';
     mats.forEach(function(m){
-      var badgeClass = m.type || 'asset';
-      var badgeLabel = m.type === 'copy' ? 'SWIPE COPY' : (m.type === 'image' ? 'IMAGE' : (m.type === 'video' ? 'VIDEO' : 'RESOURCE'));
+      var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
+      var badgeLabel = getCategoryBadgeLabel(cat);
       
       var previewHtml = '';
-      if(m.type === 'copy' || m.content){
-        previewHtml = '<div style="background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:12px 14px;margin-top:10px;font-size:13px;line-height:1.55;color:#ccc;white-space:pre-wrap;max-height:140px;overflow-y:auto;">' + esc(m.content) + '</div>';
-      } else if(m.type === 'image' && m.url){
+      if(m.content){
+        var highlighted = esc(m.content).replace(/\{LINK\}/gi, '<span style="color:var(--crimson-bright);font-weight:700;">{LINK}</span>');
+        previewHtml = '<div style="background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:12px 14px;margin-top:10px;font-size:13px;line-height:1.55;color:#ccc;white-space:pre-wrap;max-height:140px;overflow-y:auto;">' + highlighted + '</div>';
+      } else if((cat === 'creative' || m.type === 'image') && m.url){
         previewHtml = '<div style="margin-top:10px;display:flex;gap:14px;align-items:center;background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 14px;">' +
-          '<img src="' + esc(m.url) + '" alt="preview" style="width:68px;height:68px;object-fit:cover;border-radius:8px;border:1px solid var(--line);" />' +
+          '<img src="' + esc(m.url) + '" alt="preview" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line);" />' +
           '<div style="flex:1;min-width:0;">' +
             '<div style="font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px;">' + esc(m.url) + '</div>' +
             '<div style="display:flex;gap:8px;">' +
-              '<a href="' + esc(m.url) + '" target="_blank" rel="noopener" download style="display:inline-flex;align-items:center;gap:4px;font-size:11.5px;background:rgba(255,255,255,.08);color:#fff;font-weight:700;padding:5px 10px;border-radius:6px;text-decoration:none;">Download File</a>' +
-              '<a href="' + esc(m.url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;font-size:11.5px;color:var(--crimson-bright);font-weight:700;padding:5px 10px;text-decoration:none;">View Full Size &rarr;</a>' +
+              '<a href="' + esc(m.url) + '" target="_blank" rel="noopener" download style="display:inline-flex;align-items:center;gap:4px;font-size:11.5px;background:rgba(255,255,255,.08);color:#fff;font-weight:700;padding:5px 10px;border-radius:6px;text-decoration:none;">Download</a>' +
+              '<a href="' + esc(m.url) + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;font-size:11.5px;color:var(--crimson-bright);font-weight:700;padding:5px 10px;text-decoration:none;">View Full &rarr;</a>' +
             '</div>' +
           '</div>' +
         '</div>';
+      } else if(cat === 'drive_link' && (m.drive_url || m.url)){
+        var dUrl = m.drive_url || m.url;
+        previewHtml = '<div style="margin-top:8px;"><a href="' + esc(dUrl) + '" target="_blank" rel="noopener" style="font-size:12.5px;color:#facc15;font-weight:700;">' + esc(dUrl) + ' &rarr;</a></div>';
       } else if(m.url){
         previewHtml = '<div style="margin-top:8px;"><a href="' + esc(m.url) + '" target="_blank" rel="noopener" style="font-size:12.5px;color:var(--crimson-bright);font-weight:700;">' + esc(m.url) + ' &rarr;</a></div>';
       }
@@ -1206,7 +1488,7 @@ function loadMaterialsList(productId){
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">' +
           '<div style="flex:1;min-width:0;">' +
             '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
-              '<span class="mat-badge ' + badgeClass + '" style="font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:4px;background:rgba(122,10,21,.2);color:var(--crimson-bright);border:1px solid rgba(122,10,21,.3);">' + badgeLabel + '</span>' +
+              '<span class="mat-badge ' + cat + '">' + badgeLabel + '</span>' +
               '<span style="font-weight:800;font-size:14.5px;color:#fff;">' + esc(m.title) + '</span>' +
             '</div>' +
           '</div>' +
@@ -1225,8 +1507,10 @@ function loadMaterialsList(productId){
 }
 
 function editMaterial(id){
-  var m = (window._cachedMaterials || []).find(function(x){ return x.id === id; });
+  var m = (_hubAllMaterials || window._cachedMaterials || []).find(function(x){ return x.id === id; });
   if(!m) return;
+  
+  openAddMaterialModal(m.product_id);
   
   document.getElementById('editMatId').value = m.id;
   document.getElementById('matTitle').value = m.title || '';
@@ -1235,17 +1519,20 @@ function editMaterial(id){
   var saveBtn = document.getElementById('matSaveBtn');
   if(saveBtn) saveBtn.textContent = 'Save Changes';
 
-  var type = (m.type === 'copy' || m.content) ? 'copy' : (m.type || 'image');
-  setMatTab(type);
+  var cat = m.category || (m.type === 'copy' ? 'dm' : (m.type === 'image' ? 'creative' : (m.type === 'link' ? 'drive_link' : 'dm')));
+  setMatTab(cat);
 
-  if(type === 'copy'){
+  if(cat === 'dm' || cat === 'status' || cat === 'broadcast' || cat === 'email' || m.content){
     document.getElementById('matContent').value = m.content || m.url || '';
-  } else if(type === 'image'){
+  } else if(cat === 'creative' || m.type === 'image'){
     if(m.url){
       var urlEl = document.getElementById('matUrl');
       if(urlEl) urlEl.value = m.url;
       toggleUrlFallback();
     }
+  } else if(cat === 'drive_link'){
+    var driveEl = document.getElementById('matDriveUrl');
+    if(driveEl) driveEl.value = m.drive_url || m.url || '';
   } else {
     var gUrl = document.getElementById('matGenericUrl');
     if(gUrl) gUrl.value = m.url || '';
@@ -1256,20 +1543,31 @@ function editMaterial(id){
 }
 
 async function saveMaterial(){
-  var productId = document.getElementById('matProductId').value;
+  var productSelect = document.getElementById('matProductSelect');
+  var productId = (productSelect && productSelect.value) || document.getElementById('matProductId').value;
   var editId = document.getElementById('editMatId').value;
   var title = document.getElementById('matTitle').value.trim();
   var btn = document.getElementById('matSaveBtn');
   var finalUrl = '';
   var finalContent = '';
+  var finalDriveUrl = '';
 
-  if(_currentMatType === 'copy'){
+  if(!productId){
+    showSnack('Please select a product first.');
+    return;
+  }
+
+  if(_currentMatType === 'dm' || _currentMatType === 'status' || _currentMatType === 'broadcast' || _currentMatType === 'email'){
     finalContent = document.getElementById('matContent').value.trim();
-    if(!finalContent){ showSnack('Please enter the swipe copy text.'); return; }
-    if(!title) title = 'Swipe Copy';
-  } else if(_currentMatType === 'image'){
+    if(!finalContent){ showSnack('Please enter the promotional copy text.'); return; }
+    if(!title){
+      if(_currentMatType === 'dm') title = 'DM Outreach Script';
+      else if(_currentMatType === 'status') title = 'WhatsApp Status Script';
+      else if(_currentMatType === 'broadcast') title = 'Community Broadcast Script';
+      else if(_currentMatType === 'email') title = 'Email Outreach Template';
+    }
+  } else if(_currentMatType === 'creative'){
     if(_selectedMatBase64){
-      // Upload file directly from phone / computer
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span> Uploading photo...';
       try {
@@ -1295,16 +1593,20 @@ async function saveMaterial(){
       var urlInput = document.getElementById('matUrl');
       finalUrl = urlInput ? urlInput.value.trim() : '';
       if(!finalUrl){
-        showSnack('Please choose a picture to upload.');
+        showSnack('Please choose a picture to upload or enter image URL.');
         return;
       }
     }
-    if(!title) title = _selectedMatFile ? _selectedMatFile.name.replace(/\.[^/.]+$/, '') : 'Promo Image';
+    if(!title) title = _selectedMatFile ? _selectedMatFile.name.replace(/\.[^/.]+$/, '') : 'Promo Creative';
+  } else if(_currentMatType === 'drive_link'){
+    finalDriveUrl = document.getElementById('matDriveUrl').value.trim();
+    if(!finalDriveUrl){ showSnack('Please enter the Google Drive folder URL.'); return; }
+    if(!title) title = 'Google Drive Marketing Assets';
   } else {
     var gUrlEl = document.getElementById('matGenericUrl');
     finalUrl = gUrlEl ? gUrlEl.value.trim() : '';
-    if(!finalUrl){ showSnack('Please enter the resource / video URL.'); return; }
-    if(!title) title = (_currentMatType === 'video') ? 'Promo Video / Walkthrough' : 'Resource Link';
+    if(!finalUrl){ showSnack('Please enter the resource or video URL.'); return; }
+    if(!title) title = 'Resource Link';
   }
 
   btn.disabled = true;
@@ -1313,10 +1615,12 @@ async function saveMaterial(){
   var payload = {
     id: editId || undefined,
     product_id: productId,
-    type: _currentMatType,
+    category: _currentMatType,
+    type: (_currentMatType === 'creative') ? 'image' : ((_currentMatType === 'drive_link') ? 'link' : 'copy'),
     title: title,
     url: finalUrl,
-    content: finalContent
+    content: finalContent,
+    drive_url: finalDriveUrl
   };
 
   var method = editId ? 'PATCH' : 'POST';
@@ -1325,22 +1629,23 @@ async function saveMaterial(){
     btn.disabled = false;
     btn.textContent = editId ? 'Save Changes' : '+ Add Material';
     if(d.ok){
-      showSnack(editId ? 'Material updated successfully!' : 'Material uploaded successfully!');
+      showSnack(editId ? 'Material updated successfully.' : 'Material added successfully.');
       resetMatForm();
       loadMaterialsList(productId);
+      loadMarketingHub();
     } else {
-      showSnack(d.error || 'Failed to save material');
+      showSnack(d.error || 'Failed to save material.');
     }
   }).catch(function(){
     btn.disabled = false;
     btn.textContent = editId ? 'Save Changes' : '+ Add Material';
-    showSnack('Network error');
+    showSnack('Network error.');
   });
 }
 
 // Custom In-App Confirmation Modal (Zero browser confirm() popups)
 function openDeleteConfirm(id){
-  var m = (window._cachedMaterials || []).find(function(x){ return x.id === id; });
+  var m = (_hubAllMaterials || window._cachedMaterials || []).find(function(x){ return x.id === id; });
   var name = m ? m.title : 'this material';
   document.getElementById('confirmTitle').textContent = 'Delete Material?';
   document.getElementById('confirmDesc').textContent = 'Are you sure you want to delete "' + name + '"? Affiliates will no longer be able to see or download it.';
@@ -1367,6 +1672,7 @@ function executeDeleteMaterial(id){
         resetMatForm();
       }
       loadMaterialsList(productId);
+      loadMarketingHub();
     } else {
       showSnack(d.error || 'Failed to delete');
     }
