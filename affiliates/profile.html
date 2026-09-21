@@ -76,6 +76,11 @@
     <div class="frow"><label>Bank name</label><input id="bank_name" type="text"></div>
     <div class="frow"><label>Account number</label><input id="account_number" type="text" maxlength="10"></div>
     <div class="frow"><label>Account name</label><input id="account_name" type="text"></div>
+    <div class="frow">
+      <label>Custom WhatsApp Funnel Link (Optional)</label>
+      <input id="whatsapp_group_url" type="url" placeholder="https://chat.whatsapp.com/your-group-invite-link">
+      <div style="font-size:12px;color:var(--muted);margin-top:4px;">When people register with your partner link, they'll join your WhatsApp group. Leave blank for default master group.</div>
+    </div>
     <div class="err" id="err"></div>
     <button class="btn" id="save" style="width:100%;">Save changes</button>
   </div>
@@ -104,6 +109,7 @@
     document.getElementById('bank_name').value = p.bank_name || '';
     document.getElementById('account_number').value = p.account_number || '';
     document.getElementById('account_name').value = p.account_name || '';
+    document.getElementById('whatsapp_group_url').value = p.whatsapp_group_url || '';
   }
 
   App.api('profile').then(function (d) {
@@ -118,6 +124,7 @@
       bank_name: document.getElementById('bank_name').value,
       account_number: document.getElementById('account_number').value,
       account_name: document.getElementById('account_name').value,
+      whatsapp_group_url: document.getElementById('whatsapp_group_url').value,
     };
     errEl.textContent = '';
     btn.disabled = true; btn.textContent = 'Saving...';

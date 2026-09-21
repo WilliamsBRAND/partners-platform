@@ -152,6 +152,28 @@ var _selectedAffCat = 'all';
       html += '<div class="empty" style="color:#888;">Link not ready — check back soon.</div>';
     }
 
+    // Custom WhatsApp Funnel Card
+    var partnerWaUrl = (d.partner && d.partner.whatsapp_group_url) || '';
+    html += '<div style="background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:24px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px;">' +
+        '<div>' +
+          '<div style="font-size:15px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;">' +
+            '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#25D366;"></span>' +
+            'Your Custom WhatsApp Funnel Link (Optional)' +
+          '</div>' +
+          '<div style="font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.5;max-width:620px;">' +
+            'When leads register for the Free Launch Event using your referral link, they will automatically be redirected directly into your WhatsApp group instead of the default group.' +
+          '</div>' +
+        '</div>' +
+        (partnerWaUrl ? '<span style="font-size:11px;font-weight:800;color:#4ade80;background:rgba(34,197,94,0.12);padding:4px 10px;border-radius:6px;border:1px solid rgba(34,197,94,0.25);">CUSTOM FUNNEL ACTIVE</span>' : '<span style="font-size:11px;font-weight:700;color:var(--muted);background:rgba(255,255,255,0.05);padding:4px 10px;border-radius:6px;">MASTER GROUP DEFAULT</span>') +
+      '</div>' +
+      '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">' +
+        '<input type="url" id="partnerWaInput" placeholder="https://chat.whatsapp.com/your-group-invite-link" value="' + App.esc(partnerWaUrl) + '" style="flex:1;min-width:260px;background:#0d0d0f;border:1px solid var(--line);border-radius:8px;padding:12px 14px;color:#fff;font-size:13.5px;outline:none;" />' +
+        '<button type="button" class="btn" id="saveWaBtn" onclick="saveCustomWaFunnel()" style="padding:12px 20px;font-size:13px;font-weight:700;white-space:nowrap;background:var(--crimson);">Save Funnel Link</button>' +
+      '</div>' +
+      '<div id="waSaveMsg" style="font-size:12px;margin-top:8px;min-height:18px;"></div>' +
+    '</div>';
+
     // Stats
     html += '<div class="grid cols-4" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">' +
       '<div class="card stat-card"><div class="lbl">Clicks</div><div class="num">' + (p.clicks || 0) + '</div></div>' +
@@ -350,6 +372,44 @@ function shareSwipeWhatsApp(elementId){
   var text = el.innerText || el.textContent;
   var url = 'https://wa.me/?text=' + encodeURIComponent(text);
   window.open(url, '_blank');
+}
+
+function saveCustomWaFunnel() {
+  var input = document.getElementById('partnerWaInput');
+  var btn = document.getElementById('saveWaBtn');
+  var msg = document.getElementById('waSaveMsg');
+  if (!input || !btn) return;
+  var url = input.value.trim();
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  if (msg) msg.textContent = '';
+  
+  App.api('update-whatsapp', {
+    method: 'POST',
+    body: JSON.stringify({ whatsapp_group_url: url })
+  }).then(function(d) {
+    btn.disabled = false;
+    btn.textContent = 'Save Funnel Link';
+    if (d && d.ok) {
+      App.snack('WhatsApp funnel link updated!');
+      if (msg) {
+        msg.style.color = '#4ade80';
+        msg.textContent = url ? '✓ Custom WhatsApp funnel is active! Leads registering with your link will join your group.' : '✓ WhatsApp funnel reset to master group default.';
+      }
+    } else {
+      if (msg) {
+        msg.style.color = 'var(--crimson)';
+        msg.textContent = (d && d.error) || 'Could not save link. Please check URL format.';
+      }
+    }
+  }).catch(function() {
+    btn.disabled = false;
+    btn.textContent = 'Save Funnel Link';
+    if (msg) {
+      msg.style.color = 'var(--crimson)';
+      msg.textContent = 'Network error. Please try again.';
+    }
+  });
 }
 </script>
 </body>

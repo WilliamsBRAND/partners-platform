@@ -55,6 +55,7 @@ export default async function handler(req, res) {
     if (action === 'withdraw') return await withdraw(req, res, db, partnerId);
     if (action === 'profile') return await profile(req, res, db, partnerId);
     if (action === 'update') return await updateProfile(req, res, db, partnerId);
+    if (action === 'update-whatsapp' || action === 'update_whatsapp') return await updateWhatsApp(req, res, db, partnerId);
     if (action === 'change-password') return await changePassword(req, res, db, partnerId);
 
     return json(res, 400, { error: 'Unknown action.' });
@@ -394,8 +395,20 @@ async function productDetail(req, res, db, partnerId, url) {
     ? Math.round(parseFloat(product.commission_value || 0) * 100)
     : Math.round(prodPriceKobo * ((prodCommissionPercent || 0) / 100));
 
+  // Get partner's custom WhatsApp funnel URL if set
+  let whatsapp_group_url = '';
+  if (partner.code) {
+    const titleKey = `wa_funnel:${partner.code.toUpperCase()}`;
+    const { data: waRow } = await db.from('marketing_materials').select('url').eq('title', titleKey).maybeSingle();
+    if (waRow && waRow.url) whatsapp_group_url = waRow.url;
+  }
+
   return json(res, 200, {
     ok: true,
+    partner: {
+      ...partner,
+      whatsapp_group_url,
+    },
     product: {
       ...product,
       price_kobo: prodPriceKobo,
@@ -527,12 +540,21 @@ async function profile(req, res, db, partnerId) {
   const { data } = await db.from('partners')
     .select('id, code, name, email, phone, bank_name, account_number, account_name').eq('id', partnerId).maybeSingle();
   if (!data) return json(res, 404, { error: 'Partner not found.' });
-  return json(res, 200, { ok: true, profile: data }, { 'Cache-Control': 'no-store' });
+
+  // Get custom WhatsApp funnel URL if set
+  let whatsapp_group_url = '';
+  if (data.code) {
+    const titleKey = `wa_funnel:${data.code.toUpperCase()}`;
+    const { data: waRow } = await db.from('marketing_materials').select('url').eq('title', titleKey).maybeSingle();
+    if (waRow && waRow.url) whatsapp_group_url = waRow.url;
+  }
+
+  return json(res, 200, { ok: true, profile: { ...data, whatsapp_group_url } }, { 'Cache-Control': 'no-store' });
 }
 
 async function updateProfile(req, res, db, partnerId) {
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
-  const { name, phone, bank_name, account_number, account_name } = req.body || {};
+  const { name, phone, bank_name, account_number, account_name, whatsapp_group_url } = req.body || {};
 
   const u = {};
   if (name !== undefined) { if (!String(name).trim()) return json(res, 400, { error: 'Name cannot be empty.' }); u.name = name.trim(); }
@@ -546,12 +568,72 @@ async function updateProfile(req, res, db, partnerId) {
   if (bank_name !== undefined) u.bank_name = bank_name;
   if (account_name !== undefined) u.account_name = account_name;
 
-  if (Object.keys(u).length === 0) return json(res, 400, { error: 'Nothing to update.' });
+  if (whatsapp_group_url !== undefined) {
+    const { data: partner } = await db.from('partners').select('code').eq('id', partnerId).maybeSingle();
+    if (partner && partner.code) {
+      const titleKey = `wa_funnel:${partner.code.toUpperCase()}`;
+      let cleanUrl = String(whatsapp_group_url || '').trim();
+      if (cleanUrl && !cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+        cleanUrl = 'https://' + cleanUrl;
+      }
+      await db.from('marketing_materials').delete().eq('title', titleKey);
+      if (cleanUrl) {
+        await db.from('marketing_materials').insert({
+          type: 'link',
+          title: titleKey,
+          url: cleanUrl
+        });
+      }
+    }
+  }
 
-  const { data, error } = await db.from('partners').update(u).eq('id', partnerId)
-    .select('id, code, name, email, phone, bank_name, account_number, account_name').single();
-  if (error) return json(res, 500, { error: 'Failed to update profile.' });
-  return json(res, 200, { ok: true, profile: data });
+  if (Object.keys(u).length === 0 && whatsapp_group_url === undefined) return json(res, 400, { error: 'Nothing to update.' });
+
+  let updatedProfile = {};
+  if (Object.keys(u).length > 0) {
+    const { data, error } = await db.from('partners').update(u).eq('id', partnerId)
+      .select('id, code, name, email, phone, bank_name, account_number, account_name').single();
+    if (error) return json(res, 500, { error: 'Failed to update profile.' });
+    updatedProfile = data;
+  } else {
+    const { data } = await db.from('partners')
+      .select('id, code, name, email, phone, bank_name, account_number, account_name').eq('id', partnerId).single();
+    updatedProfile = data;
+  }
+
+  let finalWaUrl = '';
+  if (updatedProfile?.code) {
+    const titleKey = `wa_funnel:${updatedProfile.code.toUpperCase()}`;
+    const { data: waRow } = await db.from('marketing_materials').select('url').eq('title', titleKey).maybeSingle();
+    if (waRow && waRow.url) finalWaUrl = waRow.url;
+  }
+
+  return json(res, 200, { ok: true, profile: { ...updatedProfile, whatsapp_group_url: finalWaUrl } });
+}
+
+async function updateWhatsApp(req, res, db, partnerId) {
+  if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed.' });
+  const { whatsapp_group_url } = req.body || {};
+
+  const { data: partner } = await db.from('partners').select('id, code').eq('id', partnerId).maybeSingle();
+  if (!partner) return json(res, 404, { error: 'Partner not found.' });
+
+  const titleKey = `wa_funnel:${partner.code.toUpperCase()}`;
+  let cleanUrl = String(whatsapp_group_url || '').trim();
+  if (cleanUrl && !cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+    cleanUrl = 'https://' + cleanUrl;
+  }
+
+  await db.from('marketing_materials').delete().eq('title', titleKey);
+  if (cleanUrl) {
+    await db.from('marketing_materials').insert({
+      type: 'link',
+      title: titleKey,
+      url: cleanUrl
+    });
+  }
+
+  return json(res, 200, { ok: true, whatsapp_group_url: cleanUrl });
 }
 
 async function changePassword(req, res, db, partnerId) {
