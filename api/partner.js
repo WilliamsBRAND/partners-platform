@@ -304,7 +304,15 @@ async function productDetail(req, res, db, partnerId, url) {
     .select('id').eq('partner_id', partnerId).eq('product_id', product_id).eq('status', 'active').maybeSingle();
   if (!rel) return json(res, 403, { error: 'You are not promoting this product.' });
 
-  const referralLink = buildReferralLink(product, partner.code);
+  const isNexora = (product.slug === 'nexora' || (product.name && product.name.toLowerCase().includes('nexora')));
+  const partnerCode = partner.code || '';
+  const eventLink = isNexora
+    ? `https://nexora.tomidewilliams.com/?pp=${encodeURIComponent(partnerCode)}`
+    : (product.checkout_url ? buildReferralLink(product, partnerCode) : `https://nexora.tomidewilliams.com/?pp=${encodeURIComponent(partnerCode)}`);
+  const salesLink = isNexora
+    ? `https://nexora.tomidewilliams.store/?pp=${encodeURIComponent(partnerCode)}`
+    : (product.checkout_url ? buildReferralLink(product, partnerCode) : `https://nexora.tomidewilliams.store/?pp=${encodeURIComponent(partnerCode)}`);
+  const referralLink = eventLink;
 
   const [{ data: referrals }, { data: comms }, { data: mats }] = await Promise.all([
     db.from('referrals').select('id').eq('partner_id', partnerId).eq('product_id', product_id),
@@ -416,7 +424,9 @@ async function productDetail(req, res, db, partnerId, url) {
       commission_label: product.commission_type === 'fixed'
         ? '₦' + (+product.commission_value).toLocaleString()
         : Math.round(+product.commission_value) + '% (₦' + Math.round(prodPartnerEarningKobo / 100).toLocaleString() + ')',
-      link: referralLink,
+      link: eventLink,
+      event_link: eventLink,
+      sales_link: salesLink,
       clicks, sales: validSales.length, earned_kobo: earned, pending_kobo: pending,
     },
     sales,
