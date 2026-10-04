@@ -13,8 +13,8 @@ export function buildReferralLink(product, partnerCode) {
 }
 
 // Compute the commission earned (kobo) for an order given the product config.
-// The affiliate always receives commission on the full retail price (e.g. 30% of ₦7,600 = ₦2,280),
-// even though the buyer received a 20% discount through the partner link (paying ₦6,080).
+// The affiliate always receives commission on the full retail price (e.g. 30% of ₦25,000 = ₦7,500),
+// even though the buyer received a 20% discount through the partner link (paying ₦20,000).
 export function commissionFor(product, orderAmountKobo) {
   if (!product) return 0;
   if (product.commission_type === 'fixed') {

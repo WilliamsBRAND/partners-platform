@@ -529,7 +529,7 @@ td .grn{color:var(--green);font-size:12px;}
             <div><label class="fld">Checkout URL (full)</label><input id="pUrl" placeholder="https://nexora.tomidewilliams.store/" /></div>
             <div><label class="fld">Tagline</label><input id="pTag" placeholder="Short tagline" /></div>
             <div><label class="fld">Image URL</label><input id="pImg" placeholder="https://.../image.jpg" /></div>
-            <div><label class="fld">Price in Naira</label><input type="number" id="pPrice" placeholder="e.g. 7600" /></div>
+            <div><label class="fld">Price in Naira</label><input type="number" id="pPrice" placeholder="e.g. 25000" /></div>
             <div><label class="fld">Reference prefix</label><input id="pPrefix" placeholder="NEXORA" /></div>
           </div>
           <label class="fld">Description</label>
@@ -1737,8 +1737,8 @@ function renderHubMaterials(){
   });
 
   var prodNameDisplay = selectedProductObj ? selectedProductObj.name : (filterProd === 'all' ? 'All Products' : 'NEXORA');
-  var prodPriceDisplay = selectedProductObj ? ('₦' + Math.round((selectedProductObj.price_kobo||760000)/100).toLocaleString()) : '₦7,600';
-  var prodCommDisplay = selectedProductObj ? (selectedProductObj.commission_type === 'fixed' ? '₦' + selectedProductObj.commission_value : selectedProductObj.commission_value + '% (₦2,280)') : '30% (₦2,280)';
+  var prodPriceDisplay = selectedProductObj ? ('₦' + Math.round((selectedProductObj.price_kobo||2500000)/100).toLocaleString()) : '₦25,000';
+  var prodCommDisplay = selectedProductObj ? (selectedProductObj.commission_type === 'fixed' ? '₦' + selectedProductObj.commission_value : selectedProductObj.commission_value + '% (₦7,500)') : '30% (₦7,500)';
 
   var sampleAffLink = 'https://partners.tomidewilliams.com/p/TW106101/' + (selectedProductObj ? selectedProductObj.slug : 'nexora');
 
